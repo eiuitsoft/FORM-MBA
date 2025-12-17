@@ -1,0 +1,253 @@
+
+<div class="min-h-screen p-4 sm:p-8 bg-slate-100 flex items-center justify-center">
+  <div class="w-full max-w-5xl">
+
+    <!-- Header -->
+    <header class="text-center mb-10 animate-header">
+      <div class="inline-flex items-center gap-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[#153a5e]" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L1 9l4 1.5V17h14v-6.5L23 9l-11-7zm-2 9h4v5h-4v-5zm-4 0h2v5H6v-5zm12 0h2v5h-2v-5zM3.5 18v2h17v-2H3.5z"/>
+        </svg>
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-bold text-[#153a5e]">EASTERN INTERNATIONAL UNIVERSITY</h1>
+          <h2 class="text-xl sm:text-2xl font-semibold text-[#a68557]">MBA Application Form</h2>
+        </div>
+      </div>
+    </header>
+
+    <form [formGroup]="applicationForm" (ngSubmit)="submitForm()" class="space-y-8">
+
+      <!-- Section A: Personal Details -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="personalDetails">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">SECTION A - PERSONAL DETAILS</h3>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div class="md:col-span-2">
+            <label for="fullName" class="block text-sm font-medium text-gray-700">Full name</label>
+            <input type="text" id="fullName" formControlName="fullName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label for="nationality" class="block text-sm font-medium text-gray-700">Nationality</label>
+            <input type="text" id="nationality" formControlName="nationality" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Gender</label>
+            <div class="mt-2 flex items-center space-x-6">
+              <label class="inline-flex items-center"><input type="radio" formControlName="gender" value="Male" class="text-[#153a5e] focus:ring-[#a68557]"> <span class="ml-2">Male</span></label>
+              <label class="inline-flex items-center"><input type="radio" formControlName="gender" value="Female" class="text-[#153a5e] focus:ring-[#a68557]"> <span class="ml-2">Female</span></label>
+            </div>
+          </div>
+          <div>
+            <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Date of birth (dd/mm/yyyy)</label>
+            <input type="date" id="dateOfBirth" formControlName="dateOfBirth" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label for="placeOfBirth" class="block text-sm font-medium text-gray-700">Place of Birth</label>
+            <input type="text" id="placeOfBirth" formControlName="placeOfBirth" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label for="passportNo" class="block text-sm font-medium text-gray-700">ID/ Passport No.</label>
+            <input type="text" id="passportNo" formControlName="passportNo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label for="dateIssued" class="block text-sm font-medium text-gray-700">Date Issued (dd/mm/yyyy)</label>
+            <input type="date" id="dateIssued" formControlName="dateIssued" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" id="email" formControlName="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label for="mobile" class="block text-sm font-medium text-gray-700">Mobile</label>
+            <input type="tel" id="mobile" formControlName="mobile" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label for="jobTitle" class="block text-sm font-medium text-gray-700">Job title</label>
+            <input type="text" id="jobTitle" formControlName="jobTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label for="organization" class="block text-sm font-medium text-gray-700">Organization</label>
+            <input type="text" id="organization" formControlName="organization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div class="md:col-span-2">
+            <label for="correspondenceAddress" class="block text-sm font-medium text-gray-700">Correspondence Address</label>
+            <textarea id="correspondenceAddress" formControlName="correspondenceAddress" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label for="permanentAddress" class="block text-sm font-medium text-gray-700">Permanent Address</label>
+            <textarea id="permanentAddress" formControlName="permanentAddress" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section B: Application Details -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="applicationDetails">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">SECTION B - APPLICATION DETAILS</h3>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <label for="programName" class="block text-sm font-medium text-gray-700">Program name</label>
+            <input type="text" id="programName" formControlName="programName" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2" readonly>
+          </div>
+          <div>
+            <label for="programCode" class="block text-sm font-medium text-gray-700">Program code</label>
+            <input type="text" id="programCode" formControlName="programCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Track</label>
+            <div class="mt-2 flex items-center space-x-6">
+                <label class="inline-flex items-center"><input type="radio" formControlName="track" value="Application" class="text-[#153a5e] focus:ring-[#a68557]"> <span class="ml-2">Application</span></label>
+                <label class="inline-flex items-center"><input type="radio" formControlName="track" value="Research" class="text-[#153a5e] focus:ring-[#a68557]"> <span class="ml-2">Research</span></label>
+            </div>
+          </div>
+          <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <div>
+              <label for="admissionYear" class="block text-sm font-medium text-gray-700">Admission Year</label>
+              <input type="number" id="admissionYear" formControlName="admissionYear" placeholder="YYYY" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            </div>
+            <div>
+              <label for="admissionIntake" class="block text-sm font-medium text-gray-700">Admission Intake</label>
+              <input type="text" id="admissionIntake" formControlName="admissionIntake" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section C: Previous Education -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="educationDetails">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">SECTION C - PREVIOUS EDUCATION DETAILS</h3>
+        <div class="p-6 space-y-6">
+          <!-- Undergraduate -->
+          <div class="border border-gray-200 rounded-md p-4" formGroupName="undergraduate">
+              <h4 class="font-semibold text-lg text-[#153a5e] mb-2">1. Undergraduate qualifications (First degree)</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">University/ Institution</label>
+                    <input type="text" formControlName="university" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Country</label>
+                    <input type="text" formControlName="country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Major</label>
+                    <input type="text" formControlName="major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Year of graduation</label>
+                    <input type="number" formControlName="graduationYear" placeholder="YYYY" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
+                    <input type="text" formControlName="language" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  </div>
+              </div>
+          </div>
+           <!-- Second Degree -->
+          <div class="border border-gray-200 rounded-md p-4" formGroupName="secondDegree">
+              <h4 class="font-semibold text-lg text-[#153a5e] mb-2">Second degree (if any)</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                  <!-- ... same fields as undergraduate ... -->
+                  <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Country</label><input type="text" formControlName="country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Language of instruction</label><input type="text" formControlName="language" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              </div>
+          </div>
+          <!-- Postgraduate -->
+          <div class="border border-gray-200 rounded-md p-4" formGroupName="postgraduate">
+              <h4 class="font-semibold text-lg text-[#153a5e] mb-2">2. Postgraduate qualifications (if any)</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                  <!-- ... same fields as undergraduate plus Thesis title ... -->
+                  <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Country</label><input type="text" formControlName="country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Thesis title</label><input type="text" formControlName="thesisTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Language of instruction</label><input type="text" formControlName="language" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: English Qualifications -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="englishQualifications">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">3. English qualifications</h3>
+        <div class="p-6 space-y-4">
+            <div class="grid grid-cols-5 gap-x-6 items-center" formGroupName="ielts">
+              <label class="col-span-1 ml-3 font-semibold text-gray-700">IELTS</label>
+              <div class="col-span-2"><input type="text" formControlName="score" placeholder="Score" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div class="col-span-2"><input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+            </div>
+             <div class="grid grid-cols-5 gap-x-6 items-center" formGroupName="toefl">
+              <label class="col-span-1 ml-3 font-semibold text-gray-700">TOEFL</label>
+              <div class="col-span-2"><input type="text" formControlName="score" placeholder="Score" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div class="col-span-2"><input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+            </div>
+             <div class="grid grid-cols-5 gap-x-6 items-center" formGroupName="other">
+              <div class="col-span-1"><input type="text" formControlName="name" placeholder="Other Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div class="col-span-2"><input type="text" formControlName="score" placeholder="Score" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div class="col-span-2"><input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+            </div>
+        </div>
+      </section>
+
+      <!-- Section D: Employment History -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="employmentHistory">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">SECTION D - EMPLOYMENT HISTORY</h3>
+        <div class="p-6 space-y-6">
+          <div class="border border-gray-200 rounded-md p-4" formGroupName="position1">
+            <h4 class="font-semibold text-lg text-[#153a5e] mb-2">Position 1 (Most recent)</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div><label class="block text-sm font-medium text-gray-700">Organization</label><input type="text" formControlName="organization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">Position/ Title</label><input type="text" formControlName="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">From (mm/yyyy)</label><input type="month" formControlName="from" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">To (mm/yyyy)</label><input type="month" formControlName="to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Organization address</label><textarea formControlName="address" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea></div>
+            </div>
+          </div>
+          <div class="border border-gray-200 rounded-md p-4" formGroupName="position2">
+            <h4 class="font-semibold text-lg text-[#153a5e] mb-2">Position 2 (if applicable)</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div><label class="block text-sm font-medium text-gray-700">Organization</label><input type="text" formControlName="organization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">Position/ Title</label><input type="text" formControlName="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">From (mm/yyyy)</label><input type="month" formControlName="from" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">To (mm/yyyy)</label><input type="month" formControlName="to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Organization address</label><textarea formControlName="address" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section E: Declaration -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="declaration">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">SECTION E - DECLARATION</h3>
+        <div class="p-6 space-y-4 text-gray-700">
+          <p>By applying for admission to the Master of Business Administration program at Eastern International University, I hereby commit to fulfilling all academic, research, and financial obligations upon admission as follows:</p>
+          <ol class="list-decimal list-inside space-y-2 pl-4">
+            <li>Comply with all training regulations and policies of Eastern International University;</li>
+            <li>Ensure adequate time for studying and conducting research; participate in academic activities; and strictly follow the university study and research plan;</li>
+            <li>Pay tuition fees and any other required fees in accordance with university regulations;</li>
+            <li>Provide consent for Eastern International University to use and verify my certificates and academic qualifications.</li>
+          </ol>
+          <p class="font-semibold">I hereby declare that all information provided in this Application Form is true and accurate and shall take full responsibility for any false declarations.</p>
+          <div class="pt-4">
+            <label class="inline-flex items-center text-lg">
+              <input type="checkbox" formControlName="agreed" class="h-5 w-5 rounded border-gray-300 text-[#153a5e] focus:ring-[#a68557]">
+              <span class="ml-3">I agree to the terms and conditions.</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Submission -->
+      <div class="text-center pt-4 form-section">
+        <button type="submit" class="w-full max-w-xs inline-flex justify-center py-3 px-6 border border-transparent shadow-lg text-lg font-bold rounded-md text-white bg-[#153a5e] hover:bg-[#a68557] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#a68557] transition-all duration-300 transform hover:scale-105">
+          Submit Application
+        </button>
+        @if (submitted() && applicationForm.invalid) {
+          <p class="mt-4 text-red-600">Please review the form and fill in all required fields marked with an asterisk or highlighted in red.</p>
+        }
+      </div>
+    </form>
+  </div>
+</div>
