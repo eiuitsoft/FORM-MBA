@@ -13,6 +13,9 @@ export class AppComponent {
   private fb = inject(FormBuilder);
   
   submitted = signal(false);
+  showDialog = signal(false);
+  dialogMessage = signal('');
+  dialogType = signal<'success' | 'error'>('success');
   
   applicationForm: FormGroup = this.fb.group({
     personalDetails: this.fb.group({
@@ -91,11 +94,19 @@ export class AppComponent {
     this.submitted.set(true);
     if (this.applicationForm.valid) {
       console.log('Form Submitted!', this.applicationForm.value);
-      alert('Application submitted successfully!');
+      this.dialogType.set('success');
+      this.dialogMessage.set('Application submitted successfully!');
+      this.showDialog.set(true);
     } else {
       console.error('Form is invalid.');
-      alert('Please fill out all required fields before submitting.');
+      this.dialogType.set('error');
+      this.dialogMessage.set('Please fill out all required fields before submitting.');
+      this.showDialog.set(true);
     }
+  }
+
+  closeDialog(): void {
+    this.showDialog.set(false);
   }
 
   // Helper to easily access nested form groups in the template
