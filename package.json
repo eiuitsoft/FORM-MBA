@@ -9,15 +9,20 @@
     "preview": "ng serve --configuration=production"
   },
   "dependencies": {
-    "rxjs": "^7.8.2",
-    "@angular/core": "^21.0.0",
-    "@angular/platform-browser": "^21.0.0",
-    "@angular/common": "^21.0.0",
-    "@angular/compiler": "^21.0.0",
-    "@angular/forms": "^21.0.3",
+    "@angular/animations": "^21.0.6",
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.3",
+    "@angular/platform-browser": "^21.0.0",
+    "google-libphonenumber": "^3.2.43",
+    "intl-tel-input": "^19.5.6",
+    "ngx-bootstrap": "^20.0.2",
+    "ngx-intl-tel-input": "^17.0.0",
+    "rxjs": "^7.8.2",
     "tailwindcss": "latest"
   },
   "devDependencies": {

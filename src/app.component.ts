@@ -2,13 +2,15 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { of } from 'rxjs';
 import { MbaService } from './app/core/services/mba/mba.service';
 import { uniqueFieldValidator } from './validators/unique-field.validator';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
@@ -38,10 +40,15 @@ export class AppComponent {
       dateIssued: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       mobile: [
-        '', 
+        undefined, 
         [Validators.required],
         [uniqueFieldValidator(
-          (val) => this._mbaService.checkMobileExists(val),
+          (val: any) => {
+            // Extract e164Number from intl-tel-input object (format: +84845333577)
+            const phoneNumber = val?.e164Number || val;
+            if (!phoneNumber) return of(false);
+            return this._mbaService.checkMobileExists(phoneNumber);
+          },
           'mobileExists'
         )]
       ],
@@ -152,6 +159,8 @@ export class AppComponent {
     return {
       personalDetails: {
         ...rawValue.personalDetails,
+        // Extract phone number in E.164 format (e.g., +84845333577)
+        mobile: rawValue.personalDetails.mobile?.e164Number || rawValue.personalDetails.mobile,
         gender: rawValue.personalDetails.gender === 'Male' ? 1 : 0,
         nationalityId: '11111111-1111-1111-1111-111111111111', // TODO: Get from dropdown
         nationalityName: rawValue.personalDetails.nationality

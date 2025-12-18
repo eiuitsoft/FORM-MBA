@@ -23,11 +23,11 @@
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <div class="md:col-span-2">
             <label for="fullName" class="block text-sm font-medium text-gray-700">Full name</label>
-            <input type="text" id="fullName" formControlName="fullName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <input type="text" id="fullName" formControlName="fullName" placeholder="Enter your full name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
             <label for="nationality" class="block text-sm font-medium text-gray-700">Nationality</label>
-            <input type="text" id="nationality" formControlName="nationality" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <input type="text" id="nationality" formControlName="nationality" placeholder="Enter your nationality" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Gender</label>
@@ -42,12 +42,12 @@
           </div>
           <div>
             <label for="placeOfBirth" class="block text-sm font-medium text-gray-700">Place of Birth</label>
-            <input type="text" id="placeOfBirth" formControlName="placeOfBirth" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <input type="text" id="placeOfBirth" formControlName="placeOfBirth" placeholder="Enter place of birth" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
             <label for="passportNo" class="block text-sm font-medium text-gray-700">ID/ Passport No.</label>
             <div class="relative">
-              <input type="text" id="passportNo" formControlName="passportNo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10">
+              <input type="text" id="passportNo" formControlName="passportNo" placeholder="Enter ID or Passport number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10">
               @if (personalDetails.get('passportNo')?.pending) {
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -74,47 +74,64 @@
           </div>
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" id="email" formControlName="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <input type="email" id="email" formControlName="email" placeholder="Enter your email address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
             <label for="mobile" class="block text-sm font-medium text-gray-700">Mobile</label>
-            <div class="relative">
-              <input type="tel" id="mobile" formControlName="mobile" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10">
-              @if (personalDetails.get('mobile')?.pending) {
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </div>
-              }
-              @if (personalDetails.get('mobile')?.valid && personalDetails.get('mobile')?.touched && !personalDetails.get('mobile')?.pending) {
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                  </svg>
-                </div>
-              }
-            </div>
+            <ngx-intl-tel-input
+              [cssClass]="'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2'"
+              [preferredCountries]="['vn', 'us', 'gb']"
+              [enableAutoCountrySelect]="true"
+              [enablePlaceholder]="true"
+              [searchCountryFlag]="true"
+              [searchCountryField]="['name', 'dialCode']"
+              [selectFirstCountry]="false"
+              [selectedCountryISO]="'vn'"
+              [maxLength]="15"
+              [phoneValidation]="true"
+              [separateDialCode]="true"
+              formControlName="mobile"
+              id="mobile">
+            </ngx-intl-tel-input>
+            @if (personalDetails.get('mobile')?.pending) {
+              <div class="flex items-center mt-1">
+                <svg class="animate-spin h-4 w-4 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-sm text-gray-500">Checking...</span>
+              </div>
+            }
+            @if (personalDetails.get('mobile')?.valid && personalDetails.get('mobile')?.touched && !personalDetails.get('mobile')?.pending) {
+              <div class="flex items-center mt-1">
+                <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-sm text-green-600">Valid number</span>
+              </div>
+            }
+            @if (personalDetails.get('mobile')?.hasError('validatePhoneNumber') && personalDetails.get('mobile')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Please enter a valid phone number</p>
+            }
             @if (personalDetails.get('mobile')?.hasError('mobileExists') && personalDetails.get('mobile')?.touched) {
               <p class="text-red-600 text-sm mt-1">This mobile number is already registered</p>
             }
           </div>
           <div>
             <label for="jobTitle" class="block text-sm font-medium text-gray-700">Job title</label>
-            <input type="text" id="jobTitle" formControlName="jobTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <input type="text" id="jobTitle" formControlName="jobTitle" placeholder="Enter your job title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
             <label for="organization" class="block text-sm font-medium text-gray-700">Organization</label>
-            <input type="text" id="organization" formControlName="organization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <input type="text" id="organization" formControlName="organization" placeholder="Enter your organization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div class="md:col-span-2">
             <label for="correspondenceAddress" class="block text-sm font-medium text-gray-700">Correspondence Address</label>
-            <textarea id="correspondenceAddress" formControlName="correspondenceAddress" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+            <textarea id="correspondenceAddress" formControlName="correspondenceAddress" rows="2" placeholder="Enter your correspondence address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
           </div>
           <div class="md:col-span-2">
             <label for="permanentAddress" class="block text-sm font-medium text-gray-700">Permanent Address</label>
-            <textarea id="permanentAddress" formControlName="permanentAddress" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+            <textarea id="permanentAddress" formControlName="permanentAddress" rows="2" placeholder="Enter your permanent address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
           </div>
         </div>
       </section>
@@ -131,7 +148,7 @@
           </div>
           <div>
             <label for="programCode" class="block text-sm font-medium text-gray-700">Program code</label>
-            <input type="text" id="programCode" formControlName="programCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <input type="text" id="programCode" formControlName="programCode" placeholder="Enter program code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Track</label>
@@ -147,7 +164,7 @@
             </div>
             <div>
               <label for="admissionIntake" class="block text-sm font-medium text-gray-700">Admission Intake</label>
-              <input type="text" id="admissionIntake" formControlName="admissionIntake" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+              <input type="text" id="admissionIntake" formControlName="admissionIntake" placeholder="Enter admission intake" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
             </div>
           </div>
         </div>
@@ -163,15 +180,15 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <div>
                     <label class="block text-sm font-medium text-gray-700">University/ Institution</label>
-                    <input type="text" formControlName="university" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Country</label>
-                    <input type="text" formControlName="country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <input type="text" formControlName="country" placeholder="Enter country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Major</label>
-                    <input type="text" formControlName="major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Year of graduation</label>
@@ -179,7 +196,7 @@
                   </div>
                   <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
-                    <input type="text" formControlName="language" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <input type="text" formControlName="language" placeholder="Enter language of instruction" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   </div>
               </div>
           </div>
@@ -188,11 +205,11 @@
               <h4 class="font-semibold text-lg text-[#153a5e] mb-2">Second degree (if any)</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <!-- ... same fields as undergraduate ... -->
-                  <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Country</label><input type="text" formControlName="country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Country</label><input type="text" formControlName="country" placeholder="Enter country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Language of instruction</label><input type="text" formControlName="language" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Language of instruction</label><input type="text" formControlName="language" placeholder="Enter language of instruction" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               </div>
           </div>
           <!-- Postgraduate -->
@@ -200,12 +217,12 @@
               <h4 class="font-semibold text-lg text-[#153a5e] mb-2">2. Postgraduate qualifications (if any)</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <!-- ... same fields as undergraduate plus Thesis title ... -->
-                  <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Country</label><input type="text" formControlName="country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Country</label><input type="text" formControlName="country" placeholder="Enter country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Thesis title</label><input type="text" formControlName="thesisTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Language of instruction</label><input type="text" formControlName="language" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Thesis title</label><input type="text" formControlName="thesisTitle" placeholder="Enter thesis title (if applicable)" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Language of instruction</label><input type="text" formControlName="language" placeholder="Enter language of instruction" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               </div>
           </div>
         </div>
@@ -240,21 +257,21 @@
           <div class="border border-gray-200 rounded-md p-4" formGroupName="position1">
             <h4 class="font-semibold text-lg text-[#153a5e] mb-2">Position 1 (Most recent)</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-              <div><label class="block text-sm font-medium text-gray-700">Organization</label><input type="text" formControlName="organization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div><label class="block text-sm font-medium text-gray-700">Position/ Title</label><input type="text" formControlName="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">Organization</label><input type="text" formControlName="organization" placeholder="Enter organization name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">Position/ Title</label><input type="text" formControlName="title" placeholder="Enter your position or title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">From (mm/yyyy)</label><input type="month" formControlName="from" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">To (mm/yyyy)</label><input type="month" formControlName="to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Organization address</label><textarea formControlName="address" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea></div>
+              <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Organization address</label><textarea formControlName="address" rows="2" placeholder="Enter organization address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea></div>
             </div>
           </div>
           <div class="border border-gray-200 rounded-md p-4" formGroupName="position2">
             <h4 class="font-semibold text-lg text-[#153a5e] mb-2">Position 2 (if applicable)</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-              <div><label class="block text-sm font-medium text-gray-700">Organization</label><input type="text" formControlName="organization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div><label class="block text-sm font-medium text-gray-700">Position/ Title</label><input type="text" formControlName="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">Organization</label><input type="text" formControlName="organization" placeholder="Enter organization name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">Position/ Title</label><input type="text" formControlName="title" placeholder="Enter your position or title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">From (mm/yyyy)</label><input type="month" formControlName="from" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">To (mm/yyyy)</label><input type="month" formControlName="to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Organization address</label><textarea formControlName="address" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea></div>
+              <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Organization address</label><textarea formControlName="address" rows="2" placeholder="Enter organization address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea></div>
             </div>
           </div>
         </div>
