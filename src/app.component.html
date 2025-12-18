@@ -47,7 +47,13 @@
           <div>
             <label for="passportNo" class="block text-sm font-medium text-gray-700">ID/ Passport No.</label>
             <div class="relative">
-              <input type="text" id="passportNo" formControlName="passportNo" placeholder="Enter ID or Passport number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10">
+              <input 
+                type="text" 
+                id="passportNo" 
+                formControlName="passportNo" 
+                (input)="formatPassportInput($event)"
+                placeholder="Enter ID or Passport number" 
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10">
               @if (personalDetails.get('passportNo')?.pending) {
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -64,6 +70,15 @@
                 </div>
               }
             </div>
+            @if (personalDetails.get('passportNo')?.hasError('required') && personalDetails.get('passportNo')?.touched) {
+              <p class="text-red-600 text-sm mt-1">ID/Passport is required</p>
+            }
+            @if (personalDetails.get('passportNo')?.hasError('invalidLength')) {
+              <p class="text-red-600 text-sm mt-1">ID/Passport must be 6-12 characters</p>
+            }
+            @if (personalDetails.get('passportNo')?.hasError('invalidFormat')) {
+              <p class="text-red-600 text-sm mt-1">ID/Passport can only contain letters and numbers</p>
+            }
             @if (personalDetails.get('passportNo')?.hasError('passportExists') && personalDetails.get('passportNo')?.touched) {
               <p class="text-red-600 text-sm mt-1">This ID/Passport number is already registered</p>
             }
@@ -74,7 +89,31 @@
           </div>
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" id="email" formControlName="email" placeholder="Enter your email address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <div class="relative">
+              <input 
+                type="email" 
+                id="email" 
+                formControlName="email" 
+                (input)="formatEmailInput($event)"
+                placeholder="example@domain.com" 
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10">
+              @if (personalDetails.get('email')?.valid && personalDetails.get('email')?.touched) {
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              }
+            </div>
+            @if (personalDetails.get('email')?.hasError('required') && personalDetails.get('email')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Email is required</p>
+            }
+            @if ((personalDetails.get('email')?.hasError('email') || personalDetails.get('email')?.hasError('invalidEmailFormat')) && personalDetails.get('email')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Please enter a valid email address</p>
+            }
+            @if (personalDetails.get('email')?.hasError('invalidDomain') && personalDetails.get('email')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Email domain is invalid</p>
+            }
           </div>
           <div>
             <label for="mobile" class="block text-sm font-medium text-gray-700">Mobile</label>
