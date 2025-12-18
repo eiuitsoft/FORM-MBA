@@ -4,13 +4,13 @@
 
     <!-- Header -->
     <header class="text-center mb-10 animate-header">
-      <div class="inline-flex items-center gap-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[#153a5e]" viewBox="0 0 24 24" fill="currentColor">
+      <div class="inline-flex items-start gap-4">
+        <svg xmlns="http://www.w3.org/2000/svg"  class="h-12 w-12 text-[#153a5e] flex-shrink-0 -mt-1" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2L1 9l4 1.5V17h14v-6.5L23 9l-11-7zm-2 9h4v5h-4v-5zm-4 0h2v5H6v-5zm12 0h2v5h-2v-5zM3.5 18v2h17v-2H3.5z"/>
         </svg>
         <div>
-          <h1 class="text-3xl sm:text-4xl font-bold text-[#153a5e]">EASTERN INTERNATIONAL UNIVERSITY</h1>
-          <h2 class="text-xl sm:text-2xl font-semibold text-[#a68557]">MBA Application Form</h2>
+          <h1 class="text-3xl sm:text-4xl font-bold text-[#153a5e] leading-none">EASTERN INTERNATIONAL UNIVERSITY</h1>
+          <h2 class="text-xl sm:text-2xl font-semibold text-[#a68557] mt-1">MBA Application Form</h2>
         </div>
       </div>
     </header>
@@ -85,7 +85,9 @@
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <div>
             <label for="programName" class="block text-sm font-medium text-gray-700">Program name</label>
-            <input type="text" id="programName" formControlName="programName" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2" readonly>
+            <select id="programName" formControlName="programName" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
+              <option value="Master of Business Administration">Master of Business Administration</option>
+            </select>
           </div>
           <div>
             <label for="programCode" class="block text-sm font-medium text-gray-700">Program code</label>
@@ -241,7 +243,7 @@
 
       <!-- Submission -->
       <div class="text-center pt-4 form-section">
-        <button type="submit" class="w-full max-w-xs inline-flex justify-center py-3 px-6 border border-transparent shadow-lg text-lg font-bold rounded-md text-white bg-[#153a5e] hover:bg-[#a68557] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#a68557] transition-all duration-300 transform hover:scale-105">
+        <button type="submit" [disabled]="!applicationForm.get('declaration.agreed')?.value" class="w-full max-w-xs inline-flex justify-center py-3 px-6 border border-transparent shadow-lg text-lg font-bold rounded-md text-white bg-[#153a5e] hover:bg-[#a68557] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#a68557] transition-all duration-300 transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-gray-400">
           Submit Application
         </button>
         @if (submitted() && applicationForm.invalid) {

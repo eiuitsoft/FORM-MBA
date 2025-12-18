@@ -34,7 +34,7 @@ export class AppComponent {
       permanentAddress: ['', Validators.required],
     }),
     applicationDetails: this.fb.group({
-      programName: ['Master of Business Administration'],
+      programName: [{ value: 'Master of Business Administration', disabled: true }],
       programCode: [''],
       track: ['Application', Validators.required],
       admissionYear: ['', Validators.required],
