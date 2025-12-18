@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "1122:80"
+    restart: always
+    container_name: form-mba-web
+    image: itsofteiu/form-mba-web:latest
+
