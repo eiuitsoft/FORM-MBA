@@ -2,13 +2,17 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { of } from 'rxjs';
 import { MbaService } from './app/core/services/mba/mba.service';
 import { uniqueFieldValidator } from './validators/unique-field.validator';
+import { passportFormatValidator } from './validators/passport-format.validator';
+import { emailFormatValidator } from './validators/email-format.validator';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
@@ -29,19 +33,29 @@ export class AppComponent {
       placeOfBirth: ['', Validators.required],
       passportNo: [
         '', 
-        [Validators.required],
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.maxLength(12),
+          passportFormatValidator()
+        ],
         [uniqueFieldValidator(
           (val) => this._mbaService.checkPassportExists(val),
           'passportExists'
         )]
       ],
       dateIssued: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email, emailFormatValidator()]],
       mobile: [
-        '', 
+        undefined, 
         [Validators.required],
         [uniqueFieldValidator(
-          (val) => this._mbaService.checkMobileExists(val),
+          (val: any) => {
+            // Extract e164Number from intl-tel-input object (format: +84845333577)
+            const phoneNumber = val?.e164Number || val;
+            if (!phoneNumber) return of(false);
+            return this._mbaService.checkMobileExists(phoneNumber);
+          },
           'mobileExists'
         )]
       ],
@@ -152,6 +166,12 @@ export class AppComponent {
     return {
       personalDetails: {
         ...rawValue.personalDetails,
+        // Extract phone number in E.164 format (e.g., +84845333577)
+        mobile: rawValue.personalDetails.mobile?.e164Number || rawValue.personalDetails.mobile,
+        // Clean and uppercase passport/ID
+        passportNo: rawValue.personalDetails.passportNo?.trim().toUpperCase(),
+        // Clean and lowercase email
+        email: rawValue.personalDetails.email?.trim().toLowerCase(),
         gender: rawValue.personalDetails.gender === 'Male' ? 1 : 0,
         nationalityId: '11111111-1111-1111-1111-111111111111', // TODO: Get from dropdown
         nationalityName: rawValue.personalDetails.nationality
@@ -214,6 +234,38 @@ export class AppComponent {
 
   closeDialog(): void {
     this.showDialog.set(false);
+  }
+
+  /**
+   * Auto-format passport input: uppercase and remove special characters
+   */
+  formatPassportInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const cursorPosition = input.selectionStart || 0;
+    const oldLength = input.value.length;
+    
+    // Chuyển thành chữ hoa, loại bỏ ký tự đặc biệt
+    input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    
+    // Restore cursor position
+    const newLength = input.value.length;
+    const newPosition = cursorPosition - (oldLength - newLength);
+    input.setSelectionRange(newPosition, newPosition);
+    
+    // Update form control value
+    this.personalDetails.get('passportNo')?.setValue(input.value, { emitEvent: true });
+  }
+
+  /**
+   * Auto-format email input: lowercase and trim spaces
+   */
+  formatEmailInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    // Tự động lowercase và loại bỏ spaces
+    input.value = input.value.toLowerCase().replace(/\s/g, '');
+    
+    // Update form control value
+    this.personalDetails.get('email')?.setValue(input.value, { emitEvent: true });
   }
 
   // Helper to easily access nested form groups in the template
