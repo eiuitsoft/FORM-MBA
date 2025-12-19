@@ -8,6 +8,10 @@ import { MbaService } from './app/core/services/mba/mba.service';
 import { uniqueFieldValidator } from './validators/unique-field.validator';
 import { passportFormatValidator } from './validators/passport-format.validator';
 import { emailFormatValidator } from './validators/email-format.validator';
+import { minAgeValidator } from './validators/age.validator';
+import { minYearValidator, maxYearValidator } from './validators/year.validator';
+import { maxDateValidator, dateRangeValidator } from './validators/date.validator';
+import { scoreRangeValidator } from './validators/conditional.validator';
 
 @Component({
   selector: 'app-root',
@@ -24,12 +28,14 @@ export class AppComponent {
   dialogMessage = signal('');
   dialogType = signal<'success' | 'error'>('success');
   
+  currentYear = new Date().getFullYear();
+  
   applicationForm: FormGroup = this.fb.group({
     personalDetails: this.fb.group({
-      fullName: ['', Validators.required],
+      fullName: ['', [Validators.required, Validators.minLength(2)]],
       nationality: ['', Validators.required],
       gender: ['Male', Validators.required],
-      dateOfBirth: ['', Validators.required],
+      dateOfBirth: ['', [Validators.required, minAgeValidator(18)]],
       placeOfBirth: ['', Validators.required],
       passportNo: [
         '', 
@@ -66,17 +72,17 @@ export class AppComponent {
     }),
     applicationDetails: this.fb.group({
       programName: [{ value: 'Master of Business Administration', disabled: true }],
-      programCode: [''],
+      programCode: ['', Validators.required],
       track: ['Application', Validators.required],
-      admissionYear: ['', Validators.required],
-      admissionIntake: [''],
+      admissionYear: ['', [Validators.required, minYearValidator(new Date().getFullYear())]],
+      admissionIntake: ['', Validators.required],
     }),
     educationDetails: this.fb.group({
       undergraduate: this.fb.group({
         university: ['', Validators.required],
         country: ['', Validators.required],
         major: ['', Validators.required],
-        graduationYear: ['', Validators.required],
+        graduationYear: ['', [Validators.required, maxYearValidator(new Date().getFullYear())]],
         language: ['', Validators.required],
       }),
       secondDegree: this.fb.group({
@@ -96,9 +102,19 @@ export class AppComponent {
       }),
     }),
     englishQualifications: this.fb.group({
-      ielts: this.fb.group({ score: [''], date: [''] }),
-      toefl: this.fb.group({ score: [''], date: [''] }),
-      other: this.fb.group({ name: [''], score: [''], date: [''] }),
+      ielts: this.fb.group({ 
+        score: ['', [scoreRangeValidator(0, 9)]], 
+        date: ['', [maxDateValidator()]] 
+      }),
+      toefl: this.fb.group({ 
+        score: ['', [scoreRangeValidator(0, 120)]], 
+        date: ['', [maxDateValidator()]] 
+      }),
+      other: this.fb.group({ 
+        name: [''], 
+        score: [''], 
+        date: ['', [maxDateValidator()]] 
+      }),
     }),
     employmentHistory: this.fb.group({
       position1: this.fb.group({
@@ -107,14 +123,14 @@ export class AppComponent {
         from: ['', Validators.required],
         to: ['', Validators.required],
         address: ['', Validators.required],
-      }),
+      }, { validators: dateRangeValidator('from', 'to') }),
       position2: this.fb.group({
         organization: [''],
         title: [''],
         from: [''],
         to: [''],
         address: [''],
-      }),
+      }, { validators: dateRangeValidator('from', 'to') }),
     }),
     declaration: this.fb.group({
       agreed: [false, Validators.requiredTrue],
@@ -266,6 +282,56 @@ export class AppComponent {
     
     // Update form control value
     this.personalDetails.get('email')?.setValue(input.value, { emitEvent: true });
+  }
+
+  ngOnInit(): void {
+    // Setup conditional validation for IELTS
+    this.setupConditionalValidation('ielts');
+    
+    // Setup conditional validation for TOEFL
+    this.setupConditionalValidation('toefl');
+    
+    // Setup conditional validation for Other English test
+    this.setupConditionalValidation('other');
+  }
+
+  /**
+   * Setup conditional validation: if score is entered, date is required and vice versa
+   */
+  private setupConditionalValidation(testType: 'ielts' | 'toefl' | 'other'): void {
+    const testGroup = this.englishQualifications.get(testType) as FormGroup;
+    const scoreControl = testGroup.get('score');
+    const dateControl = testGroup.get('date');
+
+    // When score changes
+    scoreControl?.valueChanges.subscribe(score => {
+      if (score) {
+        dateControl?.setValidators([Validators.required, maxDateValidator()]);
+      } else {
+        dateControl?.setValidators([maxDateValidator()]);
+      }
+      dateControl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    // When date changes
+    dateControl?.valueChanges.subscribe(date => {
+      if (date) {
+        const validators = testType === 'ielts' 
+          ? [Validators.required, scoreRangeValidator(0, 9)]
+          : testType === 'toefl'
+          ? [Validators.required, scoreRangeValidator(0, 120)]
+          : [Validators.required];
+        scoreControl?.setValidators(validators);
+      } else {
+        const validators = testType === 'ielts' 
+          ? [scoreRangeValidator(0, 9)]
+          : testType === 'toefl'
+          ? [scoreRangeValidator(0, 120)]
+          : [];
+        scoreControl?.setValidators(validators);
+      }
+      scoreControl?.updateValueAndValidity({ emitEvent: false });
+    });
   }
 
   // Helper to easily access nested form groups in the template

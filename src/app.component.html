@@ -24,6 +24,12 @@
           <div class="md:col-span-2">
             <label for="fullName" class="block text-sm font-medium text-gray-700">Full name</label>
             <input type="text" id="fullName" formControlName="fullName" placeholder="Enter your full name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            @if (personalDetails.get('fullName')?.hasError('required') && personalDetails.get('fullName')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Full name is required</p>
+            }
+            @if (personalDetails.get('fullName')?.hasError('minlength') && personalDetails.get('fullName')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Full name must be at least 2 characters</p>
+            }
           </div>
           <div>
             <label for="nationality" class="block text-sm font-medium text-gray-700">Nationality</label>
@@ -39,6 +45,12 @@
           <div>
             <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Date of birth (dd/mm/yyyy)</label>
             <input type="date" id="dateOfBirth" formControlName="dateOfBirth" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            @if (personalDetails.get('dateOfBirth')?.hasError('required') && personalDetails.get('dateOfBirth')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Date of birth is required</p>
+            }
+            @if (personalDetails.get('dateOfBirth')?.hasError('minAge') && personalDetails.get('dateOfBirth')?.touched) {
+              <p class="text-red-600 text-sm mt-1">You must be at least 18 years old</p>
+            }
           </div>
           <div>
             <label for="placeOfBirth" class="block text-sm font-medium text-gray-700">Place of Birth</label>
@@ -188,6 +200,9 @@
           <div>
             <label for="programCode" class="block text-sm font-medium text-gray-700">Program code</label>
             <input type="text" id="programCode" formControlName="programCode" placeholder="Enter program code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            @if (applicationDetails.get('programCode')?.hasError('required') && applicationDetails.get('programCode')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Program code is required</p>
+            }
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Track</label>
@@ -200,10 +215,19 @@
             <div>
               <label for="admissionYear" class="block text-sm font-medium text-gray-700">Admission Year</label>
               <input type="number" id="admissionYear" formControlName="admissionYear" placeholder="YYYY" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+              @if (applicationDetails.get('admissionYear')?.hasError('required') && applicationDetails.get('admissionYear')?.touched) {
+                <p class="text-red-600 text-sm mt-1">Admission year is required</p>
+              }
+              @if (applicationDetails.get('admissionYear')?.hasError('minYear') && applicationDetails.get('admissionYear')?.touched) {
+                <p class="text-red-600 text-sm mt-1">Admission year must be {{ currentYear }} or later</p>
+              }
             </div>
             <div>
               <label for="admissionIntake" class="block text-sm font-medium text-gray-700">Admission Intake</label>
               <input type="text" id="admissionIntake" formControlName="admissionIntake" placeholder="Enter admission intake" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+              @if (applicationDetails.get('admissionIntake')?.hasError('required') && applicationDetails.get('admissionIntake')?.touched) {
+                <p class="text-red-600 text-sm mt-1">Admission intake is required</p>
+              }
             </div>
           </div>
         </div>
@@ -270,21 +294,85 @@
       <!-- Section: English Qualifications -->
       <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="englishQualifications">
         <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">3. English qualifications</h3>
-        <div class="p-6 space-y-4">
-            <div class="grid grid-cols-5 gap-x-6 items-center" formGroupName="ielts">
-              <label class="col-span-1 ml-3 font-semibold text-gray-700">IELTS</label>
-              <div class="col-span-2"><input type="text" formControlName="score" placeholder="Score" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div class="col-span-2"><input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+        <div class="p-6 space-y-6">
+            <!-- IELTS -->
+            <div formGroupName="ielts">
+              <div class="grid grid-cols-5 gap-x-6 items-start">
+                <label class="col-span-1 ml-3 font-semibold text-gray-700 pt-2">IELTS</label>
+                <div class="col-span-2">
+                  <input type="text" formControlName="score" placeholder="Score (0-9)" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  @if (englishQualifications.get('ielts.score')?.hasError('required') && englishQualifications.get('ielts.score')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Score is required when date is provided</p>
+                  }
+                  @if (englishQualifications.get('ielts.score')?.hasError('scoreRange') && englishQualifications.get('ielts.score')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">IELTS score must be between 0 and 9</p>
+                  }
+                  @if (englishQualifications.get('ielts.score')?.hasError('invalidScore') && englishQualifications.get('ielts.score')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Please enter a valid number</p>
+                  }
+                </div>
+                <div class="col-span-2">
+                  <input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  @if (englishQualifications.get('ielts.date')?.hasError('required') && englishQualifications.get('ielts.date')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Date is required when score is provided</p>
+                  }
+                  @if (englishQualifications.get('ielts.date')?.hasError('maxDate') && englishQualifications.get('ielts.date')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Date cannot be in the future</p>
+                  }
+                </div>
+              </div>
             </div>
-             <div class="grid grid-cols-5 gap-x-6 items-center" formGroupName="toefl">
-              <label class="col-span-1 ml-3 font-semibold text-gray-700">TOEFL</label>
-              <div class="col-span-2"><input type="text" formControlName="score" placeholder="Score" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div class="col-span-2"><input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+
+            <!-- TOEFL -->
+            <div formGroupName="toefl">
+              <div class="grid grid-cols-5 gap-x-6 items-start">
+                <label class="col-span-1 ml-3 font-semibold text-gray-700 pt-2">TOEFL</label>
+                <div class="col-span-2">
+                  <input type="text" formControlName="score" placeholder="Score (0-120)" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  @if (englishQualifications.get('toefl.score')?.hasError('required') && englishQualifications.get('toefl.score')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Score is required when date is provided</p>
+                  }
+                  @if (englishQualifications.get('toefl.score')?.hasError('scoreRange') && englishQualifications.get('toefl.score')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">TOEFL score must be between 0 and 120</p>
+                  }
+                  @if (englishQualifications.get('toefl.score')?.hasError('invalidScore') && englishQualifications.get('toefl.score')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Please enter a valid number</p>
+                  }
+                </div>
+                <div class="col-span-2">
+                  <input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  @if (englishQualifications.get('toefl.date')?.hasError('required') && englishQualifications.get('toefl.date')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Date is required when score is provided</p>
+                  }
+                  @if (englishQualifications.get('toefl.date')?.hasError('maxDate') && englishQualifications.get('toefl.date')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Date cannot be in the future</p>
+                  }
+                </div>
+              </div>
             </div>
-             <div class="grid grid-cols-5 gap-x-6 items-center" formGroupName="other">
-              <div class="col-span-1"><input type="text" formControlName="name" placeholder="Other Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div class="col-span-2"><input type="text" formControlName="score" placeholder="Score" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div class="col-span-2"><input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+
+            <!-- Other Test -->
+            <div formGroupName="other">
+              <div class="grid grid-cols-5 gap-x-6 items-start">
+                <div class="col-span-1">
+                  <input type="text" formControlName="name" placeholder="Other Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                </div>
+                <div class="col-span-2">
+                  <input type="text" formControlName="score" placeholder="Score" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  @if (englishQualifications.get('other.score')?.hasError('required') && englishQualifications.get('other.score')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Score is required when date is provided</p>
+                  }
+                </div>
+                <div class="col-span-2">
+                  <input type="date" formControlName="date" placeholder="Date of Test" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  @if (englishQualifications.get('other.date')?.hasError('required') && englishQualifications.get('other.date')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Date is required when score is provided</p>
+                  }
+                  @if (englishQualifications.get('other.date')?.hasError('maxDate') && englishQualifications.get('other.date')?.touched) {
+                    <p class="text-red-600 text-xs mt-1">Date cannot be in the future</p>
+                  }
+                </div>
+              </div>
             </div>
         </div>
       </section>
@@ -299,7 +387,13 @@
               <div><label class="block text-sm font-medium text-gray-700">Organization</label><input type="text" formControlName="organization" placeholder="Enter organization name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">Position/ Title</label><input type="text" formControlName="title" placeholder="Enter your position or title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">From (mm/yyyy)</label><input type="month" formControlName="from" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div><label class="block text-sm font-medium text-gray-700">To (mm/yyyy)</label><input type="month" formControlName="to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">To (mm/yyyy)</label>
+                <input type="month" formControlName="to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                @if (employmentHistory.get('position1')?.hasError('dateRange') && employmentHistory.get('position1.to')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">End date must be after or equal to start date</p>
+                }
+              </div>
               <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Organization address</label><textarea formControlName="address" rows="2" placeholder="Enter organization address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea></div>
             </div>
           </div>
@@ -309,7 +403,13 @@
               <div><label class="block text-sm font-medium text-gray-700">Organization</label><input type="text" formControlName="organization" placeholder="Enter organization name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">Position/ Title</label><input type="text" formControlName="title" placeholder="Enter your position or title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">From (mm/yyyy)</label><input type="month" formControlName="from" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div><label class="block text-sm font-medium text-gray-700">To (mm/yyyy)</label><input type="month" formControlName="to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">To (mm/yyyy)</label>
+                <input type="month" formControlName="to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                @if (employmentHistory.get('position2')?.hasError('dateRange') && employmentHistory.get('position2.to')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">End date must be after or equal to start date</p>
+                }
+              </div>
               <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Organization address</label><textarea formControlName="address" rows="2" placeholder="Enter organization address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea></div>
             </div>
           </div>
