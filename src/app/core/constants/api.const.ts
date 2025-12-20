@@ -10,4 +10,7 @@ export const MBA_API = {
     `${BASE_API_URL}/MBAForm/CheckPassport/${passportNo}`,
   CHECK_MOBILE: (mobile: string) =>
     `${BASE_API_URL}/MBAForm/CheckMobile/${mobile}`,
+  GET_ACTIVE_PROGRAMS: `${BASE_API_URL}/MBAProgram/GetActive`,
+  GET_ACTIVE_LANGUAGES: `${BASE_API_URL}/MBALanguage/GetActive`,
+  GET_ACTIVE_COUNTRIES: `${BASE_API_URL}/MBACountry/GetActive`,
 };

@@ -12,6 +12,7 @@ import { minAgeValidator } from './validators/age.validator';
 import { minYearValidator, maxYearValidator } from './validators/year.validator';
 import { maxDateValidator, dateRangeValidator } from './validators/date.validator';
 import { scoreRangeValidator } from './validators/conditional.validator';
+import { atLeastOneEnglishQualificationValidator } from './validators/english-qualification.validator';
 
 @Component({
   selector: 'app-root',
@@ -27,13 +28,17 @@ export class AppComponent {
   showDialog = signal(false);
   dialogMessage = signal('');
   dialogType = signal<'success' | 'error'>('success');
+  programs = signal<any[]>([]);
+  languages = signal<any[]>([]);
+  countries = signal<any[]>([]);
   
   currentYear = new Date().getFullYear();
   
   applicationForm: FormGroup = this.fb.group({
     personalDetails: this.fb.group({
       fullName: ['', [Validators.required, Validators.minLength(2)]],
-      nationality: ['', Validators.required],
+      nationalityId: ['', Validators.required],
+      nationality: [''],
       gender: ['Male', Validators.required],
       dateOfBirth: ['', [Validators.required, minAgeValidator(18)]],
       placeOfBirth: ['', Validators.required],
@@ -71,8 +76,8 @@ export class AppComponent {
       permanentAddress: ['', Validators.required],
     }),
     applicationDetails: this.fb.group({
-      programName: [{ value: 'Master of Business Administration', disabled: true }],
-      programCode: ['', Validators.required],
+      programId: ['', Validators.required],
+      programCode: [''],
       track: ['Application', Validators.required],
       admissionYear: ['', [Validators.required, minYearValidator(new Date().getFullYear())]],
       admissionIntake: ['', Validators.required],
@@ -80,24 +85,30 @@ export class AppComponent {
     educationDetails: this.fb.group({
       undergraduate: this.fb.group({
         university: ['', Validators.required],
-        country: ['', Validators.required],
+        countryId: ['', Validators.required],
+        country: [''],
         major: ['', Validators.required],
         graduationYear: ['', [Validators.required, maxYearValidator(new Date().getFullYear())]],
-        language: ['', Validators.required],
+        languageId: ['', Validators.required],
+        language: [''],
       }),
       secondDegree: this.fb.group({
         university: [''],
+        countryId: [''],
         country: [''],
         major: [''],
         graduationYear: [''],
+        languageId: [''],
         language: [''],
       }),
       postgraduate: this.fb.group({
         university: [''],
+        countryId: [''],
         country: [''],
         major: [''],
         graduationYear: [''],
         thesisTitle: [''],
+        languageId: [''],
         language: [''],
       }),
     }),
@@ -115,14 +126,14 @@ export class AppComponent {
         score: [''], 
         date: ['', [maxDateValidator()]] 
       }),
-    }),
+    }, { validators: atLeastOneEnglishQualificationValidator() }),
     employmentHistory: this.fb.group({
       position1: this.fb.group({
-        organization: ['', Validators.required],
-        title: ['', Validators.required],
-        from: ['', Validators.required],
-        to: ['', Validators.required],
-        address: ['', Validators.required],
+        organization: [''],
+        title: [''],
+        from: [''],
+        to: [''],
+        address: [''],
       }, { validators: dateRangeValidator('from', 'to') }),
       position2: this.fb.group({
         organization: [''],
@@ -169,11 +180,23 @@ export class AppComponent {
         }
       });
     } else {
-      console.error('Form is invalid.');
-      this.dialogType.set('error');
-      this.dialogMessage.set('Please fill out all required fields before submitting.');
-      this.showDialog.set(true);
+      // Mark all fields as touched to show validation errors
+      this.markFormGroupTouched(this.applicationForm);
     }
+  }
+
+  /**
+   * Mark all fields in a form group as touched to trigger validation display
+   */
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 
   private transformFormData(): any {
@@ -189,28 +212,29 @@ export class AppComponent {
         // Clean and lowercase email
         email: rawValue.personalDetails.email?.trim().toLowerCase(),
         gender: rawValue.personalDetails.gender === 'Male' ? 1 : 0,
-        nationalityId: '11111111-1111-1111-1111-111111111111', // TODO: Get from dropdown
+        nationalityId: rawValue.personalDetails.nationalityId,
         nationalityName: rawValue.personalDetails.nationality
       },
       applicationDetails: {
-        ...rawValue.applicationDetails,
+        programId: rawValue.applicationDetails.programId,
         track: rawValue.applicationDetails.track === 'Application' ? 0 : 1,
-        admissionYear: parseInt(rawValue.applicationDetails.admissionYear) || 0
+        admissionYear: parseInt(rawValue.applicationDetails.admissionYear) || 0,
+        admissionIntake: rawValue.applicationDetails.admissionIntake
       },
       educationDetails: {
         undergraduate: {
           ...rawValue.educationDetails.undergraduate,
-          countryId: '11111111-1111-1111-1111-111111111111', // TODO: Get from dropdown
+          countryId: rawValue.educationDetails.undergraduate.countryId,
           countryName: rawValue.educationDetails.undergraduate.country,
-          languageId: 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA', // TODO: Get from dropdown
+          languageId: rawValue.educationDetails.undergraduate.languageId,
           languageName: rawValue.educationDetails.undergraduate.language,
           graduationYear: parseInt(rawValue.educationDetails.undergraduate.graduationYear) || 0
         },
         secondDegree: rawValue.educationDetails.secondDegree.university ? {
           ...rawValue.educationDetails.secondDegree,
-          countryId: '11111111-1111-1111-1111-111111111111',
+          countryId: rawValue.educationDetails.secondDegree.countryId || undefined,
           countryName: rawValue.educationDetails.secondDegree.country,
-          languageId: 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA',
+          languageId: rawValue.educationDetails.secondDegree.languageId || undefined,
           languageName: rawValue.educationDetails.secondDegree.language,
           graduationYear: parseInt(rawValue.educationDetails.secondDegree.graduationYear) || 0
         } : undefined
@@ -233,11 +257,11 @@ export class AppComponent {
         } : undefined
       },
       employmentHistory: {
-        position1: {
+        position1: rawValue.employmentHistory.position1.organization ? {
           ...rawValue.employmentHistory.position1,
           fromDate: rawValue.employmentHistory.position1.from,
           toDate: rawValue.employmentHistory.position1.to
-        },
+        } : undefined,
         position2: rawValue.employmentHistory.position2.organization ? {
           ...rawValue.employmentHistory.position2,
           fromDate: rawValue.employmentHistory.position2.from,
@@ -285,6 +309,15 @@ export class AppComponent {
   }
 
   ngOnInit(): void {
+    // Load programs
+    this.loadPrograms();
+    
+    // Load languages
+    this.loadLanguages();
+    
+    // Load countries
+    this.loadCountries();
+    
     // Setup conditional validation for IELTS
     this.setupConditionalValidation('ielts');
     
@@ -296,8 +329,134 @@ export class AppComponent {
   }
 
   /**
-   * Setup conditional validation: if score is entered, date is required and vice versa
+   * Load danh sách programs từ API
    */
+  private loadPrograms(): void {
+    this._mbaService.getActivePrograms().subscribe({
+      next: (programs) => {
+        this.programs.set(programs);
+      },
+      error: (err) => {
+        console.error('Error loading programs:', err);
+      }
+    });
+  }
+
+  /**
+   * Load danh sách languages từ API
+   */
+  private loadLanguages(): void {
+    this._mbaService.getActiveLanguages().subscribe({
+      next: (languages) => {
+        this.languages.set(languages);
+      },
+      error: (err) => {
+        console.error('Error loading languages:', err);
+      }
+    });
+  }
+
+  /**
+   * Load danh sách countries từ API
+   */
+  private loadCountries(): void {
+    this._mbaService.getActiveCountries().subscribe({
+      next: (countries) => {
+        this.countries.set(countries);
+      },
+      error: (err) => {
+        console.error('Error loading countries:', err);
+      }
+    });
+  }
+
+  /**
+   * Handle khi user chọn program từ dropdown
+   */
+  onProgramChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const programId = selectElement.value;
+    
+    if (programId) {
+      const selectedProgram = this.programs().find(p => p.id === programId);
+      if (selectedProgram) {
+        this.applicationDetails.patchValue({
+          programCode: selectedProgram.code
+        });
+      }
+    } else {
+      this.applicationDetails.patchValue({
+        programCode: ''
+      });
+    }
+  }
+
+  /**
+   * Handle khi user chọn nationality từ dropdown
+   */
+  onNationalityChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const nationalityId = selectElement.value;
+    
+    if (nationalityId) {
+      const selectedCountry = this.countries().find(c => c.id === nationalityId);
+      if (selectedCountry) {
+        this.personalDetails.patchValue({
+          nationality: selectedCountry.name
+        });
+      }
+    } else {
+      this.personalDetails.patchValue({
+        nationality: ''
+      });
+    }
+  }
+
+  /**
+   * Handle khi user chọn country từ dropdown (education)
+   */
+  onCountryChange(event: Event, section: 'undergraduate' | 'secondDegree' | 'postgraduate'): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const countryId = selectElement.value;
+    
+    const sectionGroup = this.educationDetails.get(section) as FormGroup;
+    
+    if (countryId) {
+      const selectedCountry = this.countries().find(c => c.id === countryId);
+      if (selectedCountry) {
+        sectionGroup.patchValue({
+          country: selectedCountry.name
+        });
+      }
+    } else {
+      sectionGroup.patchValue({
+        country: ''
+      });
+    }
+  }
+
+  /**
+   * Handle khi user chọn language từ dropdown (undergraduate)
+   */
+  onLanguageChange(event: Event, section: 'undergraduate' | 'secondDegree' | 'postgraduate'): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const languageId = selectElement.value;
+    
+    const sectionGroup = this.educationDetails.get(section) as FormGroup;
+    
+    if (languageId) {
+      const selectedLanguage = this.languages().find(l => l.id === languageId);
+      if (selectedLanguage) {
+        sectionGroup.patchValue({
+          language: selectedLanguage.name
+        });
+      }
+    } else {
+      sectionGroup.patchValue({
+        language: ''
+      });
+    }
+  }
   private setupConditionalValidation(testType: 'ielts' | 'toefl' | 'other'): void {
     const testGroup = this.englishQualifications.get(testType) as FormGroup;
     const scoreControl = testGroup.get('score');
