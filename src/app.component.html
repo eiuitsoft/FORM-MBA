@@ -32,8 +32,20 @@
             }
           </div>
           <div>
-            <label for="nationality" class="block text-sm font-medium text-gray-700">Nationality</label>
-            <input type="text" id="nationality" formControlName="nationality" placeholder="Enter your nationality" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <label for="nationalityId" class="block text-sm font-medium text-gray-700">Nationality</label>
+            <select 
+              id="nationalityId" 
+              formControlName="nationalityId" 
+              (change)="onNationalityChange($event)"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+              <option value="">-- Select nationality --</option>
+              @for (country of countries(); track country.id) {
+                <option [value]="country.id">{{ country.name }}</option>
+              }
+            </select>
+            @if (personalDetails.get('nationalityId')?.hasError('required') && personalDetails.get('nationalityId')?.touched) {
+              <p class="text-red-600 text-sm mt-1">Nationality is required</p>
+            }
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Gender</label>
@@ -191,18 +203,25 @@
       <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="applicationDetails">
         <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">SECTION B - APPLICATION DETAILS</h3>
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-          <div>
-            <label for="programName" class="block text-sm font-medium text-gray-700">Program name</label>
-            <select id="programName" formControlName="programName" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
-              <option value="Master of Business Administration">Master of Business Administration</option>
+          <div class="md:col-span-2">
+            <label for="programId" class="block text-sm font-medium text-gray-700">Program name</label>
+            <select 
+              id="programId" 
+              formControlName="programId" 
+              (change)="onProgramChange($event)"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+              <option value="">-- Select a program --</option>
+              @for (program of programs(); track program.id) {
+                <option [value]="program.id">{{ program.name }}</option>
+              }
             </select>
+            @if (applicationDetails.get('programId')?.hasError('required') && (applicationDetails.get('programId')?.touched || submitted())) {
+              <p class="text-red-600 text-sm mt-1">Please select a program</p>
+            }
           </div>
           <div>
             <label for="programCode" class="block text-sm font-medium text-gray-700">Program code</label>
-            <input type="text" id="programCode" formControlName="programCode" placeholder="Enter program code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-            @if (applicationDetails.get('programCode')?.hasError('required') && applicationDetails.get('programCode')?.touched) {
-              <p class="text-red-600 text-sm mt-1">Program code is required</p>
-            }
+            <input type="text" id="programCode" formControlName="programCode" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Track</label>
@@ -244,22 +263,56 @@
                   <div>
                     <label class="block text-sm font-medium text-gray-700">University/ Institution</label>
                     <input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    @if (educationDetails.get('undergraduate.university')?.hasError('required') && educationDetails.get('undergraduate.university')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">University/Institution is required</p>
+                    }
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Country</label>
-                    <input type="text" formControlName="country" placeholder="Enter country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <select 
+                      formControlName="countryId" 
+                      (change)="onCountryChange($event, 'undergraduate')"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                      <option value="">-- Select country --</option>
+                      @for (country of countries(); track country.id) {
+                        <option [value]="country.id">{{ country.name }}</option>
+                      }
+                    </select>
+                    @if (educationDetails.get('undergraduate.countryId')?.hasError('required') && educationDetails.get('undergraduate.countryId')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Country is required</p>
+                    }
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Major</label>
                     <input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    @if (educationDetails.get('undergraduate.major')?.hasError('required') && educationDetails.get('undergraduate.major')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Major is required</p>
+                    }
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Year of graduation</label>
                     <input type="number" formControlName="graduationYear" placeholder="YYYY" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    @if (educationDetails.get('undergraduate.graduationYear')?.hasError('required') && educationDetails.get('undergraduate.graduationYear')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Year of graduation is required</p>
+                    }
+                    @if (educationDetails.get('undergraduate.graduationYear')?.hasError('maxYear') && educationDetails.get('undergraduate.graduationYear')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Year of graduation cannot be in the future</p>
+                    }
                   </div>
                   <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
-                    <input type="text" formControlName="language" placeholder="Enter language of instruction" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <select 
+                      formControlName="languageId" 
+                      (change)="onLanguageChange($event, 'undergraduate')"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                      <option value="">-- Select language --</option>
+                      @for (language of languages(); track language.id) {
+                        <option [value]="language.id">{{ language.name }}</option>
+                      }
+                    </select>
+                    @if (educationDetails.get('undergraduate.languageId')?.hasError('required') && educationDetails.get('undergraduate.languageId')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Language of instruction is required</p>
+                    }
                   </div>
               </div>
           </div>
@@ -269,10 +322,32 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <!-- ... same fields as undergraduate ... -->
                   <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Country</label><input type="text" formControlName="country" placeholder="Enter country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Country</label>
+                    <select 
+                      formControlName="countryId" 
+                      (change)="onCountryChange($event, 'secondDegree')"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                      <option value="">-- Select country --</option>
+                      @for (country of countries(); track country.id) {
+                        <option [value]="country.id">{{ country.name }}</option>
+                      }
+                    </select>
+                  </div>
                   <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Language of instruction</label><input type="text" formControlName="language" placeholder="Enter language of instruction" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
+                    <select 
+                      formControlName="languageId" 
+                      (change)="onLanguageChange($event, 'secondDegree')"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                      <option value="">-- Select language --</option>
+                      @for (language of languages(); track language.id) {
+                        <option [value]="language.id">{{ language.name }}</option>
+                      }
+                    </select>
+                  </div>
               </div>
           </div>
           <!-- Postgraduate -->
@@ -281,11 +356,33 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <!-- ... same fields as undergraduate plus Thesis title ... -->
                   <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Country</label><input type="text" formControlName="country" placeholder="Enter country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Country</label>
+                    <select 
+                      formControlName="countryId" 
+                      (change)="onCountryChange($event, 'postgraduate')"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                      <option value="">-- Select country --</option>
+                      @for (country of countries(); track country.id) {
+                        <option [value]="country.id">{{ country.name }}</option>
+                      }
+                    </select>
+                  </div>
                   <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Thesis title</label><input type="text" formControlName="thesisTitle" placeholder="Enter thesis title (if applicable)" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Language of instruction</label><input type="text" formControlName="language" placeholder="Enter language of instruction" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
+                    <select 
+                      formControlName="languageId" 
+                      (change)="onLanguageChange($event, 'postgraduate')"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                      <option value="">-- Select language --</option>
+                      @for (language of languages(); track language.id) {
+                        <option [value]="language.id">{{ language.name }}</option>
+                      }
+                    </select>
+                  </div>
               </div>
           </div>
         </div>
@@ -374,6 +471,13 @@
                 </div>
               </div>
             </div>
+            
+            <!-- Validation message for at least one English qualification -->
+            @if (englishQualifications.hasError('atLeastOneRequired') && (submitted() || englishQualifications.touched)) {
+              <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p class="text-red-600 text-sm">Please provide at least one English qualification (IELTS, TOEFL or Other)</p>
+              </div>
+            }
         </div>
       </section>
 

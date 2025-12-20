@@ -26,7 +26,8 @@ export interface PersonalDetails {
 }
 
 export interface ApplicationDetails {
-  programName: string;
+  programId: string;
+  programName?: string;
   programCode?: string;
   track: number; // 0: Application, 1: Research
   admissionYear: number;
