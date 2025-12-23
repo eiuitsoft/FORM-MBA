@@ -258,14 +258,18 @@ export class AppComponent {
       },
       employmentHistory: {
         position1: rawValue.employmentHistory.position1.organization ? {
-          ...rawValue.employmentHistory.position1,
+          organizationName: rawValue.employmentHistory.position1.organization,
+          jobTitle: rawValue.employmentHistory.position1.title,
           fromDate: rawValue.employmentHistory.position1.from,
-          toDate: rawValue.employmentHistory.position1.to
+          toDate: rawValue.employmentHistory.position1.to,
+          address: rawValue.employmentHistory.position1.address
         } : undefined,
         position2: rawValue.employmentHistory.position2.organization ? {
-          ...rawValue.employmentHistory.position2,
+          organizationName: rawValue.employmentHistory.position2.organization,
+          jobTitle: rawValue.employmentHistory.position2.title,
           fromDate: rawValue.employmentHistory.position2.from,
-          toDate: rawValue.employmentHistory.position2.to
+          toDate: rawValue.employmentHistory.position2.to,
+          address: rawValue.employmentHistory.position2.address
         } : undefined
       },
       declaration: rawValue.declaration

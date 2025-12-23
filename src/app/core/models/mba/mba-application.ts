@@ -73,8 +73,8 @@ export interface EmploymentHistory {
 }
 
 export interface EmploymentRecord {
-  organization: string;
-  title: string;
+  organizationName: string;
+  jobTitle: string;
   fromDate: string;
   toDate: string;
   address: string;
