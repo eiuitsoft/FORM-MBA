@@ -74,8 +74,8 @@ export class AppComponent {
           'mobileExists'
         )]
       ],
-      jobTitle: [''],
-      organization: [''],
+      jobTitle: ['', Validators.required],
+      organization: ['', Validators.required],
       correspondenceCityId: [''],
       correspondenceCityName: [''],
       correspondenceDistrictId: [{ value: '', disabled: true }],
@@ -161,13 +161,11 @@ export class AppComponent {
     // Transform form data to match API structure
     const formData = this.transformFormData();
     
-    console.log('Submitting form:', formData);
-    
     this._mbaService.add(formData).subscribe({
       next: (res) => {
         if (res.success) {
           this.dialogType.set('success');
-          this.dialogMessage.set(res.message || 'Application submitted successfully!');
+          this.dialogMessage.set('Application submitted successfully!');
           this.showDialog.set(true);
           // Reset form after successful submission
           this.applicationForm.reset();
