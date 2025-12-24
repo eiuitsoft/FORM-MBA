@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { MBA_API } from '../../constants/api.const';
+import { MBA_API, MAIN_API } from '../../constants/api.const';
 import { OperationResult } from '../../models/general/operation-result';
 import { MBAApplication } from '../../models/mba/mba-application';
 import { MBAProgram } from '../../models/mba/mba-program';
 import { MBALanguage } from '../../models/mba/mba-language';
 import { MBACountry } from '../../models/mba/mba-country';
+import { MBACity } from '../../models/mba/mba-city';
+import { City, District } from '../../models/mba/mba-address';
 
 @Injectable({
   providedIn: 'root'
@@ -61,5 +63,58 @@ export class MbaService {
   getActiveCountries(): Observable<MBACountry[]> {
     return this._httpClient.get<{ success: boolean; data: MBACountry[] }>(MBA_API.GET_ACTIVE_COUNTRIES)
       .pipe(map(response => response.data || []));
+  }
+
+  /**
+   * Lấy danh sách cities đang active
+   */
+  getActiveCities(): Observable<MBACity[]> {
+    return this._httpClient.get<{ success: boolean; data: MBACity[] }>(MBA_API.GET_ACTIVE_CITIES)
+      .pipe(map(response => response.data || []));
+  }
+
+  /**
+   * Gửi email với PDF attachment
+   */
+  sendEmailWithPDF(data: any, pdfBlob: Blob): Observable<OperationResult> {
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(data));
+    formData.append('pdf', pdfBlob, 'mba-application.pdf');
+    
+    return this._httpClient.post<OperationResult>(MBA_API.SEND_EMAIL_WITH_PDF, formData);
+  }
+
+  /**
+   * Lấy danh sách tất cả cities/provinces
+   */
+  getAllCities(): Observable<City[]> {
+    return this._httpClient.get<City[] | { success: boolean; data: City[] }>(MAIN_API.GET_ALL_CITY)
+      .pipe(
+        map(response => {
+          // Check if response is wrapped in success/data structure
+          if (response && typeof response === 'object' && 'data' in response) {
+            return response.data || [];
+          }
+          // Otherwise assume it's direct array
+          return Array.isArray(response) ? response : [];
+        })
+      );
+  }
+
+  /**
+   * Lấy danh sách districts theo city code
+   */
+  getDistrictsByCity(cityCode: string): Observable<District[]> {
+    return this._httpClient.get<District[] | { success: boolean; data: District[] }>(MAIN_API.GET_ALL_DISTINCT_BY_CITY(cityCode))
+      .pipe(
+        map(response => {
+          // Check if response is wrapped in success/data structure
+          if (response && typeof response === 'object' && 'data' in response) {
+            return response.data || [];
+          }
+          // Otherwise assume it's direct array
+          return Array.isArray(response) ? response : [];
+        })
+      );
   }
 }

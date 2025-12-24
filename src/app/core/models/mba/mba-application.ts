@@ -22,7 +22,12 @@ export interface PersonalDetails {
   jobTitle?: string;
   organization?: string;
   correspondenceAddress: string;
+  correspondenceCityId?: string;
+  correspondenceCityName?: string;
   permanentAddress: string;
+  permanentCityId?: string;
+  permanentCityName?: string;
+  passportFile?: File[] | string[]; // Support multiple files
 }
 
 export interface ApplicationDetails {
@@ -49,6 +54,7 @@ export interface EducationRecord {
   languageId?: string;
   languageName?: string;
   thesisTitle?: string;
+  file?: File[] | string[]; // Support multiple files
 }
 
 export interface PostgraduateRecord extends EducationRecord {}
@@ -57,6 +63,7 @@ export interface EnglishQualifications {
   ielts?: TestScore;
   toefl?: TestScore;
   other?: OtherTest;
+  certificateFile?: File[] | string[]; // Support multiple files
 }
 
 export interface TestScore {

@@ -13,4 +13,15 @@ export const MBA_API = {
   GET_ACTIVE_PROGRAMS: `${BASE_API_URL}/MBAProgram/GetActive`,
   GET_ACTIVE_LANGUAGES: `${BASE_API_URL}/MBALanguage/GetActive`,
   GET_ACTIVE_COUNTRIES: `${BASE_API_URL}/MBACountry/GetActive`,
+  
+  // TODO: Implement these APIs on backend
+  GET_ACTIVE_CITIES: `${BASE_API_URL}/MBACity/GetActive`, // Not implemented yet
+  SEND_EMAIL_WITH_PDF: `${BASE_API_URL}/MBAForm/SendEmailWithPDF`, // Not implemented yet
+};
+
+// Main/Address endpoints
+export const MAIN_API = {
+  GET_ALL_CITY: `${BASE_API_URL}/Main/GetAllCity`,
+  GET_ALL_DISTINCT_BY_CITY: (cityCode: string) =>
+    `${BASE_API_URL}/Main/GetAllDistinctByCity?cityCode=${cityCode}`,
 };

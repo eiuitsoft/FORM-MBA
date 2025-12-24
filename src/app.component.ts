@@ -1,6 +1,6 @@
 
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { of } from 'rxjs';
@@ -26,11 +26,15 @@ export class AppComponent {
   
   submitted = signal(false);
   showDialog = signal(false);
+  showConfirmDialog = signal(false);
   dialogMessage = signal('');
   dialogType = signal<'success' | 'error'>('success');
   programs = signal<any[]>([]);
   languages = signal<any[]>([]);
   countries = signal<any[]>([]);
+  cities = signal<any[]>([]);
+  correspondenceDistricts = signal<any[]>([]);
+  permanentDistricts = signal<any[]>([]);
   
   currentYear = new Date().getFullYear();
   
@@ -72,45 +76,32 @@ export class AppComponent {
       ],
       jobTitle: [''],
       organization: [''],
+      correspondenceCityId: [''],
+      correspondenceCityName: [''],
+      correspondenceDistrictId: [{ value: '', disabled: true }],
+      correspondenceDistrictName: [''],
       correspondenceAddress: ['', Validators.required],
+      permanentCityId: [''],
+      permanentCityName: [''],
+      permanentDistrictId: [{ value: '', disabled: true }],
+      permanentDistrictName: [''],
       permanentAddress: ['', Validators.required],
+      passportFile: [null],
     }),
     applicationDetails: this.fb.group({
-      programId: ['', Validators.required],
-      programCode: [''],
-      track: ['Application', Validators.required],
-      admissionYear: ['', [Validators.required, minYearValidator(new Date().getFullYear())]],
-      admissionIntake: ['', Validators.required],
+      programId: [{ value: '', disabled: true }, Validators.required],
+      programCode: [{ value: '', disabled: true }],
+      programName: [''],
+      track: [{ value: 'Application', disabled: true }, Validators.required],
+      admissionYear: [{ value: this.currentYear + 1, disabled: true }, [Validators.required, minYearValidator(this.currentYear)]],
+      admissionIntake: [{ value: '1', disabled: true }, Validators.required],
     }),
     educationDetails: this.fb.group({
-      undergraduate: this.fb.group({
-        university: ['', Validators.required],
-        countryId: ['', Validators.required],
-        country: [''],
-        major: ['', Validators.required],
-        graduationYear: ['', [Validators.required, maxYearValidator(new Date().getFullYear())]],
-        languageId: ['', Validators.required],
-        language: [''],
-      }),
-      secondDegree: this.fb.group({
-        university: [''],
-        countryId: [''],
-        country: [''],
-        major: [''],
-        graduationYear: [''],
-        languageId: [''],
-        language: [''],
-      }),
-      postgraduate: this.fb.group({
-        university: [''],
-        countryId: [''],
-        country: [''],
-        major: [''],
-        graduationYear: [''],
-        thesisTitle: [''],
-        languageId: [''],
-        language: [''],
-      }),
+      undergraduates: this.fb.array([
+        this.createUndergraduateGroup(), // First degree - required
+        this.createOptionalUndergraduateGroup() // Second degree - optional
+      ]),
+      postgraduates: this.fb.array([this.createPostgraduateGroup()]),
     }),
     englishQualifications: this.fb.group({
       ielts: this.fb.group({ 
@@ -126,6 +117,7 @@ export class AppComponent {
         score: [''], 
         date: ['', [maxDateValidator()]] 
       }),
+      certificateFile: [null], // File upload for all English qualifications
     }, { validators: atLeastOneEnglishQualificationValidator() }),
     employmentHistory: this.fb.group({
       position1: this.fb.group({
@@ -152,37 +144,54 @@ export class AppComponent {
     this.submitted.set(true);
     
     if (this.applicationForm.valid) {
-      // Transform form data to match API structure
-      const formData = this.transformFormData();
-      
-      console.log('Submitting form:', formData);
-      
-      this._mbaService.add(formData).subscribe({
-        next: (res) => {
-          if (res.success) {
-            this.dialogType.set('success');
-            this.dialogMessage.set(res.message || 'Application submitted successfully!');
-            this.showDialog.set(true);
-            // Reset form after successful submission
-            this.applicationForm.reset();
-            this.submitted.set(false);
-          } else {
-            this.dialogType.set('error');
-            this.dialogMessage.set(res.message || 'Failed to submit application');
-            this.showDialog.set(true);
-          }
-        },
-        error: (err) => {
-          console.error('Submit error:', err);
-          this.dialogType.set('error');
-          this.dialogMessage.set('An error occurred while submitting the application');
-          this.showDialog.set(true);
-        }
-      });
+      // Show confirm dialog
+      this.showConfirmDialog.set(true);
     } else {
       // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.applicationForm);
     }
+  }
+
+  /**
+   * Handle confirm Submit
+   */
+  confirmSubmit(): void {
+    this.showConfirmDialog.set(false);
+    
+    // Transform form data to match API structure
+    const formData = this.transformFormData();
+    
+    console.log('Submitting form:', formData);
+    
+    this._mbaService.add(formData).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.dialogType.set('success');
+          this.dialogMessage.set(res.message || 'Application submitted successfully!');
+          this.showDialog.set(true);
+          // Reset form after successful submission
+          this.applicationForm.reset();
+          this.submitted.set(false);
+        } else {
+          this.dialogType.set('error');
+          this.dialogMessage.set(res.message || 'Failed to submit application');
+          this.showDialog.set(true);
+        }
+      },
+      error: (err) => {
+        console.error('Submit error:', err);
+        this.dialogType.set('error');
+        this.dialogMessage.set('An error occurred while submitting the application');
+        this.showDialog.set(true);
+      }
+    });
+  }
+
+  /**
+   * Handle confirm No - Keep form as is
+   */
+  cancelSubmit(): void {
+    this.showConfirmDialog.set(false);
   }
 
   /**
@@ -195,12 +204,50 @@ export class AppComponent {
 
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
+      } else if (control instanceof FormArray) {
+        control.controls.forEach(c => {
+          if (c instanceof FormGroup) {
+            this.markFormGroupTouched(c);
+          } else {
+            c.markAsTouched();
+          }
+        });
       }
     });
   }
 
+  /**
+   * Check if a field should show error styling
+   */
+  isFieldInvalid(controlPath: string): boolean {
+    const control = this.applicationForm.get(controlPath);
+    return !!(control && control.invalid && (control.touched || this.submitted()));
+  }
+
+  /**
+   * Get CSS classes for input field based on validation state
+   */
+  getFieldClasses(controlPath: string, baseClasses: string = 'mt-1 block w-full rounded-md shadow-sm px-3 py-2'): string {
+    const control = this.applicationForm.get(controlPath);
+    const isInvalid = control && control.invalid && (control.touched || this.submitted());
+    
+    if (isInvalid) {
+      return `${baseClasses} border-2 border-red-500 focus:border-red-500 focus:ring-red-500`;
+    }
+    return `${baseClasses} border-gray-300 focus:border-[#a68557] focus:ring-[#a68557]`;
+  }
+
   private transformFormData(): any {
     const rawValue = this.applicationForm.getRawValue();
+    
+    // Helper function to merge address components
+    const mergeAddress = (cityName: string, districtName: string, address: string): string => {
+      const parts = [];
+      if (address) parts.push(address);
+      if (districtName) parts.push(districtName);
+      if (cityName) parts.push(cityName);
+      return parts.join(', ');
+    };
     
     return {
       personalDetails: {
@@ -213,31 +260,55 @@ export class AppComponent {
         email: rawValue.personalDetails.email?.trim().toLowerCase(),
         gender: rawValue.personalDetails.gender === 'Male' ? 1 : 0,
         nationalityId: rawValue.personalDetails.nationalityId,
-        nationalityName: rawValue.personalDetails.nationality
+        nationalityName: rawValue.personalDetails.nationality,
+        // Merge correspondence address components into single field
+        correspondenceAddress: mergeAddress(
+          rawValue.personalDetails.correspondenceCityName,
+          rawValue.personalDetails.correspondenceDistrictName,
+          rawValue.personalDetails.correspondenceAddress
+        ),
+        // Merge permanent address components into single field
+        permanentAddress: mergeAddress(
+          rawValue.personalDetails.permanentCityName,
+          rawValue.personalDetails.permanentDistrictName,
+          rawValue.personalDetails.permanentAddress
+        ),
+        passportFile: rawValue.personalDetails.passportFile || undefined
       },
       applicationDetails: {
-        programId: rawValue.applicationDetails.programId,
-        track: rawValue.applicationDetails.track === 'Application' ? 0 : 1,
+        programId: this.applicationDetails.get('programId')?.value || '', // Get from disabled control
+        programName: rawValue.applicationDetails.programName,
+        programCode: rawValue.applicationDetails.programCode,
+        track: 0, // Always Application
         admissionYear: parseInt(rawValue.applicationDetails.admissionYear) || 0,
-        admissionIntake: rawValue.applicationDetails.admissionIntake
+        admissionIntake: '1' // Always 1, hardcoded
       },
       educationDetails: {
-        undergraduate: {
-          ...rawValue.educationDetails.undergraduate,
-          countryId: rawValue.educationDetails.undergraduate.countryId,
-          countryName: rawValue.educationDetails.undergraduate.country,
-          languageId: rawValue.educationDetails.undergraduate.languageId,
-          languageName: rawValue.educationDetails.undergraduate.language,
-          graduationYear: parseInt(rawValue.educationDetails.undergraduate.graduationYear) || 0
-        },
-        secondDegree: rawValue.educationDetails.secondDegree.university ? {
-          ...rawValue.educationDetails.secondDegree,
-          countryId: rawValue.educationDetails.secondDegree.countryId || undefined,
-          countryName: rawValue.educationDetails.secondDegree.country,
-          languageId: rawValue.educationDetails.secondDegree.languageId || undefined,
-          languageName: rawValue.educationDetails.secondDegree.language,
-          graduationYear: parseInt(rawValue.educationDetails.secondDegree.graduationYear) || 0
-        } : undefined
+        undergraduates: rawValue.educationDetails.undergraduates
+          .filter((ug: any) => ug.university) // Only include if university is filled
+          .map((ug: any) => ({
+            university: ug.university,
+            countryId: ug.countryId,
+            countryName: ug.country,
+            major: ug.major,
+            graduationYear: parseInt(ug.graduationYear) || 0,
+            languageId: ug.languageId,
+            languageName: ug.language,
+            file: ug.file || undefined
+          })),
+        postgraduates: rawValue.educationDetails.postgraduates
+          .filter((pg: any) => pg.university) // Only include if university is filled
+          .map((pg: any) => ({
+            university: pg.university,
+            countryId: pg.countryId,
+            countryName: pg.country,
+            major: pg.major,
+            graduationYear: parseInt(pg.graduationYear) || 0,
+            thesisTitle: pg.thesisTitle,
+            languageId: pg.languageId,
+            languageName: pg.language,
+            file: pg.file || undefined
+          }))
       },
       englishQualifications: {
         ielts: rawValue.englishQualifications.ielts.score ? {
@@ -322,6 +393,9 @@ export class AppComponent {
     // Load countries
     this.loadCountries();
     
+    // Load cities
+    this.loadCities();
+    
     // Setup conditional validation for IELTS
     this.setupConditionalValidation('ielts');
     
@@ -330,6 +404,26 @@ export class AppComponent {
     
     // Setup conditional validation for Other English test
     this.setupConditionalValidation('other');
+    
+    // Setup beforeunload warning
+    this.setupBeforeUnloadWarning();
+  }
+
+  /**
+   * Setup warning when user tries to reload or close tab with unsaved changes
+   */
+  private setupBeforeUnloadWarning(): void {
+    window.addEventListener('beforeunload', (event) => {
+      // Check if form has been touched (has any data)
+      if (this.applicationForm.dirty && !this.submitted()) {
+        // Standard way to show confirmation dialog
+        event.preventDefault();
+        // Chrome requires returnValue to be set
+        event.returnValue = '';
+        return '';
+      }
+      return undefined;
+    });
   }
 
   /**
@@ -339,6 +433,17 @@ export class AppComponent {
     this._mbaService.getActivePrograms().subscribe({
       next: (programs) => {
         this.programs.set(programs);
+        
+        // Auto-select MBA program if available
+        const mbaProgram = programs.find(p => p.code === 'MBA' || p.name.includes('Master of Business Administration'));
+        if (mbaProgram) {
+          // Use setValue to update disabled control
+          this.applicationDetails.get('programId')?.setValue(mbaProgram.id);
+          this.applicationDetails.patchValue({
+            programCode: mbaProgram.code,
+            programName: mbaProgram.name
+          });
+        }
       },
       error: (err) => {
         console.error('Error loading programs:', err);
@@ -375,6 +480,20 @@ export class AppComponent {
   }
 
   /**
+   * Load danh sách cities từ API
+   */
+  private loadCities(): void {
+    this._mbaService.getAllCities().subscribe({
+      next: (cities) => {
+        this.cities.set(cities);
+      },
+      error: (err) => {
+        console.error('Error loading cities:', err);
+      }
+    });
+  }
+
+  /**
    * Handle khi user chọn program từ dropdown
    */
   onProgramChange(event: Event): void {
@@ -385,12 +504,14 @@ export class AppComponent {
       const selectedProgram = this.programs().find(p => p.id === programId);
       if (selectedProgram) {
         this.applicationDetails.patchValue({
-          programCode: selectedProgram.code
+          programCode: selectedProgram.code,
+          programName: selectedProgram.name
         });
       }
     } else {
       this.applicationDetails.patchValue({
-        programCode: ''
+        programCode: '',
+        programName: ''
       });
     }
   }
@@ -408,6 +529,14 @@ export class AppComponent {
         this.personalDetails.patchValue({
           nationality: selectedCountry.name
         });
+        
+        // Reset city fields when nationality changes
+        this.personalDetails.patchValue({
+          correspondenceCityId: '',
+          correspondenceCityName: '',
+          permanentCityId: '',
+          permanentCityName: ''
+        });
       }
     } else {
       this.personalDetails.patchValue({
@@ -419,11 +548,19 @@ export class AppComponent {
   /**
    * Handle khi user chọn country từ dropdown (education)
    */
-  onCountryChange(event: Event, section: 'undergraduate' | 'secondDegree' | 'postgraduate'): void {
+  onCountryChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
     const selectElement = event.target as HTMLSelectElement;
     const countryId = selectElement.value;
     
-    const sectionGroup = this.educationDetails.get(section) as FormGroup;
+    let sectionGroup: FormGroup;
+    
+    if (section === 'undergraduates' && index !== undefined) {
+      sectionGroup = this.undergraduates.at(index) as FormGroup;
+    } else if (section === 'postgraduates' && index !== undefined) {
+      sectionGroup = this.postgraduates.at(index) as FormGroup;
+    } else {
+      return;
+    }
     
     if (countryId) {
       const selectedCountry = this.countries().find(c => c.id === countryId);
@@ -440,13 +577,442 @@ export class AppComponent {
   }
 
   /**
+   * Handle khi user chọn correspondence city từ dropdown
+   */
+  onCorrespondenceCityChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const cityCode = selectElement.value;
+    
+    if (cityCode) {
+      const selectedCity = this.cities().find(c => c.cityCode === cityCode);
+      if (selectedCity) {
+        this.personalDetails.patchValue({
+          correspondenceCityName: selectedCity.cityName
+        });
+      }
+      
+      // Enable district dropdown
+      this.personalDetails.get('correspondenceDistrictId')?.enable();
+      
+      // Load districts for selected city
+      this._mbaService.getDistrictsByCity(cityCode).subscribe({
+        next: (districts) => {
+          this.correspondenceDistricts.set(districts);
+          // Reset district selection
+          this.personalDetails.patchValue({
+            correspondenceDistrictId: '',
+            correspondenceDistrictName: ''
+          });
+        },
+        error: (err) => {
+          console.error('Error loading correspondence districts:', err);
+          this.correspondenceDistricts.set([]);
+        }
+      });
+    } else {
+      // Disable district dropdown when no city selected
+      this.personalDetails.get('correspondenceDistrictId')?.disable();
+      this.personalDetails.patchValue({
+        correspondenceCityName: '',
+        correspondenceDistrictId: '',
+        correspondenceDistrictName: ''
+      });
+      this.correspondenceDistricts.set([]);
+    }
+  }
+
+  /**
+   * Handle khi user chọn correspondence district từ dropdown
+   */
+  onCorrespondenceDistrictChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const distinctCode = selectElement.value;
+    
+    if (distinctCode) {
+      const selectedDistrict = this.correspondenceDistricts().find(d => d.distinctCode === distinctCode);
+      if (selectedDistrict) {
+        this.personalDetails.patchValue({
+          correspondenceDistrictName: selectedDistrict.distinctName
+        });
+      }
+    } else {
+      this.personalDetails.patchValue({
+        correspondenceDistrictName: ''
+      });
+    }
+  }
+
+  /**
+   * Handle khi user chọn permanent city từ dropdown
+   */
+  onPermanentCityChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const cityCode = selectElement.value;
+    
+    if (cityCode) {
+      const selectedCity = this.cities().find(c => c.cityCode === cityCode);
+      if (selectedCity) {
+        this.personalDetails.patchValue({
+          permanentCityName: selectedCity.cityName
+        });
+      }
+      
+      // Enable district dropdown
+      this.personalDetails.get('permanentDistrictId')?.enable();
+      
+      // Load districts for selected city
+      this._mbaService.getDistrictsByCity(cityCode).subscribe({
+        next: (districts) => {
+          this.permanentDistricts.set(districts);
+          // Reset district selection
+          this.personalDetails.patchValue({
+            permanentDistrictId: '',
+            permanentDistrictName: ''
+          });
+        },
+        error: (err) => {
+          console.error('Error loading permanent districts:', err);
+          this.permanentDistricts.set([]);
+        }
+      });
+    } else {
+      // Disable district dropdown when no city selected
+      this.personalDetails.get('permanentDistrictId')?.disable();
+      this.personalDetails.patchValue({
+        permanentCityName: '',
+        permanentDistrictId: '',
+        permanentDistrictName: ''
+      });
+      this.permanentDistricts.set([]);
+    }
+  }
+
+  /**
+   * Handle khi user chọn permanent district từ dropdown
+   */
+  onPermanentDistrictChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const distinctCode = selectElement.value;
+    
+    if (distinctCode) {
+      const selectedDistrict = this.permanentDistricts().find(d => d.distinctCode === distinctCode);
+      if (selectedDistrict) {
+        this.personalDetails.patchValue({
+          permanentDistrictName: selectedDistrict.distinctName
+        });
+      }
+    } else {
+      this.personalDetails.patchValue({
+        permanentDistrictName: ''
+      });
+    }
+  }
+
+  /**
+   * Handle passport file upload - Multiple files
+   */
+  onPassportFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files);
+      const validFiles: File[] = [];
+      const errors: string[] = [];
+      
+      for (const file of files) {
+        // Validate file size (max 5MB per file)
+        if (file.size > 5 * 1024 * 1024) {
+          errors.push(`${file.name}: File size must be less than 5MB`);
+          continue;
+        }
+        
+        // Validate file type
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
+          continue;
+        }
+        
+        validFiles.push(file);
+      }
+      
+      if (errors.length > 0) {
+        alert('Some files were rejected:\n\n' + errors.join('\n'));
+      }
+      
+      if (validFiles.length > 0) {
+        // Merge with existing files
+        const existingFiles = this.personalDetails.get('passportFile')?.value || [];
+        const allFiles = [...existingFiles, ...validFiles];
+        this.personalDetails.patchValue({ passportFile: allFiles });
+      }
+      
+      // Reset input to allow selecting the same file again
+      input.value = '';
+    }
+  }
+
+  /**
+   * Remove a specific passport file
+   */
+  removePassportFile(index: number): void {
+    const files = this.personalDetails.get('passportFile')?.value || [];
+    if (files.length > 0) {
+      const updatedFiles = files.filter((_: any, i: number) => i !== index);
+      this.personalDetails.patchValue({ passportFile: updatedFiles.length > 0 ? updatedFiles : null });
+    }
+  }
+
+  /**
+   * Get file name from File object
+   */
+  getFileName(file: any): string {
+    return file?.name || 'Unknown file';
+  }
+
+  /**
+   * Format file size for display
+   */
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  /**
+   * Create undergraduate form group (required fields)
+   */
+  private createUndergraduateGroup(): FormGroup {
+    return this.fb.group({
+      university: ['', Validators.required],
+      countryId: ['', Validators.required],
+      country: [''],
+      major: ['', Validators.required],
+      graduationYear: ['', [Validators.required, maxYearValidator(new Date().getFullYear())]],
+      languageId: ['', Validators.required],
+      language: [''],
+      file: [null],
+    });
+  }
+
+  /**
+   * Create optional undergraduate form group (no required fields)
+   */
+  private createOptionalUndergraduateGroup(): FormGroup {
+    return this.fb.group({
+      university: [''],
+      countryId: [''],
+      country: [''],
+      major: [''],
+      graduationYear: ['', [maxYearValidator(new Date().getFullYear())]],
+      languageId: [''],
+      language: [''],
+      file: [null],
+    });
+  }
+
+  /**
+   * Create postgraduate form group
+   */
+  private createPostgraduateGroup(): FormGroup {
+    return this.fb.group({
+      university: [''],
+      countryId: [''],
+      country: [''],
+      major: [''],
+      graduationYear: [''],
+      thesisTitle: [''],
+      languageId: [''],
+      language: [''],
+      file: [null],
+    });
+  }
+
+  /**
+   * Get undergraduates FormArray
+   */
+  get undergraduates(): FormArray {
+    return this.educationDetails.get('undergraduates') as FormArray;
+  }
+
+  /**
+   * Get postgraduates FormArray
+   */
+  get postgraduates(): FormArray {
+    return this.educationDetails.get('postgraduates') as FormArray;
+  }
+
+  /**
+   * Add new undergraduate section (optional)
+   */
+  addUndergraduate(): void {
+    this.undergraduates.push(this.createOptionalUndergraduateGroup());
+  }
+
+  /**
+   * Remove undergraduate section
+   */
+  removeUndergraduate(index: number): void {
+    if (this.undergraduates.length > 2) {
+      this.undergraduates.removeAt(index);
+    }
+  }
+
+  /**
+   * Add new postgraduate section
+   */
+  addPostgraduate(): void {
+    this.postgraduates.push(this.createPostgraduateGroup());
+  }
+
+  /**
+   * Remove postgraduate section
+   */
+  removePostgraduate(index: number): void {
+    if (this.postgraduates.length > 1) {
+      this.postgraduates.removeAt(index);
+    }
+  }
+
+  /**
+   * Handle education file upload - Multiple files
+   */
+  onEducationFileChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files);
+      const validFiles: File[] = [];
+      const errors: string[] = [];
+      
+      for (const file of files) {
+        // Validate file size (max 5MB per file)
+        if (file.size > 5 * 1024 * 1024) {
+          errors.push(`${file.name}: File size must be less than 5MB`);
+          continue;
+        }
+        
+        // Validate file type
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
+          continue;
+        }
+        
+        validFiles.push(file);
+      }
+      
+      if (errors.length > 0) {
+        alert('Some files were rejected:\n\n' + errors.join('\n'));
+      }
+      
+      if (validFiles.length > 0) {
+        let existingFiles: File[] = [];
+        
+        if (section === 'undergraduates' && index !== undefined) {
+          existingFiles = this.undergraduates.at(index).get('file')?.value || [];
+          const allFiles = [...existingFiles, ...validFiles];
+          this.undergraduates.at(index).patchValue({ file: allFiles });
+        } else if (section === 'postgraduates' && index !== undefined) {
+          existingFiles = this.postgraduates.at(index).get('file')?.value || [];
+          const allFiles = [...existingFiles, ...validFiles];
+          this.postgraduates.at(index).patchValue({ file: allFiles });
+        }
+      }
+      
+      
+      // Reset input to allow selecting the same file again
+      input.value = '';
+    }
+  }
+
+  /**
+   * Remove a specific education file
+   */
+  removeEducationFile(section: 'undergraduates' | 'postgraduates', fileIndex: number, arrayIndex?: number): void {
+    let files: File[] = [];
+    
+    if (section === 'undergraduates' && arrayIndex !== undefined) {
+      files = this.undergraduates.at(arrayIndex).get('file')?.value || [];
+      const updatedFiles = files.filter((_, i) => i !== fileIndex);
+      this.undergraduates.at(arrayIndex).patchValue({ file: updatedFiles.length > 0 ? updatedFiles : null });
+    } else if (section === 'postgraduates' && arrayIndex !== undefined) {
+      files = this.postgraduates.at(arrayIndex).get('file')?.value || [];
+      const updatedFiles = files.filter((_, i) => i !== fileIndex);
+      this.postgraduates.at(arrayIndex).patchValue({ file: updatedFiles.length > 0 ? updatedFiles : null });
+    }
+  }
+
+  /**
+   * Handle English certificate file upload - Multiple files
+   */
+  onEnglishCertificateFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files);
+      const validFiles: File[] = [];
+      const errors: string[] = [];
+      
+      for (const file of files) {
+        // Validate file size (max 5MB per file)
+        if (file.size > 5 * 1024 * 1024) {
+          errors.push(`${file.name}: File size must be less than 5MB`);
+          continue;
+        }
+        
+        // Validate file type
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
+          continue;
+        }
+        
+        validFiles.push(file);
+      }
+      
+      if (errors.length > 0) {
+        alert('Some files were rejected:\n\n' + errors.join('\n'));
+      }
+      
+      if (validFiles.length > 0) {
+        // Merge with existing files
+        const existingFiles = this.englishQualifications.get('certificateFile')?.value || [];
+        const allFiles = [...existingFiles, ...validFiles];
+        this.englishQualifications.patchValue({ certificateFile: allFiles });
+      }
+      
+      // Reset input to allow selecting the same file again
+      input.value = '';
+    }
+  }
+
+  /**
+   * Remove a specific English certificate file
+   */
+  removeEnglishCertificateFile(index: number): void {
+    const files = this.englishQualifications.get('certificateFile')?.value || [];
+    if (files.length > 0) {
+      const updatedFiles = files.filter((_: any, i: number) => i !== index);
+      this.englishQualifications.patchValue({ certificateFile: updatedFiles.length > 0 ? updatedFiles : null });
+    }
+  }
+
+  /**
    * Handle khi user chọn language từ dropdown (undergraduate)
    */
-  onLanguageChange(event: Event, section: 'undergraduate' | 'secondDegree' | 'postgraduate'): void {
+  onLanguageChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
     const selectElement = event.target as HTMLSelectElement;
     const languageId = selectElement.value;
     
-    const sectionGroup = this.educationDetails.get(section) as FormGroup;
+    let sectionGroup: FormGroup;
+    
+    if (section === 'undergraduates' && index !== undefined) {
+      sectionGroup = this.undergraduates.at(index) as FormGroup;
+    } else if (section === 'postgraduates' && index !== undefined) {
+      sectionGroup = this.postgraduates.at(index) as FormGroup;
+    } else {
+      return;
+    }
     
     if (languageId) {
       const selectedLanguage = this.languages().find(l => l.id === languageId);

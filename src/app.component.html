@@ -22,8 +22,13 @@
         <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">SECTION A - PERSONAL DETAILS</h3>
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <div class="md:col-span-2">
-            <label for="fullName" class="block text-sm font-medium text-gray-700">Full name</label>
-            <input type="text" id="fullName" formControlName="fullName" placeholder="Enter your full name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <label for="fullName" class="block text-sm font-medium text-gray-700">Full name <span class="text-red-600">*</span></label>
+            <input 
+              type="text" 
+              id="fullName" 
+              formControlName="fullName" 
+              placeholder="Enter your full name" 
+              [class]="getFieldClasses('personalDetails.fullName')">
             @if (personalDetails.get('fullName')?.hasError('required') && personalDetails.get('fullName')?.touched) {
               <p class="text-red-600 text-sm mt-1">Full name is required</p>
             }
@@ -32,7 +37,7 @@
             }
           </div>
           <div>
-            <label for="nationalityId" class="block text-sm font-medium text-gray-700">Nationality</label>
+            <label for="nationalityId" class="block text-sm font-medium text-gray-700">Nationality <span class="text-red-600">*</span></label>
             <select 
               id="nationalityId" 
               formControlName="nationalityId" 
@@ -55,7 +60,7 @@
             </div>
           </div>
           <div>
-            <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Date of birth (dd/mm/yyyy)</label>
+            <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Date of birth (dd/mm/yyyy) <span class="text-red-600">*</span></label>
             <input type="date" id="dateOfBirth" formControlName="dateOfBirth" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
             @if (personalDetails.get('dateOfBirth')?.hasError('required') && personalDetails.get('dateOfBirth')?.touched) {
               <p class="text-red-600 text-sm mt-1">Date of birth is required</p>
@@ -65,11 +70,11 @@
             }
           </div>
           <div>
-            <label for="placeOfBirth" class="block text-sm font-medium text-gray-700">Place of Birth</label>
+            <label for="placeOfBirth" class="block text-sm font-medium text-gray-700">Place of Birth <span class="text-red-600">*</span></label>
             <input type="text" id="placeOfBirth" formControlName="placeOfBirth" placeholder="Enter place of birth" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
-            <label for="passportNo" class="block text-sm font-medium text-gray-700">ID/ Passport No.</label>
+            <label for="passportNo" class="block text-sm font-medium text-gray-700">ID/ Passport No. <span class="text-red-600">*</span></label>
             <div class="relative">
               <input 
                 type="text" 
@@ -108,11 +113,11 @@
             }
           </div>
           <div>
-            <label for="dateIssued" class="block text-sm font-medium text-gray-700">Date Issued (dd/mm/yyyy)</label>
+            <label for="dateIssued" class="block text-sm font-medium text-gray-700">Date Issued (dd/mm/yyyy) <span class="text-red-600">*</span></label>
             <input type="date" id="dateIssued" formControlName="dateIssued" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-600">*</span></label>
             <div class="relative">
               <input 
                 type="email" 
@@ -140,7 +145,7 @@
             }
           </div>
           <div>
-            <label for="mobile" class="block text-sm font-medium text-gray-700">Mobile</label>
+            <label for="mobile" class="block text-sm font-medium text-gray-700">Mobile <span class="text-red-600">*</span></label>
             <ngx-intl-tel-input
               [cssClass]="'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2'"
               [preferredCountries]="['vn', 'us', 'gb']"
@@ -181,20 +186,120 @@
             }
           </div>
           <div>
-            <label for="jobTitle" class="block text-sm font-medium text-gray-700">Job title</label>
+            <label for="jobTitle" class="block text-sm font-medium text-gray-700">Job title <span class="text-red-600">*</span></label>
             <input type="text" id="jobTitle" formControlName="jobTitle" placeholder="Enter your job title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
           <div>
-            <label for="organization" class="block text-sm font-medium text-gray-700">Organization</label>
+            <label for="organization" class="block text-sm font-medium text-gray-700">Organization <span class="text-red-600">*</span></label>
             <input type="text" id="organization" formControlName="organization" placeholder="Enter your organization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           </div>
-          <div class="md:col-span-2">
-            <label for="correspondenceAddress" class="block text-sm font-medium text-gray-700">Correspondence Address</label>
+          
+          <!-- Correspondence City, District & Address -->
+          <div class="md:col-span-1">
+            <div class="grid grid-cols-2 gap-x-3">
+              <div>
+                <label for="correspondenceCityId" class="block text-sm font-medium text-gray-700">Correspondence City</label>
+                <select 
+                  id="correspondenceCityId" 
+                  formControlName="correspondenceCityId"
+                  (change)="onCorrespondenceCityChange($event)"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  <option value="">-- Select city --</option>
+                  @for (city of cities(); track $index) {
+                    <option [value]="city.cityCode">{{ city.cityName }}</option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label for="correspondenceDistrictId" class="block text-sm font-medium text-gray-700">Correspondence District</label>
+                <select 
+                  id="correspondenceDistrictId" 
+                  formControlName="correspondenceDistrictId"
+                  (change)="onCorrespondenceDistrictChange($event)"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                  <option value="">-- Select district --</option>
+                  @for (district of correspondenceDistricts(); track $index) {
+                    <option [value]="district.distinctCode">{{ district.distinctName }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="md:col-span-1">
+            <label for="correspondenceAddress" class="block text-sm font-medium text-gray-700">Correspondence Address <span class="text-red-600">*</span></label>
             <textarea id="correspondenceAddress" formControlName="correspondenceAddress" rows="2" placeholder="Enter your correspondence address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
           </div>
-          <div class="md:col-span-2">
-            <label for="permanentAddress" class="block text-sm font-medium text-gray-700">Permanent Address</label>
+          
+          <!-- Permanent City, District & Address -->
+          <div class="md:col-span-1">
+            <div class="grid grid-cols-2 gap-x-3">
+              <div>
+                <label for="permanentCityId" class="block text-sm font-medium text-gray-700">Permanent City</label>
+                <select 
+                  id="permanentCityId" 
+                  formControlName="permanentCityId"
+                  (change)="onPermanentCityChange($event)"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  <option value="">-- Select city --</option>
+                  @for (city of cities(); track $index) {
+                    <option [value]="city.cityCode">{{ city.cityName }}</option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label for="permanentDistrictId" class="block text-sm font-medium text-gray-700">Permanent District</label>
+                <select 
+                  id="permanentDistrictId" 
+                  formControlName="permanentDistrictId"
+                  (change)="onPermanentDistrictChange($event)"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                  <option value="">-- Select district --</option>
+                  @for (district of permanentDistricts(); track $index) {
+                    <option [value]="district.distinctCode">{{ district.distinctName }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="md:col-span-1">
+            <label for="permanentAddress" class="block text-sm font-medium text-gray-700">Permanent Address <span class="text-red-600">*</span></label>
             <textarea id="permanentAddress" formControlName="permanentAddress" rows="2" placeholder="Enter your permanent address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+          </div>
+          
+          <!-- Passport File Upload - Multiple Files -->
+          <div class="md:col-span-2">
+            <label for="passportFile" class="block text-sm font-medium text-gray-700">Upload ID/Passport Document</label>
+            <input 
+              type="file" 
+              id="passportFile" 
+              accept=".pdf,.jpg,.jpeg,.png"
+              multiple
+              (change)="onPassportFileChange($event)"
+              class="mt-1 block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-[#153a5e] file:text-white
+                hover:file:bg-[#a68557] cursor-pointer">
+            @if (personalDetails.get('passportFile')?.value && personalDetails.get('passportFile')?.value.length > 0) {
+              <div class="text-sm mt-2 space-y-1">
+                <p class="font-semibold text-green-600">✓ {{ personalDetails.get('passportFile')?.value.length }} file(s) selected:</p>
+                @for (file of personalDetails.get('passportFile')?.value; track $index) {
+                  <div class="flex items-center justify-between bg-green-50 px-3 py-2 rounded border border-green-200">
+                    <span class="text-gray-700">{{ file.name }} <span class="text-gray-500">({{ formatFileSize(file.size) }})</span></span>
+                    <button 
+                      type="button"
+                      (click)="removePassportFile($index)"
+                      class="text-red-600 hover:text-red-800 font-bold ml-2">
+                      ✕
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+            <p class="text-xs text-gray-500 mt-1">
+              Upload a single or multiple files containing all your ID/Passport documents (PDF, JPG, or PNG, max 5MB per file)
+            </p>
           </div>
         </div>
       </section>
@@ -207,33 +312,29 @@
             <label for="programId" class="block text-sm font-medium text-gray-700">Program name</label>
             <select 
               id="programId" 
-              formControlName="programId" 
-              (change)="onProgramChange($event)"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+              formControlName="programId"
+              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
               <option value="">-- Select a program --</option>
               @for (program of programs(); track program.id) {
                 <option [value]="program.id">{{ program.name }}</option>
               }
             </select>
-            @if (applicationDetails.get('programId')?.hasError('required') && (applicationDetails.get('programId')?.touched || submitted())) {
-              <p class="text-red-600 text-sm mt-1">Please select a program</p>
-            }
           </div>
           <div>
             <label for="programCode" class="block text-sm font-medium text-gray-700">Program code</label>
-            <input type="text" id="programCode" formControlName="programCode" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
+            <input type="text" id="programCode" formControlName="programCode" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Track</label>
             <div class="mt-2 flex items-center space-x-6">
                 <label class="inline-flex items-center"><input type="radio" formControlName="track" value="Application" class="text-[#153a5e] focus:ring-[#a68557]"> <span class="ml-2">Application</span></label>
-                <label class="inline-flex items-center opacity-50 cursor-not-allowed"><input type="radio" formControlName="track" value="Research" disabled class="text-[#153a5e] focus:ring-[#a68557]"> <span class="ml-2">Research</span></label>
+                <label class="inline-flex items-center opacity-50 cursor-not-allowed"><input type="radio" value="Research" class="text-[#153a5e] focus:ring-[#a68557]" disabled> <span class="ml-2">Research</span></label>
             </div>
           </div>
           <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-6">
             <div>
               <label for="admissionYear" class="block text-sm font-medium text-gray-700">Admission Year</label>
-              <input type="number" id="admissionYear" formControlName="admissionYear" placeholder="YYYY" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+              <input type="number" id="admissionYear" formControlName="admissionYear" placeholder="YYYY" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
               @if (applicationDetails.get('admissionYear')?.hasError('required') && applicationDetails.get('admissionYear')?.touched) {
                 <p class="text-red-600 text-sm mt-1">Admission year is required</p>
               }
@@ -243,10 +344,11 @@
             </div>
             <div>
               <label for="admissionIntake" class="block text-sm font-medium text-gray-700">Admission Intake</label>
-              <input type="text" id="admissionIntake" formControlName="admissionIntake" placeholder="Enter admission intake" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-              @if (applicationDetails.get('admissionIntake')?.hasError('required') && applicationDetails.get('admissionIntake')?.touched) {
-                <p class="text-red-600 text-sm mt-1">Admission intake is required</p>
-              }
+              <input 
+                type="text" 
+                id="admissionIntake" 
+                formControlName="admissionIntake" 
+                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
             </div>
           </div>
         </div>
@@ -256,111 +358,253 @@
       <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="educationDetails">
         <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">SECTION C - PREVIOUS EDUCATION DETAILS</h3>
         <div class="p-6 space-y-6">
-          <!-- Undergraduate -->
-          <div class="border border-gray-200 rounded-md p-4" formGroupName="undergraduate">
-              <h4 class="font-semibold text-lg text-[#153a5e] mb-2">1. Undergraduate qualifications (First degree)</h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <!-- Undergraduate - FormArray -->
+          <div formArrayName="undergraduates">
+            @for (undergrad of undergraduates.controls; track $index; let ugIndex = $index) {
+              <div class="border border-gray-200 rounded-md p-4 mb-4" [formGroupName]="ugIndex">
+                <div class="flex justify-between items-center mb-2">
+                  <h4 class="font-semibold text-lg text-[#153a5e]">
+                    @if (ugIndex === 0) {
+                      1. Undergraduate qualifications (First degree)
+                    } @else if (ugIndex === 1) {
+                      Second degree (optional)
+                    } @else if (ugIndex === 2) {
+                      Third degree (optional)
+                    } @else if (ugIndex === 3) {
+                      Fourth degree (optional)
+                    } @else if (ugIndex === 4) {
+                      Fifth degree (optional)
+                    } @else {
+                      {{ ugIndex + 1 }}th degree (optional)
+                    }
+                  </h4>
+                  @if (ugIndex >= 2) {
+                    <button 
+                      type="button"
+                      (click)="removeUndergraduate(ugIndex)"
+                      class="text-red-600 hover:text-red-800 text-sm font-medium px-3 py-1 rounded hover:bg-red-50">
+                      ✕ Remove
+                    </button>
+                  }
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">University/ Institution</label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      University/ Institution
+                      @if (ugIndex === 0) {
+                        <span class="text-red-600">*</span>
+                      }
+                    </label>
                     <input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                    @if (educationDetails.get('undergraduate.university')?.hasError('required') && educationDetails.get('undergraduate.university')?.touched) {
+                    @if (undergraduates.at(ugIndex).get('university')?.hasError('required') && undergraduates.at(ugIndex).get('university')?.touched) {
                       <p class="text-red-600 text-sm mt-1">University/Institution is required</p>
                     }
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Country</label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Country
+                      @if (ugIndex === 0) {
+                        <span class="text-red-600">*</span>
+                      }
+                    </label>
                     <select 
                       formControlName="countryId" 
-                      (change)="onCountryChange($event, 'undergraduate')"
+                      (change)="onCountryChange($event, 'undergraduates', ugIndex)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                       <option value="">-- Select country --</option>
                       @for (country of countries(); track country.id) {
                         <option [value]="country.id">{{ country.name }}</option>
                       }
                     </select>
-                    @if (educationDetails.get('undergraduate.countryId')?.hasError('required') && educationDetails.get('undergraduate.countryId')?.touched) {
+                    @if (undergraduates.at(ugIndex).get('countryId')?.hasError('required') && undergraduates.at(ugIndex).get('countryId')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Country is required</p>
                     }
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Major</label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Major
+                      @if (ugIndex === 0) {
+                        <span class="text-red-600">*</span>
+                      }
+                    </label>
                     <input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                    @if (educationDetails.get('undergraduate.major')?.hasError('required') && educationDetails.get('undergraduate.major')?.touched) {
+                    @if (undergraduates.at(ugIndex).get('major')?.hasError('required') && undergraduates.at(ugIndex).get('major')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Major is required</p>
                     }
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Year of graduation</label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Year of graduation
+                      @if (ugIndex === 0) {
+                        <span class="text-red-600">*</span>
+                      }
+                    </label>
                     <input type="number" formControlName="graduationYear" placeholder="YYYY" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                    @if (educationDetails.get('undergraduate.graduationYear')?.hasError('required') && educationDetails.get('undergraduate.graduationYear')?.touched) {
+                    @if (undergraduates.at(ugIndex).get('graduationYear')?.hasError('required') && undergraduates.at(ugIndex).get('graduationYear')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Year of graduation is required</p>
                     }
-                    @if (educationDetails.get('undergraduate.graduationYear')?.hasError('maxYear') && educationDetails.get('undergraduate.graduationYear')?.touched) {
+                    @if (undergraduates.at(ugIndex).get('graduationYear')?.hasError('maxYear') && undergraduates.at(ugIndex).get('graduationYear')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Year of graduation cannot be in the future</p>
                     }
                   </div>
-                  <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
+                  <!-- Language & File Upload - Same Row -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Language of instruction
+                      @if (ugIndex === 0) {
+                        <span class="text-red-600">*</span>
+                      }
+                    </label>
                     <select 
                       formControlName="languageId" 
-                      (change)="onLanguageChange($event, 'undergraduate')"
+                      (change)="onLanguageChange($event, 'undergraduates', ugIndex)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                       <option value="">-- Select language --</option>
                       @for (language of languages(); track language.id) {
                         <option [value]="language.id">{{ language.name }}</option>
                       }
                     </select>
-                    @if (educationDetails.get('undergraduate.languageId')?.hasError('required') && educationDetails.get('undergraduate.languageId')?.touched) {
+                    @if (undergraduates.at(ugIndex).get('languageId')?.hasError('required') && undergraduates.at(ugIndex).get('languageId')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Language of instruction is required</p>
                     }
                   </div>
+                  <div>
+                    <label for="undergraduateFile_{{ugIndex}}" class="block text-sm font-medium text-gray-700">Upload Certificate (Optional)</label>
+                    <input 
+                      type="file" 
+                      id="undergraduateFile_{{ugIndex}}" 
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      multiple
+                      (change)="onEducationFileChange($event, 'undergraduates', ugIndex)"
+                      class="mt-1 block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-[#153a5e] file:text-white
+                        hover:file:bg-[#a68557] cursor-pointer">
+                    @if (undergraduates.at(ugIndex).get('file')?.value && undergraduates.at(ugIndex).get('file')?.value.length > 0) {
+                      <div class="text-sm mt-2 space-y-1">
+                        <p class="font-semibold text-green-600">✓ {{ undergraduates.at(ugIndex).get('file')?.value.length }} file(s):</p>
+                        @for (file of undergraduates.at(ugIndex).get('file')?.value; track $index) {
+                          <div class="flex items-center justify-between bg-green-50 px-2 py-1 rounded border border-green-200">
+                            <span class="text-xs text-gray-700">{{ file.name }}</span>
+                            <button 
+                              type="button"
+                              (click)="removeEducationFile('undergraduates', $index, ugIndex)"
+                              class="text-red-600 hover:text-red-800 font-bold ml-2 text-sm">
+                              ✕
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
               </div>
+            }
           </div>
-           <!-- Second Degree -->
-          <div class="border border-gray-200 rounded-md p-4" formGroupName="secondDegree">
-              <h4 class="font-semibold text-lg text-[#153a5e] mb-2">Second degree (if any)</h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <!-- ... same fields as undergraduate ... -->
+          
+          <!-- Add More Undergraduate Button -->
+          <button 
+            type="button"
+            (click)="addUndergraduate()"
+            class="w-full py-2 px-4 border-2 border-dashed border-[#153a5e] text-[#153a5e] rounded-md hover:bg-[#153a5e] hover:text-white transition-colors font-medium mb-4">
+            + Add More Undergraduate
+          </button>
+          
+          <!-- Second Degree - After Add More Button -->
+          <!-- COMMENTED OUT: Second degree is now handled by FormArray (index 1) -->
+          <!--
+          <div class="border border-gray-200 rounded-md p-4 mb-4" formGroupName="secondDegree">
+            <h4 class="font-semibold text-lg text-[#153a5e] mb-2">Second degree (if any)</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Country</label>
+                <select 
+                  formControlName="countryId" 
+                  (change)="onCountryChange($event, 'secondDegree')"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  <option value="">-- Select country --</option>
+                  @for (country of countries(); track country.id) {
+                    <option [value]="country.id">{{ country.name }}</option>
+                  }
+                </select>
+              </div>
+              <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
+                <select 
+                  formControlName="languageId" 
+                  (change)="onLanguageChange($event, 'secondDegree')"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  <option value="">-- Select language --</option>
+                  @for (language of languages(); track language.id) {
+                    <option [value]="language.id">{{ language.name }}</option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label for="secondDegreeFile" class="block text-sm font-medium text-gray-700">Upload Certificate (Optional)</label>
+                <input 
+                  type="file" 
+                  id="secondDegreeFile" 
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  multiple
+                  (change)="onEducationFileChange($event, 'secondDegree')"
+                  class="mt-1 block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-[#153a5e] file:text-white
+                    hover:file:bg-[#a68557] cursor-pointer">
+                @if (educationDetails.get('secondDegree.file')?.value && educationDetails.get('secondDegree.file')?.value.length > 0) {
+                  <p class="text-sm text-green-600 mt-1">
+                    ✓ {{ educationDetails.get('secondDegree.file')?.value.length }} file(s) selected
+                  </p>
+                }
+              </div>
+            </div>
+          </div>
+          -->
+          
+          <!-- Postgraduate - FormArray -->
+          <div formArrayName="postgraduates">
+            @for (postgrad of postgraduates.controls; track $index; let pgIndex = $index) {
+              <div class="border border-gray-200 rounded-md p-4 mb-4" [formGroupName]="pgIndex">
+                <div class="flex justify-between items-center mb-2">
+                  <h4 class="font-semibold text-lg text-[#153a5e]">
+                    @if (pgIndex === 0) {
+                      2. Postgraduate qualifications (if any)
+                    } @else if (pgIndex === 1) {
+                      Second postgraduate
+                    } @else if (pgIndex === 2) {
+                      Third postgraduate
+                    } @else if (pgIndex === 3) {
+                      Fourth postgraduate
+                    } @else if (pgIndex === 4) {
+                      Fifth postgraduate
+                    } @else {
+                      {{ pgIndex + 1 }}th postgraduate
+                    }
+                  </h4>
+                  @if (pgIndex > 0) {
+                    <button 
+                      type="button"
+                      (click)="removePostgraduate(pgIndex)"
+                      class="text-red-600 hover:text-red-800 text-sm font-medium px-3 py-1 rounded hover:bg-red-50">
+                      ✕ Remove
+                    </button>
+                  }
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Country</label>
                     <select 
                       formControlName="countryId" 
-                      (change)="onCountryChange($event, 'secondDegree')"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                      <option value="">-- Select country --</option>
-                      @for (country of countries(); track country.id) {
-                        <option [value]="country.id">{{ country.name }}</option>
-                      }
-                    </select>
-                  </div>
-                  <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
-                    <select 
-                      formControlName="languageId" 
-                      (change)="onLanguageChange($event, 'secondDegree')"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                      <option value="">-- Select language --</option>
-                      @for (language of languages(); track language.id) {
-                        <option [value]="language.id">{{ language.name }}</option>
-                      }
-                    </select>
-                  </div>
-              </div>
-          </div>
-          <!-- Postgraduate -->
-          <div class="border border-gray-200 rounded-md p-4" formGroupName="postgraduate">
-              <h4 class="font-semibold text-lg text-[#153a5e] mb-2">2. Postgraduate qualifications (if any)</h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <!-- ... same fields as undergraduate plus Thesis title ... -->
-                  <div><label class="block text-sm font-medium text-gray-700">University/ Institution</label><input type="text" formControlName="university" placeholder="Enter university or institution name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Country</label>
-                    <select 
-                      formControlName="countryId" 
-                      (change)="onCountryChange($event, 'postgraduate')"
+                      (change)="onCountryChange($event, 'postgraduates', pgIndex)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                       <option value="">-- Select country --</option>
                       @for (country of countries(); track country.id) {
@@ -371,11 +615,12 @@
                   <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Thesis title</label><input type="text" formControlName="thesisTitle" placeholder="Enter thesis title (if applicable)" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div class="md:col-span-2">
+                  <!-- Language & File Upload - Same Row -->
+                  <div>
                     <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
                     <select 
                       formControlName="languageId" 
-                      (change)="onLanguageChange($event, 'postgraduate')"
+                      (change)="onLanguageChange($event, 'postgraduates', pgIndex)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                       <option value="">-- Select language --</option>
                       @for (language of languages(); track language.id) {
@@ -383,7 +628,47 @@
                       }
                     </select>
                   </div>
+                  <div>
+                    <label for="postgraduateFile_{{pgIndex}}" class="block text-sm font-medium text-gray-700">Upload Certificate (Optional)</label>
+                    <input 
+                      type="file" 
+                      id="postgraduateFile_{{pgIndex}}" 
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      multiple
+                      (change)="onEducationFileChange($event, 'postgraduates', pgIndex)"
+                      class="mt-1 block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-[#153a5e] file:text-white
+                        hover:file:bg-[#a68557] cursor-pointer">
+                    @if (postgraduates.at(pgIndex).get('file')?.value && postgraduates.at(pgIndex).get('file')?.value.length > 0) {
+                      <div class="text-sm mt-2 space-y-1">
+                        <p class="font-semibold text-green-600">✓ {{ postgraduates.at(pgIndex).get('file')?.value.length }} file(s):</p>
+                        @for (file of postgraduates.at(pgIndex).get('file')?.value; track $index) {
+                          <div class="flex items-center justify-between bg-green-50 px-2 py-1 rounded border border-green-200">
+                            <span class="text-xs text-gray-700">{{ file.name }}</span>
+                            <button 
+                              type="button"
+                              (click)="removeEducationFile('postgraduates', $index, pgIndex)"
+                              class="text-red-600 hover:text-red-800 font-bold ml-2 text-sm">
+                              ✕
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
               </div>
+            }
+            <!-- Add More Button -->
+            <button 
+              type="button"
+              (click)="addPostgraduate()"
+              class="w-full py-2 px-4 border-2 border-dashed border-[#153a5e] text-[#153a5e] rounded-md hover:bg-[#153a5e] hover:text-white transition-colors font-medium">
+              + Add More Postgraduate
+            </button>
           </div>
         </div>
       </section>
@@ -472,6 +757,44 @@
               </div>
             </div>
             
+            <!-- English Certificate Upload -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+              <label for="englishCertificateFile" class="block text-sm font-medium text-gray-700 mb-2">
+                Upload English Certificate (for all qualifications)
+              </label>
+              <input 
+                type="file" 
+                id="englishCertificateFile" 
+                accept=".pdf,.jpg,.jpeg,.png"
+                multiple
+                (change)="onEnglishCertificateFileChange($event)"
+                class="block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-md file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-[#153a5e] file:text-white
+                  hover:file:bg-[#a68557] cursor-pointer">
+              @if (englishQualifications.get('certificateFile')?.value && englishQualifications.get('certificateFile')?.value.length > 0) {
+                <div class="text-sm mt-2 space-y-1">
+                  <p class="font-semibold text-green-600">✓ {{ englishQualifications.get('certificateFile')?.value.length }} file(s) selected:</p>
+                  @for (file of englishQualifications.get('certificateFile')?.value; track $index) {
+                    <div class="flex items-center justify-between bg-green-50 px-3 py-2 rounded border border-green-200">
+                      <span class="text-gray-700">{{ file.name }} <span class="text-gray-500">({{ formatFileSize(file.size) }})</span></span>
+                      <button 
+                        type="button"
+                        (click)="removeEnglishCertificateFile($index)"
+                        class="text-red-600 hover:text-red-800 font-bold ml-2">
+                        ✕
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+              <p class="text-xs text-gray-500 mt-1">
+                Upload a single or multiple files containing all your English qualification certificates (PDF, JPG, or PNG, max 5MB per file)
+              </p>
+            </div>
+            
             <!-- Validation message for at least one English qualification -->
             @if (englishQualifications.hasError('atLeastOneRequired') && (submitted() || englishQualifications.touched)) {
               <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
@@ -553,7 +876,57 @@
     </form>
   </div>
 
-  <!-- Dialog -->
+  <!-- Confirm Dialog -->
+  @if (showConfirmDialog()) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+      <div class="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 transform transition-all animate-slideUp">
+        <div class="text-center mb-6">
+          <div class="mx-auto w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">
+            Confirm Submission
+          </h3>
+          <p class="text-gray-600">
+            Are you sure you want to submit this application?
+          </p>
+        </div>
+        
+        <!-- Send Email Checkbox -->
+        <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <label class="flex items-start cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked
+              class="mt-0.5 h-5 w-5 rounded border-gray-300 text-[#153a5e] focus:ring-[#a68557]">
+            <div class="ml-3">
+              <span class="text-sm font-medium text-gray-900">Send confirmation email</span>
+              <p class="text-xs text-gray-500 mt-1">
+                A confirmation email with PDF application form will be sent to your email address
+              </p>
+            </div>
+          </label>
+        </div>
+        
+        <div class="flex gap-3">
+          <button 
+            (click)="cancelSubmit()" 
+            class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors duration-200 font-medium">
+            Cancel
+          </button>
+          <button 
+            (click)="confirmSubmit()" 
+            class="flex-1 px-6 py-3 bg-[#153a5e] text-white rounded-md hover:bg-[#a68557] transition-colors duration-200 font-medium">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Result Dialog -->
   @if (showDialog()) {
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn" (click)="closeDialog()">
       <div class="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 transform transition-all animate-slideUp" (click)="$event.stopPropagation()">
@@ -587,3 +960,5 @@
     </div>
   }
 </div>
+
+
