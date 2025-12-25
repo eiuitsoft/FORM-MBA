@@ -1,0 +1,45 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="logo">
+      <img src="/assets/images/logo-footer.png" alt="EIU Logo" />
+    </div>
+
+    <button class="mobile-toggle" (click)="toggleMenu()">
+      ☰
+    </button>
+
+    <ul class="nav-menu" [class.show]="showMobileMenu()">
+      <li>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+          <span class="material-icons">edit</span> MBA Application
+        </a>
+      </li>
+      
+      <ng-container *ngIf="isLoggedIn; else loggedOut">
+        <li>
+          <a [routerLink]="['/application', tokenService.studentId()]" routerLinkActive="active" class="nav-link">
+            <span class="material-icons">assignment</span> My Application
+          </a>
+        </li>
+        <li class="user-menu">
+          <button class="user-button" (click)="toggleUserMenu()">
+            <span class="material-icons">account_circle</span> {{ fullName }}
+          </button>
+          <div class="dropdown-menu" *ngIf="showUserMenu()">
+            <button (click)="logout()" class="dropdown-item">
+              <span class="material-icons">exit_to_app</span> Logout
+            </button>
+          </div>
+        </li>
+      </ng-container>
+      
+      <ng-template #loggedOut>
+        <li>
+          <a routerLink="/login" routerLinkActive="active" class="nav-link">
+            <span class="material-icons">power_settings_new</span> Login
+          </a>
+        </li>
+      </ng-template>
+    </ul>
+  </div>
+</nav>

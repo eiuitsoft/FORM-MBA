@@ -42,6 +42,21 @@ export class MbaService {
   }
 
   /**
+   * Cập nhật application
+   */
+  update(id: string, data: MBAApplication): Observable<OperationResult> {
+    return this._httpClient.put<OperationResult>(MBA_API.UPDATE(id), data);
+  }
+
+  /**
+   * Lấy thông tin application theo ID
+   */
+  getById(id: string): Observable<any> {
+    return this._httpClient.get<{ success: boolean; data: any }>(MBA_API.GET_BY_ID(id))
+      .pipe(map(response => response.data));
+  }
+
+  /**
    * Lấy danh sách programs đang active
    */
   getActivePrograms(): Observable<MBAProgram[]> {

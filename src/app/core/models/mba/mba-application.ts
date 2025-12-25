@@ -1,5 +1,4 @@
 export interface MBAApplication {
-  id?: string;
   personalDetails: PersonalDetails;
   applicationDetails: ApplicationDetails;
   educationDetails: EducationDetails;
@@ -9,6 +8,7 @@ export interface MBAApplication {
 }
 
 export interface PersonalDetails {
+  id?: string;
   fullName: string;
   nationalityId?: string;
   nationalityName?: string;
@@ -21,13 +21,25 @@ export interface PersonalDetails {
   mobile: string;
   jobTitle?: string;
   organization?: string;
-  correspondenceAddress: string;
-  correspondenceCityId?: string;
+  profileCode?: string;
+  correspondenceCityId?: number;
   correspondenceCityName?: string;
-  permanentAddress: string;
-  permanentCityId?: string;
+  correspondenceAddress: string;
+  permanentCityId?: number;
   permanentCityName?: string;
-  passportFile?: File[] | string[]; // Support multiple files
+  permanentAddress: string;
+  uploadedFiles?: UploadedFile[];
+}
+
+export interface UploadedFile {
+  id?: number;
+  fileOriginalName: string;
+  fileFullPath: string;
+  fileExtension: string;
+  fileSize: number;
+  fileCategoryId: number;
+  fileCategoryName?: string;
+  statusFile?: number;
 }
 
 export interface ApplicationDetails {
@@ -42,10 +54,11 @@ export interface ApplicationDetails {
 export interface EducationDetails {
   undergraduate: EducationRecord;
   secondDegree?: EducationRecord;
-  postgraduate?: PostgraduateRecord;
+  postgraduate?: EducationRecord;
 }
 
 export interface EducationRecord {
+  id?: string;
   university: string;
   countryId?: string;
   countryName?: string;
@@ -53,26 +66,22 @@ export interface EducationRecord {
   graduationYear: number;
   languageId?: string;
   languageName?: string;
+  sortOrder?: number;
   thesisTitle?: string;
-  file?: File[] | string[]; // Support multiple files
 }
-
-export interface PostgraduateRecord extends EducationRecord {}
 
 export interface EnglishQualifications {
   ielts?: TestScore;
   toefl?: TestScore;
-  other?: OtherTest;
-  certificateFile?: File[] | string[]; // Support multiple files
+  other?: TestScore;
 }
 
 export interface TestScore {
+  id?: string;
   name?: string;
   score?: string;
   date?: string;
 }
-
-export interface OtherTest extends TestScore {}
 
 export interface EmploymentHistory {
   position1: EmploymentRecord;
@@ -80,6 +89,7 @@ export interface EmploymentHistory {
 }
 
 export interface EmploymentRecord {
+  id?: string;
   organizationName: string;
   jobTitle: string;
   fromDate: string;

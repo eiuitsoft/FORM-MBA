@@ -6,6 +6,8 @@ export const BASE_API_URL = environment.API_URL;
 // MBA Application endpoints
 export const MBA_API = {
   ADD: `${BASE_API_URL}/MBAForm/Add`,
+  UPDATE: (id: string) => `${BASE_API_URL}/MBAForm/Update/${id}`,
+  GET_BY_ID: (id: string) => `${BASE_API_URL}/MBAForm/GetById/${id}`,
   CHECK_PASSPORT: (passportNo: string) =>
     `${BASE_API_URL}/MBAForm/CheckPassport/check-passport/${passportNo}`,
   CHECK_MOBILE: (mobile: string) =>
@@ -17,6 +19,12 @@ export const MBA_API = {
   // TODO: Implement these APIs on backend
   GET_ACTIVE_CITIES: `${BASE_API_URL}/MBACity/GetActive`, // Not implemented yet
   SEND_EMAIL_WITH_PDF: `${BASE_API_URL}/MBAForm/SendEmailWithPDF`, // Not implemented yet
+};
+
+// Authentication endpoints
+export const AUTH_API = {
+  SEND_OTP: `${BASE_API_URL}/MBAForm/SendOTP/send-otp`,
+  LOGIN_OTP: `${BASE_API_URL}/MBAForm/LoginWithOTP/login-otp`,
 };
 
 // Main/Address endpoints

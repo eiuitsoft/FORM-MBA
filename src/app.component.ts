@@ -1,10 +1,13 @@
 
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { of } from 'rxjs';
 import { MbaService } from './app/core/services/mba/mba.service';
+import { AlertService } from './app/core/services/alert/alert.service';
+import { PageLayoutComponent } from './app/components/layouts/page-layout/page-layout.component';
 import { uniqueFieldValidator } from './validators/unique-field.validator';
 import { passportFormatValidator } from './validators/passport-format.validator';
 import { emailFormatValidator } from './validators/email-format.validator';
@@ -17,18 +20,21 @@ import { atLeastOneEnglishQualificationValidator } from './validators/english-qu
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule],
+  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, PageLayoutComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private fb = inject(FormBuilder);
   private readonly _mbaService = inject(MbaService);
+  private readonly _alertService = inject(AlertService);
+  private readonly _router = inject(Router);
+  private readonly _route = inject(ActivatedRoute);
+  
+  loading = signal(false);
   
   submitted = signal(false);
-  showDialog = signal(false);
   showConfirmDialog = signal(false);
-  dialogMessage = signal('');
-  dialogType = signal<'success' | 'error'>('success');
   programs = signal<any[]>([]);
   languages = signal<any[]>([]);
   countries = signal<any[]>([]);
@@ -164,23 +170,22 @@ export class AppComponent {
     this._mbaService.add(formData).subscribe({
       next: (res) => {
         if (res.success) {
-          this.dialogType.set('success');
-          this.dialogMessage.set('Application submitted successfully!');
-          this.showDialog.set(true);
+          this._alertService.success('Success!', 'Application submitted successfully! Redirecting to login...', 3000);
           // Reset form after successful submission
           this.applicationForm.reset();
           this.submitted.set(false);
+          
+          // Navigate to login page after 3 seconds
+          setTimeout(() => {
+            this._router.navigate(['/login']);
+          }, 3000);
         } else {
-          this.dialogType.set('error');
-          this.dialogMessage.set(res.message || 'Failed to submit application');
-          this.showDialog.set(true);
+          this._alertService.error('Error', res.message || 'Failed to submit application');
         }
       },
       error: (err) => {
         console.error('Submit error:', err);
-        this.dialogType.set('error');
-        this.dialogMessage.set('An error occurred while submitting the application');
-        this.showDialog.set(true);
+        this._alertService.error('Error', 'An error occurred while submitting the application');
       }
     });
   }
@@ -240,7 +245,7 @@ export class AppComponent {
     
     // Helper function to merge address components
     const mergeAddress = (cityName: string, districtName: string, address: string): string => {
-      const parts = [];
+      const parts: string[] = [];
       if (address) parts.push(address);
       if (districtName) parts.push(districtName);
       if (cityName) parts.push(cityName);
@@ -284,7 +289,7 @@ export class AppComponent {
       educationDetails: {
         undergraduates: rawValue.educationDetails.undergraduates
           .filter((ug: any) => ug.university) // Only include if university is filled
-          .map((ug: any) => ({
+          .map((ug: any, index: number) => ({
             university: ug.university,
             countryId: ug.countryId,
             countryName: ug.country,
@@ -292,11 +297,12 @@ export class AppComponent {
             graduationYear: parseInt(ug.graduationYear) || 0,
             languageId: ug.languageId,
             languageName: ug.language,
+            sortOrder: index,
             file: ug.file || undefined
           })),
         postgraduates: rawValue.educationDetails.postgraduates
           .filter((pg: any) => pg.university) // Only include if university is filled
-          .map((pg: any) => ({
+          .map((pg: any, index: number) => ({
             university: pg.university,
             countryId: pg.countryId,
             countryName: pg.country,
@@ -305,6 +311,7 @@ export class AppComponent {
             thesisTitle: pg.thesisTitle,
             languageId: pg.languageId,
             languageName: pg.language,
+            sortOrder: index,
             file: pg.file || undefined
           }))
       },
@@ -343,10 +350,6 @@ export class AppComponent {
       },
       declaration: rawValue.declaration
     };
-  }
-
-  closeDialog(): void {
-    this.showDialog.set(false);
   }
 
   /**
