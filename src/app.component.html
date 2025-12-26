@@ -1,4 +1,4 @@
-
+<app-page-layout>
 <div class="min-h-screen p-4 sm:p-8 bg-slate-100 flex items-center justify-center">
   <div class="w-full max-w-5xl">
 
@@ -45,7 +45,7 @@
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
               <option value="">-- Select nationality --</option>
               @for (country of countries(); track country.id) {
-                <option [value]="country.id">{{ country.name }}</option>
+                <option [value]="country.id" [textContent]="country.name"></option>
               }
             </select>
             @if (personalDetails.get('nationalityId')?.hasError('required') && personalDetails.get('nationalityId')?.touched) {
@@ -220,8 +220,8 @@
                   (change)="onCorrespondenceCityChange($event)"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   <option value="">-- Select city --</option>
-                  @for (city of cities(); track $index) {
-                    <option [value]="city.cityCode">{{ city.cityName }}</option>
+                  @for (province of provinces(); track province.provinceCode) {
+                    <option [value]="province.provinceCode">{{ province.provinceName }}</option>
                   }
                 </select>
               </div>
@@ -233,8 +233,8 @@
                   (change)="onCorrespondenceDistrictChange($event)"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
                   <option value="">-- Select district --</option>
-                  @for (district of correspondenceDistricts(); track $index) {
-                    <option [value]="district.distinctCode">{{ district.distinctName }}</option>
+                  @for (ward of correspondenceWards(); track ward.wardCode) {
+                    <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                   }
                 </select>
               </div>
@@ -259,8 +259,8 @@
                   (change)="onPermanentCityChange($event)"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   <option value="">-- Select city --</option>
-                  @for (city of cities(); track $index) {
-                    <option [value]="city.cityCode">{{ city.cityName }}</option>
+                  @for (province of provinces(); track province.provinceCode) {
+                    <option [value]="province.provinceCode">{{ province.provinceName }}</option>
                   }
                 </select>
               </div>
@@ -272,8 +272,8 @@
                   (change)="onPermanentDistrictChange($event)"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
                   <option value="">-- Select district --</option>
-                  @for (district of permanentDistricts(); track $index) {
-                    <option [value]="district.distinctCode">{{ district.distinctName }}</option>
+                  @for (ward of permanentWards(); track ward.wardCode) {
+                    <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                   }
                 </select>
               </div>
@@ -304,10 +304,10 @@
                 hover:file:bg-[#a68557] cursor-pointer">
             @if (personalDetails.get('passportFile')?.value && personalDetails.get('passportFile')?.value.length > 0) {
               <div class="text-sm mt-2 space-y-1">
-                <p class="font-semibold text-green-600">✓ {{ personalDetails.get('passportFile')?.value.length }} file(s) selected:</p>
+                <p class="font-semibold text-green-600">✓ <span [textContent]="personalDetails.get('passportFile')?.value.length"></span> file(s) selected:</p>
                 @for (file of personalDetails.get('passportFile')?.value; track $index) {
                   <div class="flex items-center justify-between bg-green-50 px-3 py-2 rounded border border-green-200">
-                    <span class="text-gray-700">{{ file.name }} <span class="text-gray-500">({{ formatFileSize(file.size) }})</span></span>
+                    <span class="text-gray-700" [textContent]="file.name + ' (' + formatFileSize(file.size) + ')'"></span>
                     <button 
                       type="button"
                       (click)="removePassportFile($index)"
@@ -337,7 +337,7 @@
               class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
               <option value="">-- Select a program --</option>
               @for (program of programs(); track program.id) {
-                <option [value]="program.id">{{ program.name }}</option>
+                <option [value]="program.id" [textContent]="program.name"></option>
               }
             </select>
           </div>
@@ -360,7 +360,7 @@
                 <p class="text-red-600 text-sm mt-1">Admission year is required</p>
               }
               @if (applicationDetails.get('admissionYear')?.hasError('minYear') && applicationDetails.get('admissionYear')?.touched) {
-                <p class="text-red-600 text-sm mt-1">Admission year must be {{ currentYear }} or later</p>
+                <p class="text-red-600 text-sm mt-1">Admission year must be <span [textContent]="currentYear"></span> or later</p>
               }
             </div>
             <div>
@@ -396,7 +396,7 @@
                     } @else if (ugIndex === 4) {
                       Fifth degree (optional)
                     } @else {
-                      {{ ugIndex + 1 }}th degree (optional)
+                      <span [textContent]="ugIndex + 1"></span>th degree (optional)
                     }
                   </h4>
                   @if (ugIndex >= 2) {
@@ -434,7 +434,7 @@
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                       <option value="">-- Select country --</option>
                       @for (country of countries(); track country.id) {
-                        <option [value]="country.id">{{ country.name }}</option>
+                        <option [value]="country.id" [textContent]="country.name"></option>
                       }
                     </select>
                     @if (undergraduates.at(ugIndex).get('countryId')?.hasError('required') && undergraduates.at(ugIndex).get('countryId')?.touched) {
@@ -464,6 +464,9 @@
                     @if (undergraduates.at(ugIndex).get('graduationYear')?.hasError('required') && undergraduates.at(ugIndex).get('graduationYear')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Year of graduation is required</p>
                     }
+                    @if (undergraduates.at(ugIndex).get('graduationYear')?.hasError('minYear') && undergraduates.at(ugIndex).get('graduationYear')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Year of graduation must be at least 1950</p>
+                    }
                     @if (undergraduates.at(ugIndex).get('graduationYear')?.hasError('maxYear') && undergraduates.at(ugIndex).get('graduationYear')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Year of graduation cannot be in the future</p>
                     }
@@ -481,19 +484,20 @@
                       (change)="onLanguageChange($event, 'undergraduates', ugIndex)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                       <option value="">-- Select language --</option>
-                      @for (language of languages(); track language.id) {
-                        <option [value]="language.id">{{ language.name }}</option>
+                      @for (lang of languages(); track lang.id) {
+                        <option [value]="lang.id">{{ lang.name }}</option>
                       }
                     </select>
                     @if (undergraduates.at(ugIndex).get('languageId')?.hasError('required') && undergraduates.at(ugIndex).get('languageId')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Language of instruction is required</p>
                     }
                   </div>
+                
                   <div>
-                    <label for="undergraduateFile_{{ugIndex}}" class="block text-sm font-medium text-gray-700">Upload Certificate (Optional)</label>
+                    <label [attr.for]="'undergraduateFile_' + ugIndex" class="block text-sm font-medium text-gray-700">Upload Certificate (Optional)</label>
                     <input 
                       type="file" 
-                      id="undergraduateFile_{{ugIndex}}" 
+                      [id]="'undergraduateFile_' + ugIndex" 
                       accept=".pdf,.jpg,.jpeg,.png"
                       multiple
                       (change)="onEducationFileChange($event, 'undergraduates', ugIndex)"
@@ -505,10 +509,10 @@
                         hover:file:bg-[#a68557] cursor-pointer">
                     @if (undergraduates.at(ugIndex).get('file')?.value && undergraduates.at(ugIndex).get('file')?.value.length > 0) {
                       <div class="text-sm mt-2 space-y-1">
-                        <p class="font-semibold text-green-600">✓ {{ undergraduates.at(ugIndex).get('file')?.value.length }} file(s):</p>
+                        <p class="font-semibold text-green-600">✓ <span [textContent]="undergraduates.at(ugIndex).get('file')?.value.length"></span> file(s):</p>
                         @for (file of undergraduates.at(ugIndex).get('file')?.value; track $index) {
                           <div class="flex items-center justify-between bg-green-50 px-2 py-1 rounded border border-green-200">
-                            <span class="text-xs text-gray-700">{{ file.name }}</span>
+                            <span class="text-xs text-gray-700" [textContent]="file.name"></span>
                             <button 
                               type="button"
                               (click)="removeEducationFile('undergraduates', $index, ugIndex)"
@@ -548,12 +552,21 @@
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   <option value="">-- Select country --</option>
                   @for (country of countries(); track country.id) {
-                    <option [value]="country.id">{{ country.name }}</option>
+                    <option [value]="country.id" [textContent]="country.name"></option>
                   }
                 </select>
               </div>
               <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Year of graduation</label>
+                <input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                @if (undergraduates.at(1).get('graduationYear')?.hasError('minYear') && undergraduates.at(1).get('graduationYear')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">Year of graduation must be at least 1950</p>
+                }
+                @if (undergraduates.at(1).get('graduationYear')?.hasError('maxYear') && undergraduates.at(1).get('graduationYear')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">Year of graduation cannot be in the future</p>
+                }
+              </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
                 <select 
@@ -562,7 +575,7 @@
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   <option value="">-- Select language --</option>
                   @for (language of languages(); track language.id) {
-                    <option [value]="language.id">{{ language.name }}</option>
+                    <option [value]="language.id" [textContent]="language.name"></option>
                   }
                 </select>
               </div>
@@ -582,7 +595,7 @@
                     hover:file:bg-[#a68557] cursor-pointer">
                 @if (educationDetails.get('secondDegree.file')?.value && educationDetails.get('secondDegree.file')?.value.length > 0) {
                   <p class="text-sm text-green-600 mt-1">
-                    ✓ {{ educationDetails.get('secondDegree.file')?.value.length }} file(s) selected
+                    ✓ <span [textContent]="educationDetails.get('secondDegree.file')?.value.length"></span> file(s) selected
                   </p>
                 }
               </div>
@@ -607,7 +620,7 @@
                     } @else if (pgIndex === 4) {
                       Fifth postgraduate
                     } @else {
-                      {{ pgIndex + 1 }}th postgraduate
+                      <span [textContent]="pgIndex + 1"></span>th postgraduate
                     }
                   </h4>
                   @if (pgIndex > 0) {
@@ -629,12 +642,21 @@
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                       <option value="">-- Select country --</option>
                       @for (country of countries(); track country.id) {
-                        <option [value]="country.id">{{ country.name }}</option>
+                        <option [value]="country.id" [textContent]="country.name"></option>
                       }
                     </select>
                   </div>
                   <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Year of graduation</label>
+                    <input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    @if (postgraduates.at(pgIndex).get('graduationYear')?.hasError('minYear') && postgraduates.at(pgIndex).get('graduationYear')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Year of graduation must be at least 1950</p>
+                    }
+                    @if (postgraduates.at(pgIndex).get('graduationYear')?.hasError('maxYear') && postgraduates.at(pgIndex).get('graduationYear')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Year of graduation cannot be in the future</p>
+                    }
+                  </div>
                   <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Thesis title</label><input type="text" formControlName="thesisTitle" placeholder="Enter thesis title (if applicable)" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <!-- Language & File Upload - Same Row -->
                   <div>
@@ -645,15 +667,15 @@
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                       <option value="">-- Select language --</option>
                       @for (language of languages(); track language.id) {
-                        <option [value]="language.id">{{ language.name }}</option>
+                        <option [value]="language.id" [textContent]="language.name"></option>
                       }
                     </select>
                   </div>
                   <div>
-                    <label for="postgraduateFile_{{pgIndex}}" class="block text-sm font-medium text-gray-700">Upload Certificate (Optional)</label>
+                    <label [attr.for]="'postgraduateFile_' + pgIndex" class="block text-sm font-medium text-gray-700">Upload Certificate (Optional)</label>
                     <input 
                       type="file" 
-                      id="postgraduateFile_{{pgIndex}}" 
+                      [id]="'postgraduateFile_' + pgIndex" 
                       accept=".pdf,.jpg,.jpeg,.png"
                       multiple
                       (change)="onEducationFileChange($event, 'postgraduates', pgIndex)"
@@ -665,10 +687,10 @@
                         hover:file:bg-[#a68557] cursor-pointer">
                     @if (postgraduates.at(pgIndex).get('file')?.value && postgraduates.at(pgIndex).get('file')?.value.length > 0) {
                       <div class="text-sm mt-2 space-y-1">
-                        <p class="font-semibold text-green-600">✓ {{ postgraduates.at(pgIndex).get('file')?.value.length }} file(s):</p>
+                        <p class="font-semibold text-green-600">✓ <span [textContent]="postgraduates.at(pgIndex).get('file')?.value.length"></span> file(s):</p>
                         @for (file of postgraduates.at(pgIndex).get('file')?.value; track $index) {
                           <div class="flex items-center justify-between bg-green-50 px-2 py-1 rounded border border-green-200">
-                            <span class="text-xs text-gray-700">{{ file.name }}</span>
+                            <span class="text-xs text-gray-700" [textContent]="file.name"></span>
                             <button 
                               type="button"
                               (click)="removeEducationFile('postgraduates', $index, pgIndex)"
@@ -797,10 +819,10 @@
                   hover:file:bg-[#a68557] cursor-pointer">
               @if (englishQualifications.get('certificateFile')?.value && englishQualifications.get('certificateFile')?.value.length > 0) {
                 <div class="text-sm mt-2 space-y-1">
-                  <p class="font-semibold text-green-600">✓ {{ englishQualifications.get('certificateFile')?.value.length }} file(s) selected:</p>
+                  <p class="font-semibold text-green-600">✓ <span [textContent]="englishQualifications.get('certificateFile')?.value.length"></span> file(s) selected:</p>
                   @for (file of englishQualifications.get('certificateFile')?.value; track $index) {
                     <div class="flex items-center justify-between bg-green-50 px-3 py-2 rounded border border-green-200">
-                      <span class="text-gray-700">{{ file.name }} <span class="text-gray-500">({{ formatFileSize(file.size) }})</span></span>
+                      <span class="text-gray-700" [textContent]="file.name + ' (' + formatFileSize(file.size) + ')'"></span>
                       <button 
                         type="button"
                         (click)="removeEnglishCertificateFile($index)"
@@ -930,40 +952,7 @@
       </div>
     </div>
   }
-
-  <!-- Result Dialog -->
-  @if (showDialog()) {
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn" (click)="closeDialog()">
-      <div class="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 transform transition-all animate-slideUp" (click)="$event.stopPropagation()">
-        <div class="flex items-start mb-4">
-          @if (dialogType() === 'success') {
-            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          } @else {
-            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </div>
-          }
-          <div class="ml-4 flex-1">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">
-              {{ dialogType() === 'success' ? 'Success' : 'Error' }}
-            </h3>
-            <p class="text-gray-600">{{ dialogMessage() }}</p>
-          </div>
-        </div>
-        <div class="flex justify-end mt-6">
-          <button (click)="closeDialog()" class="px-6 py-2 bg-[#153a5e] text-white rounded-md hover:bg-[#a68557] transition-colors duration-200 font-medium">
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  }
 </div>
+</app-page-layout>
 
 

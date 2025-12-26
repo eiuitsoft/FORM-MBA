@@ -1,9 +1,9 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 /**
- * Validator cho Passport/ID format
- * Cho phép 6-12 ký tự (cover cả passport quốc tế và CMND/CCCD VN)
- * Chỉ chứa chữ và số, KHÔNG bắt buộc phải có chữ
+ * Validator for Passport/ID format
+ * Allows 6-12 characters (covers international passports and VN CMND/CCCD)
+ * Contains only letters and numbers, letters NOT required
  */
 export function passportFormatValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -12,12 +12,12 @@ export function passportFormatValidator(): ValidatorFn {
     const value = control.value.trim();
     const cleaned = value.replace(/[^A-Z0-9]/g, '');
     
-    // Cho phép 6-12 ký tự
+    // Allow 6-12 characters
     if (cleaned.length < 6 || cleaned.length > 12) {
       return { invalidLength: true };
     }
     
-    // Chỉ cho phép chữ và số
+    // Only allow letters and numbers
     if (!/^[A-Z0-9]+$/.test(cleaned)) {
       return { invalidFormat: true };
     }

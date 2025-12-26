@@ -1,10 +1,13 @@
 
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { of } from 'rxjs';
 import { MbaService } from './app/core/services/mba/mba.service';
+import { AlertService } from './app/core/services/alert/alert.service';
+import { PageLayoutComponent } from './app/components/layouts/page-layout/page-layout.component';
 import { uniqueFieldValidator } from './validators/unique-field.validator';
 import { passportFormatValidator } from './validators/passport-format.validator';
 import { emailFormatValidator } from './validators/email-format.validator';
@@ -17,24 +20,27 @@ import { atLeastOneEnglishQualificationValidator } from './validators/english-qu
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule],
+  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, PageLayoutComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private fb = inject(FormBuilder);
   private readonly _mbaService = inject(MbaService);
+  private readonly _alertService = inject(AlertService);
+  private readonly _router = inject(Router);
+  private readonly _route = inject(ActivatedRoute);
+  
+  loading = signal(false);
   
   submitted = signal(false);
-  showDialog = signal(false);
   showConfirmDialog = signal(false);
-  dialogMessage = signal('');
-  dialogType = signal<'success' | 'error'>('success');
   programs = signal<any[]>([]);
   languages = signal<any[]>([]);
   countries = signal<any[]>([]);
-  cities = signal<any[]>([]);
-  correspondenceDistricts = signal<any[]>([]);
-  permanentDistricts = signal<any[]>([]);
+  provinces = signal<any[]>([]); // Changed from cities to provinces
+  correspondenceWards = signal<any[]>([]); // Changed from districts to wards
+  permanentWards = signal<any[]>([]); // Changed from districts to wards
   
   currentYear = new Date().getFullYear();
   
@@ -164,23 +170,22 @@ export class AppComponent {
     this._mbaService.add(formData).subscribe({
       next: (res) => {
         if (res.success) {
-          this.dialogType.set('success');
-          this.dialogMessage.set('Application submitted successfully!');
-          this.showDialog.set(true);
+          this._alertService.success('Success!', 'Application submitted successfully! Redirecting to login...', 3000);
           // Reset form after successful submission
           this.applicationForm.reset();
           this.submitted.set(false);
+          
+          // Navigate to login page after 3 seconds
+          setTimeout(() => {
+            this._router.navigate(['/login']);
+          }, 3000);
         } else {
-          this.dialogType.set('error');
-          this.dialogMessage.set(res.message || 'Failed to submit application');
-          this.showDialog.set(true);
+          this._alertService.error('Error', res.message || 'Failed to submit application');
         }
       },
       error: (err) => {
         console.error('Submit error:', err);
-        this.dialogType.set('error');
-        this.dialogMessage.set('An error occurred while submitting the application');
-        this.showDialog.set(true);
+        this._alertService.error('Error', 'An error occurred while submitting the application');
       }
     });
   }
@@ -235,118 +240,177 @@ export class AppComponent {
     return `${baseClasses} border-gray-300 focus:border-[#a68557] focus:ring-[#a68557]`;
   }
 
-  private transformFormData(): any {
+  private transformFormData(): FormData {
     const rawValue = this.applicationForm.getRawValue();
+    const formData = new FormData();
     
-    // Helper function to merge address components
-    const mergeAddress = (cityName: string, districtName: string, address: string): string => {
-      const parts = [];
-      if (address) parts.push(address);
-      if (districtName) parts.push(districtName);
-      if (cityName) parts.push(cityName);
-      return parts.join(', ');
-    };
+    // ========== PERSONAL DETAILS ==========
+    formData.append('PersonalDetails.FullName', rawValue.personalDetails.fullName || '');
+    formData.append('PersonalDetails.NationalityId', rawValue.personalDetails.nationalityId || '');
+    // Gender: 0=Male, 1=Female (BE spec)
+    formData.append('PersonalDetails.Gender', rawValue.personalDetails.gender === 'Male' ? '1' : '2');
+    formData.append('PersonalDetails.DateOfBirth', rawValue.personalDetails.dateOfBirth || '');
+    formData.append('PersonalDetails.PlaceOfBirth', rawValue.personalDetails.placeOfBirth || '');
+    formData.append('PersonalDetails.PassportNo', rawValue.personalDetails.passportNo?.trim().toUpperCase() || '');
+    formData.append('PersonalDetails.DateIssued', rawValue.personalDetails.dateIssued || '');
+    formData.append('PersonalDetails.Email', rawValue.personalDetails.email?.trim().toLowerCase() || '');
+    // Extract phone number in E.164 format
+    const mobile = rawValue.personalDetails.mobile?.e164Number || rawValue.personalDetails.mobile || '';
+    formData.append('PersonalDetails.Mobile', mobile);
     
-    return {
-      personalDetails: {
-        ...rawValue.personalDetails,
-        // Extract phone number in E.164 format (e.g., +84845333577)
-        mobile: rawValue.personalDetails.mobile?.e164Number || rawValue.personalDetails.mobile,
-        // Clean and uppercase passport/ID
-        passportNo: rawValue.personalDetails.passportNo?.trim().toUpperCase(),
-        // Clean and lowercase email
-        email: rawValue.personalDetails.email?.trim().toLowerCase(),
-        gender: rawValue.personalDetails.gender === 'Male' ? 1 : 0,
-        nationalityId: rawValue.personalDetails.nationalityId,
-        nationalityName: rawValue.personalDetails.nationality,
-        // Merge correspondence address components into single field
-        correspondenceAddress: mergeAddress(
-          rawValue.personalDetails.correspondenceCityName,
-          rawValue.personalDetails.correspondenceDistrictName,
-          rawValue.personalDetails.correspondenceAddress
-        ),
-        // Merge permanent address components into single field
-        permanentAddress: mergeAddress(
-          rawValue.personalDetails.permanentCityName,
-          rawValue.personalDetails.permanentDistrictName,
-          rawValue.personalDetails.permanentAddress
-        ),
-        passportFile: rawValue.personalDetails.passportFile || undefined
-      },
-      applicationDetails: {
-        programId: this.applicationDetails.get('programId')?.value || '', // Get from disabled control
-        programName: rawValue.applicationDetails.programName,
-        programCode: rawValue.applicationDetails.programCode,
-        track: 0, // Always Application
-        admissionYear: parseInt(rawValue.applicationDetails.admissionYear) || 0,
-        admissionIntake: '1' // Always 1, hardcoded
-      },
-      educationDetails: {
-        undergraduates: rawValue.educationDetails.undergraduates
-          .filter((ug: any) => ug.university) // Only include if university is filled
-          .map((ug: any) => ({
-            university: ug.university,
-            countryId: ug.countryId,
-            countryName: ug.country,
-            major: ug.major,
-            graduationYear: parseInt(ug.graduationYear) || 0,
-            languageId: ug.languageId,
-            languageName: ug.language,
-            file: ug.file || undefined
-          })),
-        postgraduates: rawValue.educationDetails.postgraduates
-          .filter((pg: any) => pg.university) // Only include if university is filled
-          .map((pg: any) => ({
-            university: pg.university,
-            countryId: pg.countryId,
-            countryName: pg.country,
-            major: pg.major,
-            graduationYear: parseInt(pg.graduationYear) || 0,
-            thesisTitle: pg.thesisTitle,
-            languageId: pg.languageId,
-            languageName: pg.language,
-            file: pg.file || undefined
-          }))
-      },
-      englishQualifications: {
-        ielts: rawValue.englishQualifications.ielts.score ? {
-          name: 'IELTS',
-          score: rawValue.englishQualifications.ielts.score,
-          date: rawValue.englishQualifications.ielts.date
-        } : undefined,
-        toefl: rawValue.englishQualifications.toefl.score ? {
-          name: 'TOEFL',
-          score: rawValue.englishQualifications.toefl.score,
-          date: rawValue.englishQualifications.toefl.date
-        } : undefined,
-        other: rawValue.englishQualifications.other.name ? {
-          name: rawValue.englishQualifications.other.name,
-          score: rawValue.englishQualifications.other.score,
-          date: rawValue.englishQualifications.other.date
-        } : undefined
-      },
-      employmentHistory: {
-        position1: rawValue.employmentHistory.position1.organization ? {
-          organizationName: rawValue.employmentHistory.position1.organization,
-          jobTitle: rawValue.employmentHistory.position1.title,
-          fromDate: rawValue.employmentHistory.position1.from,
-          toDate: rawValue.employmentHistory.position1.to,
-          address: rawValue.employmentHistory.position1.address
-        } : undefined,
-        position2: rawValue.employmentHistory.position2.organization ? {
-          organizationName: rawValue.employmentHistory.position2.organization,
-          jobTitle: rawValue.employmentHistory.position2.title,
-          fromDate: rawValue.employmentHistory.position2.from,
-          toDate: rawValue.employmentHistory.position2.to,
-          address: rawValue.employmentHistory.position2.address
-        } : undefined
-      },
-      declaration: rawValue.declaration
-    };
-  }
-
-  closeDialog(): void {
-    this.showDialog.set(false);
+    // Optional fields - only append if has value
+    if (rawValue.personalDetails.jobTitle) {
+      formData.append('PersonalDetails.JobTitle', rawValue.personalDetails.jobTitle);
+    }
+    if (rawValue.personalDetails.organization) {
+      formData.append('PersonalDetails.Organization', rawValue.personalDetails.organization);
+    }
+    
+    // City IDs - get from ward selection (ward.id is integer)
+    if (rawValue.personalDetails.correspondenceDistrictId) {
+      const correspondenceWard = this.correspondenceWards().find(w => w.wardCode === rawValue.personalDetails.correspondenceDistrictId);
+      if (correspondenceWard?.id) {
+        formData.append('PersonalDetails.CorrespondenceCityId', correspondenceWard.id.toString());
+      }
+    }
+    if (rawValue.personalDetails.correspondenceAddress) {
+      formData.append('PersonalDetails.CorrespondenceAddress', rawValue.personalDetails.correspondenceAddress);
+    }
+    
+    if (rawValue.personalDetails.permanentDistrictId) {
+      const permanentWard = this.permanentWards().find(w => w.wardCode === rawValue.personalDetails.permanentDistrictId);
+      if (permanentWard?.id) {
+        formData.append('PersonalDetails.PermanentCityId', permanentWard.id.toString());
+      }
+    }
+    if (rawValue.personalDetails.permanentAddress) {
+      formData.append('PersonalDetails.PermanentAddress', rawValue.personalDetails.permanentAddress);
+    }
+    
+    // Passport files
+    const passportFiles = rawValue.personalDetails.passportFile || [];
+    if (Array.isArray(passportFiles)) {
+      passportFiles.forEach((file: File) => {
+        formData.append('PersonalDetails.Files', file);
+      });
+    }
+    
+    // ========== APPLICATION DETAILS ==========
+    formData.append('ApplicationDetails.ProgramId', this.applicationDetails.get('programId')?.value || '');
+    formData.append('ApplicationDetails.Track', '0'); // 0=Application
+    formData.append('ApplicationDetails.AdmissionYear', rawValue.applicationDetails.admissionYear?.toString() || '');
+    formData.append('ApplicationDetails.AdmissionIntake', rawValue.applicationDetails.admissionIntake || '');
+    
+    // ========== EDUCATION DETAILS ==========
+    // Undergraduates
+    const undergraduates = rawValue.educationDetails.undergraduates.filter((ug: any) => ug.university);
+    undergraduates.forEach((ug: any, index: number) => {
+      formData.append(`EducationDetails.Undergraduates[${index}].University`, ug.university || '');
+      formData.append(`EducationDetails.Undergraduates[${index}].CountryId`, ug.countryId || '');
+      formData.append(`EducationDetails.Undergraduates[${index}].Major`, ug.major || '');
+      formData.append(`EducationDetails.Undergraduates[${index}].GraduationYear`, ug.graduationYear?.toString() || '');
+      formData.append(`EducationDetails.Undergraduates[${index}].LanguageId`, ug.languageId || '');
+      formData.append(`EducationDetails.Undergraduates[${index}].SortOrder`, index.toString());
+      
+      // Files for this degree
+      const files = ug.file || [];
+      if (Array.isArray(files)) {
+        files.forEach((file: File) => {
+          formData.append(`EducationDetails.Undergraduates[${index}].Files`, file);
+        });
+      }
+    });
+    
+    // Postgraduates
+    const postgraduates = rawValue.educationDetails.postgraduates.filter((pg: any) => pg.university);
+    postgraduates.forEach((pg: any, index: number) => {
+      formData.append(`EducationDetails.Postgraduates[${index}].University`, pg.university || '');
+      formData.append(`EducationDetails.Postgraduates[${index}].CountryId`, pg.countryId || '');
+      formData.append(`EducationDetails.Postgraduates[${index}].Major`, pg.major || '');
+      formData.append(`EducationDetails.Postgraduates[${index}].GraduationYear`, pg.graduationYear?.toString() || '');
+      formData.append(`EducationDetails.Postgraduates[${index}].LanguageId`, pg.languageId || '');
+      if (pg.thesisTitle) {
+        formData.append(`EducationDetails.Postgraduates[${index}].ThesisTitle`, pg.thesisTitle);
+      }
+      formData.append(`EducationDetails.Postgraduates[${index}].SortOrder`, index.toString());
+      
+      // Files for this degree
+      const files = pg.file || [];
+      if (Array.isArray(files)) {
+        files.forEach((file: File) => {
+          formData.append(`EducationDetails.Postgraduates[${index}].Files`, file);
+        });
+      }
+    });
+    
+    // ========== ENGLISH QUALIFICATIONS ==========
+    // IELTS
+    if (rawValue.englishQualifications.ielts.score) {
+      formData.append('EnglishQualifications.Ielts.Score', rawValue.englishQualifications.ielts.score);
+      if (rawValue.englishQualifications.ielts.date) {
+        formData.append('EnglishQualifications.Ielts.Date', rawValue.englishQualifications.ielts.date);
+      }
+    }
+    
+    // TOEFL
+    if (rawValue.englishQualifications.toefl.score) {
+      formData.append('EnglishQualifications.Toefl.Score', rawValue.englishQualifications.toefl.score);
+      if (rawValue.englishQualifications.toefl.date) {
+        formData.append('EnglishQualifications.Toefl.Date', rawValue.englishQualifications.toefl.date);
+      }
+    }
+    
+    // Other
+    if (rawValue.englishQualifications.other.name) {
+      formData.append('EnglishQualifications.Other.Name', rawValue.englishQualifications.other.name);
+      formData.append('EnglishQualifications.Other.Score', rawValue.englishQualifications.other.score || '');
+      if (rawValue.englishQualifications.other.date) {
+        formData.append('EnglishQualifications.Other.Date', rawValue.englishQualifications.other.date);
+      }
+    }
+    
+    // English certificate files (shared for all qualifications)
+    const englishFiles = rawValue.englishQualifications.certificateFile || [];
+    if (Array.isArray(englishFiles)) {
+      englishFiles.forEach((file: File) => {
+        formData.append('EnglishQualifications.Files', file);
+      });
+    }
+    
+    // ========== EMPLOYMENT HISTORY ==========
+    // Position 1
+    if (rawValue.employmentHistory.position1.organization) {
+      formData.append('EmploymentHistory.Position1.OrganizationName', rawValue.employmentHistory.position1.organization);
+      formData.append('EmploymentHistory.Position1.JobTitle', rawValue.employmentHistory.position1.title || '');
+      formData.append('EmploymentHistory.Position1.FromDate', rawValue.employmentHistory.position1.from || '');
+      if (rawValue.employmentHistory.position1.to) {
+        formData.append('EmploymentHistory.Position1.ToDate', rawValue.employmentHistory.position1.to);
+      }
+      if (rawValue.employmentHistory.position1.address) {
+        formData.append('EmploymentHistory.Position1.Address', rawValue.employmentHistory.position1.address);
+      }
+    }
+    
+    // Position 2
+    if (rawValue.employmentHistory.position2.organization) {
+      formData.append('EmploymentHistory.Position2.OrganizationName', rawValue.employmentHistory.position2.organization);
+      formData.append('EmploymentHistory.Position2.JobTitle', rawValue.employmentHistory.position2.title || '');
+      formData.append('EmploymentHistory.Position2.FromDate', rawValue.employmentHistory.position2.from || '');
+      if (rawValue.employmentHistory.position2.to) {
+        formData.append('EmploymentHistory.Position2.ToDate', rawValue.employmentHistory.position2.to);
+      }
+      if (rawValue.employmentHistory.position2.address) {
+        formData.append('EmploymentHistory.Position2.Address', rawValue.employmentHistory.position2.address);
+      }
+    }
+    
+    // ========== DECLARATION ==========
+    formData.append('Declaration.agreed', rawValue.declaration.agreed.toString());
+    if (rawValue.declaration.agreed) {
+      formData.append('Declaration.AcceptedDate', new Date().toISOString().split('T')[0]);
+    }
+    
+    return formData;
   }
 
   /**
@@ -357,7 +421,7 @@ export class AppComponent {
     const cursorPosition = input.selectionStart || 0;
     const oldLength = input.value.length;
     
-    // Chuyển thành chữ hoa, loại bỏ ký tự đặc biệt
+    // Convert to uppercase, remove special characters
     input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     
     // Restore cursor position
@@ -374,7 +438,7 @@ export class AppComponent {
    */
   formatEmailInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    // Tự động lowercase và loại bỏ spaces
+    // Auto lowercase and remove spaces
     input.value = input.value.toLowerCase().replace(/\s/g, '');
     
     // Update form control value
@@ -391,8 +455,8 @@ export class AppComponent {
     // Load countries
     this.loadCountries();
     
-    // Load cities
-    this.loadCities();
+    // Load provinces (cities)
+    this.loadProvinces();
     
     // Setup conditional validation for IELTS
     this.setupConditionalValidation('ielts');
@@ -425,7 +489,7 @@ export class AppComponent {
   }
 
   /**
-   * Load danh sách programs từ API
+   * Load list of programs from API
    */
   private loadPrograms(): void {
     this._mbaService.getActivePrograms().subscribe({
@@ -450,7 +514,7 @@ export class AppComponent {
   }
 
   /**
-   * Load danh sách languages từ API
+   * Load list of languages from API
    */
   private loadLanguages(): void {
     this._mbaService.getActiveLanguages().subscribe({
@@ -464,7 +528,7 @@ export class AppComponent {
   }
 
   /**
-   * Load danh sách countries từ API
+   * Load list of countries from API
    */
   private loadCountries(): void {
     this._mbaService.getActiveCountries().subscribe({
@@ -478,21 +542,21 @@ export class AppComponent {
   }
 
   /**
-   * Load danh sách cities từ API
+   * Load list of provinces from API
    */
-  private loadCities(): void {
-    this._mbaService.getAllCities().subscribe({
-      next: (cities) => {
-        this.cities.set(cities);
+  private loadProvinces(): void {
+    this._mbaService.getProvinces().subscribe({
+      next: (provinces) => {
+        this.provinces.set(provinces);
       },
       error: (err) => {
-        console.error('Error loading cities:', err);
+        console.error('Error loading provinces:', err);
       }
     });
   }
 
   /**
-   * Handle khi user chọn program từ dropdown
+   * Handle when user selects program from dropdown
    */
   onProgramChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
@@ -515,7 +579,7 @@ export class AppComponent {
   }
 
   /**
-   * Handle khi user chọn nationality từ dropdown
+   * Handle when user selects nationality from dropdown
    */
   onNationalityChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
@@ -544,7 +608,7 @@ export class AppComponent {
   }
 
   /**
-   * Handle khi user chọn country từ dropdown (education)
+   * Handle when user selects country from dropdown (education)
    */
   onCountryChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
     const selectElement = event.target as HTMLSelectElement;
@@ -575,62 +639,62 @@ export class AppComponent {
   }
 
   /**
-   * Handle khi user chọn correspondence city từ dropdown
+   * Handle when user selects correspondence province from dropdown
    */
   onCorrespondenceCityChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
-    const cityCode = selectElement.value;
+    const provinceCode = selectElement.value;
     
-    if (cityCode) {
-      const selectedCity = this.cities().find(c => c.cityCode === cityCode);
-      if (selectedCity) {
+    if (provinceCode) {
+      const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
+      if (selectedProvince) {
         this.personalDetails.patchValue({
-          correspondenceCityName: selectedCity.cityName
+          correspondenceCityName: selectedProvince.provinceName
         });
       }
       
-      // Enable district dropdown
+      // Enable ward dropdown
       this.personalDetails.get('correspondenceDistrictId')?.enable();
       
-      // Load districts for selected city
-      this._mbaService.getDistrictsByCity(cityCode).subscribe({
-        next: (districts) => {
-          this.correspondenceDistricts.set(districts);
-          // Reset district selection
+      // Load wards for selected province
+      this._mbaService.getWardsByProvinceCode(provinceCode).subscribe({
+        next: (wards) => {
+          this.correspondenceWards.set(wards);
+          // Reset ward selection
           this.personalDetails.patchValue({
             correspondenceDistrictId: '',
             correspondenceDistrictName: ''
           });
         },
         error: (err) => {
-          console.error('Error loading correspondence districts:', err);
-          this.correspondenceDistricts.set([]);
+          console.error('Error loading correspondence wards:', err);
+          this.correspondenceWards.set([]);
         }
       });
     } else {
-      // Disable district dropdown when no city selected
+      // Disable ward dropdown when no province selected
       this.personalDetails.get('correspondenceDistrictId')?.disable();
       this.personalDetails.patchValue({
         correspondenceCityName: '',
         correspondenceDistrictId: '',
         correspondenceDistrictName: ''
       });
-      this.correspondenceDistricts.set([]);
+      this.correspondenceWards.set([]);
     }
   }
 
   /**
-   * Handle khi user chọn correspondence district từ dropdown
+   * Handle when user selects correspondence ward from dropdown
    */
   onCorrespondenceDistrictChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
-    const distinctCode = selectElement.value;
+    const wardCode = selectElement.value;
     
-    if (distinctCode) {
-      const selectedDistrict = this.correspondenceDistricts().find(d => d.distinctCode === distinctCode);
-      if (selectedDistrict) {
+    if (wardCode) {
+      const selectedWard = this.correspondenceWards().find(w => w.wardCode === wardCode);
+      if (selectedWard) {
         this.personalDetails.patchValue({
-          correspondenceDistrictName: selectedDistrict.distinctName
+          correspondenceDistrictName: selectedWard.wardName
         });
       }
     } else {
@@ -641,62 +705,62 @@ export class AppComponent {
   }
 
   /**
-   * Handle khi user chọn permanent city từ dropdown
+   * Handle when user selects permanent province from dropdown
    */
   onPermanentCityChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
-    const cityCode = selectElement.value;
+    const provinceCode = selectElement.value;
     
-    if (cityCode) {
-      const selectedCity = this.cities().find(c => c.cityCode === cityCode);
-      if (selectedCity) {
+    if (provinceCode) {
+      const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
+      if (selectedProvince) {
         this.personalDetails.patchValue({
-          permanentCityName: selectedCity.cityName
+          permanentCityName: selectedProvince.provinceName
         });
       }
       
-      // Enable district dropdown
+      // Enable ward dropdown
       this.personalDetails.get('permanentDistrictId')?.enable();
       
-      // Load districts for selected city
-      this._mbaService.getDistrictsByCity(cityCode).subscribe({
-        next: (districts) => {
-          this.permanentDistricts.set(districts);
-          // Reset district selection
+      // Load wards for selected province
+      this._mbaService.getWardsByProvinceCode(provinceCode).subscribe({
+        next: (wards) => {
+          this.permanentWards.set(wards);
+          // Reset ward selection
           this.personalDetails.patchValue({
             permanentDistrictId: '',
             permanentDistrictName: ''
           });
         },
         error: (err) => {
-          console.error('Error loading permanent districts:', err);
-          this.permanentDistricts.set([]);
+          console.error('Error loading permanent wards:', err);
+          this.permanentWards.set([]);
         }
       });
     } else {
-      // Disable district dropdown when no city selected
+      // Disable ward dropdown when no province selected
       this.personalDetails.get('permanentDistrictId')?.disable();
       this.personalDetails.patchValue({
         permanentCityName: '',
         permanentDistrictId: '',
         permanentDistrictName: ''
       });
-      this.permanentDistricts.set([]);
+      this.permanentWards.set([]);
     }
   }
 
   /**
-   * Handle khi user chọn permanent district từ dropdown
+   * Handle when user selects permanent ward from dropdown
    */
   onPermanentDistrictChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
-    const distinctCode = selectElement.value;
+    const wardCode = selectElement.value;
     
-    if (distinctCode) {
-      const selectedDistrict = this.permanentDistricts().find(d => d.distinctCode === distinctCode);
-      if (selectedDistrict) {
+    if (wardCode) {
+      const selectedWard = this.permanentWards().find(w => w.wardCode === wardCode);
+      if (selectedWard) {
         this.personalDetails.patchValue({
-          permanentDistrictName: selectedDistrict.distinctName
+          permanentDistrictName: selectedWard.wardName
         });
       }
     } else {
@@ -787,7 +851,11 @@ export class AppComponent {
       countryId: ['', Validators.required],
       country: [''],
       major: ['', Validators.required],
-      graduationYear: ['', [Validators.required, maxYearValidator(new Date().getFullYear())]],
+      graduationYear: ['', [
+        Validators.required, 
+        minYearValidator(1950),
+        maxYearValidator(new Date().getFullYear())
+      ]],
       languageId: ['', Validators.required],
       language: [''],
       file: [null],
@@ -803,7 +871,10 @@ export class AppComponent {
       countryId: [''],
       country: [''],
       major: [''],
-      graduationYear: ['', [maxYearValidator(new Date().getFullYear())]],
+      graduationYear: ['', [
+        minYearValidator(1950),
+        maxYearValidator(new Date().getFullYear())
+      ]],
       languageId: [''],
       language: [''],
       file: [null],
@@ -819,7 +890,10 @@ export class AppComponent {
       countryId: [''],
       country: [''],
       major: [''],
-      graduationYear: [''],
+      graduationYear: ['', [
+        minYearValidator(1950),
+        maxYearValidator(new Date().getFullYear())
+      ]],
       thesisTitle: [''],
       languageId: [''],
       language: [''],
@@ -996,7 +1070,7 @@ export class AppComponent {
   }
 
   /**
-   * Handle khi user chọn language từ dropdown (undergraduate)
+   * Handle when user selects language from dropdown (undergraduate)
    */
   onLanguageChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
     const selectElement = event.target as HTMLSelectElement;

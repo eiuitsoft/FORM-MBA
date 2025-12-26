@@ -1,0 +1,164 @@
+<app-page-layout>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8 flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">
+          MBA Application {{ isEditMode() ? '- Edit Mode' : 'Details' }}
+        </h1>
+        <p class="mt-2 text-sm text-gray-600">
+          Application ID: {{ applicationId() }}
+        </p>
+      </div>
+      <div class="flex gap-3">
+        <button
+          *ngIf="!isEditMode()"
+          (click)="toggleEditMode()"
+          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#a68557] hover:bg-[#8b6d47]"
+        >
+          Edit Application
+        </button>
+        <button
+          *ngIf="isEditMode()"
+          (click)="cancelEdit()"
+          class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          *ngIf="isEditMode()"
+          (click)="saveChanges()"
+          [disabled]="saving()"
+          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400"
+        >
+          {{ saving() ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#a68557]"></div>
+      <p class="mt-4 text-gray-600">Loading application data...</p>
+    </div>
+
+    <!-- View Mode -->
+    <div *ngIf="!loading() && !isEditMode() && applicationData()" class="space-y-6">
+      <!-- Personal Details -->
+      <app-personal-details-view 
+        [data]="applicationData()?.personalDetails"
+        [uploadedFiles]="uploadedFiles()"
+        (onFilesUpdate)="onViewFilesUpdate($event)" />
+
+      <!-- Application Details -->
+      <app-application-details-view [data]="applicationData()?.applicationDetails" />
+
+      <!-- Education Details -->
+      <app-education-details-view 
+        [data]="applicationData()?.educationDetails"
+        [undergraduateFiles]="undergraduateFiles()"
+        [postgraduateFiles]="postgraduateFiles()"
+        (onFilesUpdate)="onEducationFilesUpdate($event)" />
+
+      <!-- English Qualifications -->
+      <app-english-qualifications-view 
+        [data]="applicationData()?.englishQualifications"
+        [englishFiles]="englishFiles()"
+        (onFilesUpdate)="onEnglishFilesUpdate($event)" />
+
+      <!-- Employment History -->
+      <app-employment-history-view [data]="applicationData()?.employmentHistory" />
+
+      <!-- Declaration -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Declaration</h2>
+        <div class="flex items-center">
+          <svg class="h-5 w-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-gray-700">Applicant has agreed to the terms and conditions</span>
+        </div>
+      </div>
+
+      <!-- Application Timeline -->
+      <div class="bg-gray-50 shadow rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Application Timeline</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Created</p>
+            <p class="mt-1 text-sm text-gray-900">{{ formatDateTime(applicationData()?.createdTime) }}</p>
+          </div>
+          <div *ngIf="applicationData()?.updatedTime">
+            <p class="text-sm font-medium text-gray-500">Last Updated</p>
+            <p class="mt-1 text-sm text-gray-900">{{ formatDateTime(applicationData()?.updatedTime) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <form *ngIf="!loading() && isEditMode() && editForm" [formGroup]="editForm" class="space-y-6">
+      <!-- Personal Details Edit -->
+      <app-personal-details-edit 
+        [formGroup]="personalDetailsForm" 
+        [countries]="countries()"
+        [provinces]="provinces()"
+        [correspondenceWards]="correspondenceWards()"
+        [permanentWards]="permanentWards()"
+        [uploadedFiles]="uploadedFiles()"
+        [onFileChange]="onPassportFileChange.bind(this)"
+        [onRemoveFile]="removePassportFile.bind(this)"
+        (onCorrespondenceProvinceChange)="onCorrespondenceProvinceChange($event)"
+        (onCorrespondenceWardChange)="onCorrespondenceWardChange($event)"
+        (onPermanentProvinceChange)="onPermanentProvinceChange($event)"
+        (onPermanentWardChange)="onPermanentWardChange($event)" />
+      
+      <!-- Application Details (Read-only in edit mode) -->
+      <app-application-details-view [data]="applicationData()?.applicationDetails" />
+      
+      <!-- Education Details Edit -->
+      <app-education-details-edit 
+        [formGroup]="educationDetailsForm"
+        [countries]="countries()"
+        [languages]="languages()"
+        [undergraduateFiles]="undergraduateFiles()"
+        [postgraduateFiles]="postgraduateFiles()"
+        [onAddUndergraduate]="addUndergraduate.bind(this)"
+        [onRemoveUndergraduate]="removeUndergraduate.bind(this)"
+        [onAddPostgraduate]="addPostgraduate.bind(this)"
+        [onRemovePostgraduate]="removePostgraduate.bind(this)"
+        [onDegreeFileChange]="onDegreeFileChange.bind(this)"
+        [onRemoveDegreeFile]="removeDegreeFile.bind(this)" />
+      
+      <!-- English Qualifications Edit -->
+      <app-english-qualifications-edit 
+        [formGroup]="englishQualificationsForm"
+        [englishFiles]="englishFiles()"
+        [onEnglishFileChange]="onEnglishFileChange.bind(this)"
+        [onRemoveEnglishFile]="removeEnglishFile.bind(this)" />
+      
+      <!-- Employment History Edit -->
+      <app-employment-history-edit 
+        [formGroup]="employmentHistoryForm" />
+      
+      <!-- Bottom Action Buttons -->
+      <div class="flex justify-end gap-3 pt-6 pr-8 border-t border-gray-200 sticky bottom-0 bg-white py-4 shadow-lg">
+        <button
+          type="button"
+          (click)="cancelEdit()"
+          class="px-6 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          (click)="saveChanges()"
+          [disabled]="saving()"
+          class="px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+        >
+          {{ saving() ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</app-page-layout>
