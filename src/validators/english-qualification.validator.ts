@@ -1,8 +1,8 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 /**
- * Validator để check ít nhất 1 trong các English qualifications phải được điền
- * (IELTS hoặc TOEFL hoặc Other)
+ * Validator to check at least 1 of the English qualifications must be filled
+ * (IELTS or TOEFL or Other)
  */
 export function atLeastOneEnglishQualificationValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {

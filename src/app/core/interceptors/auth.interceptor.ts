@@ -29,17 +29,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = error.error.message;
       } else if (error.status === 0) {
         // Network error
-        errorMessage = 'Không thể kết nối với server. Vui lòng kiểm tra kết nối mạng.';
+        errorMessage = 'Unable to connect to server. Please check your network connection.';
       } else if (error.status === 401) {
         // Unauthorized - redirect to login
         router.navigate(['/login']);
-        errorMessage = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+        errorMessage = 'Session expired. Please login again.';
       } else if (error.status === 400) {
         // Bad request
-        errorMessage = error.error?.message || 'Yêu cầu không hợp lệ.';
+        errorMessage = error.error?.message || 'Invalid request.';
       } else {
         // Server-side error
-        errorMessage = error.message || 'Đã có lỗi xảy ra từ hệ thống.';
+        errorMessage = error.message || 'A system error has occurred.';
       }
 
       console.error('HTTP Error:', {

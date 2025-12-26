@@ -206,13 +206,41 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         </div>
 
         <!-- Organization -->
-        <div>
+        <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700">Organization <span class="text-red-600">*</span></label>
           <input type="text" formControlName="organization" 
                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           @if (formGroup.get('organization')?.hasError('required') && formGroup.get('organization')?.touched) {
             <p class="text-red-600 text-sm mt-1">Organization is required</p>
           }
+        </div>
+
+        <!-- Correspondence City & District -->
+        <div class="md:col-span-2">
+          <div class="grid grid-cols-2 gap-x-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Correspondence City</label>
+              <select formControlName="correspondenceCityId"
+                      (change)="onCorrespondenceProvinceChange.emit($event)"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                <option value="">-- Select city --</option>
+                @for (province of provinces; track province.provinceCode) {
+                  <option [value]="province.provinceCode">{{ province.provinceName }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Correspondence District</label>
+              <select formControlName="correspondenceDistrictId"
+                      (change)="onCorrespondenceWardChange.emit($event)"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                <option value="">-- Select district --</option>
+                @for (ward of correspondenceWards; track ward.wardCode) {
+                  <option [value]="ward.wardCode">{{ ward.wardName }}</option>
+                }
+              </select>
+            </div>
+          </div>
         </div>
 
         <!-- Correspondence Address -->
@@ -223,6 +251,34 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           @if (formGroup.get('correspondenceAddress')?.hasError('required') && formGroup.get('correspondenceAddress')?.touched) {
             <p class="text-red-600 text-sm mt-1">Correspondence Address is required</p>
           }
+        </div>
+
+        <!-- Permanent City & District -->
+        <div class="md:col-span-2">
+          <div class="grid grid-cols-2 gap-x-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Permanent City</label>
+              <select formControlName="permanentCityId"
+                      (change)="onPermanentProvinceChange.emit($event)"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                <option value="">-- Select city --</option>
+                @for (province of provinces; track province.provinceCode) {
+                  <option [value]="province.provinceCode">{{ province.provinceName }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Permanent District</label>
+              <select formControlName="permanentDistrictId"
+                      (change)="onPermanentWardChange.emit($event)"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                <option value="">-- Select district --</option>
+                @for (ward of permanentWards; track ward.wardCode) {
+                  <option [value]="ward.wardCode">{{ ward.wardName }}</option>
+                }
+              </select>
+            </div>
+          </div>
         </div>
 
         <!-- Permanent Address -->
@@ -255,7 +311,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
     <!-- File Manager Dialog -->
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
-      [title]="'Quản lý tệp ID/Passport'"
+      [title]="'Manage ID/Passport Files'"
+      [fileCategoryId]="1"
       [(files)]="uploadedFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>
@@ -264,11 +321,18 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
 export class PersonalDetailsEditComponent {
   @Input() formGroup!: FormGroup;
   @Input() countries: any[] = [];
+  @Input() provinces: any[] = [];
+  @Input() correspondenceWards: any[] = [];
+  @Input() permanentWards: any[] = [];
   @Input() uploadedFiles: any[] = [];
   @Input() onFileChange!: (event: any) => void;
   @Input() onRemoveFile!: (index: number) => void;
   @Output() onPassportChange = new EventEmitter<string>();
   @Output() onMobileChange = new EventEmitter<any>();
+  @Output() onCorrespondenceProvinceChange = new EventEmitter<Event>();
+  @Output() onCorrespondenceWardChange = new EventEmitter<Event>();
+  @Output() onPermanentProvinceChange = new EventEmitter<Event>();
+  @Output() onPermanentWardChange = new EventEmitter<Event>();
 
   isFileManagerOpen = false;
 

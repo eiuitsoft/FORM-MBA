@@ -64,6 +64,11 @@ export class ApplicationDetailComponent implements OnInit {
   // Dropdown data
   countries = signal<any[]>([]);
   languages = signal<any[]>([]);
+  provinces = signal<any[]>([]);
+  correspondenceWards = signal<any[]>([]);
+  permanentWards = signal<any[]>([]);
+  correspondenceWardInfo = signal<any>(null);
+  permanentWardInfo = signal<any>(null);
   
   // Edit form
   editForm!: FormGroup;
@@ -83,11 +88,141 @@ export class ApplicationDetailComponent implements OnInit {
   private loadApplicationData(id: string): void {
     this.loading.set(true);
 
+    // TEMPORARY: Mock data for development when BE is not available
+    if (id === 'mock' || id === 'test') {
+      const mockData = {
+        id: 'mock-id-123',
+        personalDetails: {
+          id: 'pd-1',
+          fullName: 'John Doe',
+          nationalityId: '11111111-1111-1111-1111-111111111111',
+          nationalityName: 'Vietnam',
+          gender: 1,
+          dateOfBirth: '1990-01-01',
+          placeOfBirth: 'Hanoi',
+          passportNo: 'A1234567',
+          dateIssued: '2020-01-01',
+          email: 'john.doe@example.com',
+          mobile: '+84123456789',
+          jobTitle: 'Software Engineer',
+          organization: 'Tech Company',
+          correspondenceCityId: '79',
+          correspondenceCityName: 'Thành phố Hồ Chí Minh',
+          correspondenceDistrictId: '',
+          correspondenceDistrictName: '',
+          correspondenceAddress: '123 Main St',
+          permanentCityId: '79',
+          permanentCityName: 'Thành phố Hồ Chí Minh',
+          permanentDistrictId: '',
+          permanentDistrictName: '',
+          permanentAddress: '123 Main St',
+          uploadedFiles: []
+        },
+        applicationDetails: {
+          programId: '99999999-9999-9999-9999-999999999999',
+          programName: 'Master of Business Administration',
+          programCode: 'MBA',
+          track: 0,
+          admissionYear: 2025,
+          admissionIntake: 'Fall'
+        },
+        educationDetails: {
+          undergraduates: [{
+            id: 'ug-1',
+            university: 'Test University',
+            countryId: '11111111-1111-1111-1111-111111111111',
+            countryName: 'Vietnam',
+            major: 'Computer Science',
+            graduationYear: 2015,
+            languageId: 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA',
+            languageName: 'English',
+            thesisTitle: '',
+            uploadedFiles: []
+          }],
+          postgraduates: []
+        },
+        englishQualifications: {
+          ielts: {
+            id: 'ielts-1',
+            name: 'IELTS',
+            score: '7.5',
+            date: '2023-01-01',
+            uploadedFiles: []
+          },
+          toefl: null,
+          other: null
+        },
+        employmentHistory: {
+          position1: {
+            id: 'emp-1',
+            organizationName: 'Tech Company',
+            jobTitle: 'Software Engineer',
+            fromDate: '2020-01-01',
+            toDate: '2024-12-31',
+            address: '123 Tech St'
+          },
+          position2: null
+        },
+        declaration: {
+          agreed: true
+        }
+      };
+      
+      this.applicationData.set(mockData);
+      this.uploadedFiles.set([]);
+      this.loading.set(false);
+      return;
+    }
+
     this._mbaService.getById(id).subscribe({
       next: (data) => {
-        this.applicationData.set(data);
-        this.uploadedFiles.set(data.personalDetails?.uploadedFiles || []);
-        this.loading.set(false);
+        // Load ward info for correspondence and permanent cities
+        const loadPromises: Promise<void>[] = [];
+        
+        // Load correspondence ward info
+        if (data.personalDetails?.correspondenceCityId) {
+          const promise = new Promise<void>((resolve) => {
+            this._mbaService.getWardById(data.personalDetails.correspondenceCityId).subscribe({
+              next: (ward) => {
+                // Update data with ward info
+                data.personalDetails.correspondenceCityName = ward.provinceName;
+                data.personalDetails.correspondenceDistrictName = ward.wardName;
+                resolve();
+              },
+              error: (err) => {
+                console.error('Error loading correspondence ward:', err);
+                resolve();
+              }
+            });
+          });
+          loadPromises.push(promise);
+        }
+        
+        // Load permanent ward info
+        if (data.personalDetails?.permanentCityId) {
+          const promise = new Promise<void>((resolve) => {
+            this._mbaService.getWardById(data.personalDetails.permanentCityId).subscribe({
+              next: (ward) => {
+                // Update data with ward info
+                data.personalDetails.permanentCityName = ward.provinceName;
+                data.personalDetails.permanentDistrictName = ward.wardName;
+                resolve();
+              },
+              error: (err) => {
+                console.error('Error loading permanent ward:', err);
+                resolve();
+              }
+            });
+          });
+          loadPromises.push(promise);
+        }
+        
+        // Wait for all ward info to load, then set data
+        Promise.all(loadPromises).then(() => {
+          this.applicationData.set(data);
+          this.uploadedFiles.set(data.personalDetails?.uploadedFiles || []);
+          this.loading.set(false);
+        });
       },
       error: (err) => {
         console.error('Error loading application:', err);
@@ -107,6 +242,11 @@ export class ApplicationDetailComponent implements OnInit {
     this._mbaService.getActiveLanguages().subscribe({
       next: (languages) => this.languages.set(languages),
       error: (err) => console.error('Error loading languages:', err)
+    });
+
+    this._mbaService.getProvinces().subscribe({
+      next: (provinces) => this.provinces.set(provinces),
+      error: (err) => console.error('Error loading provinces:', err)
     });
   }
 
@@ -140,6 +280,54 @@ export class ApplicationDetailComponent implements OnInit {
     ];
     this.englishFiles.set(allEnglishFiles);
     
+    // Load ward info and wards list for correspondence city
+    if (data?.personalDetails?.correspondenceCityId) {
+      this._mbaService.getWardById(data.personalDetails.correspondenceCityId).subscribe({
+        next: (ward) => {
+          this.correspondenceWardInfo.set(ward);
+          // Update form with province and ward codes
+          if (this.editForm) {
+            this.personalDetailsForm.patchValue({
+              correspondenceCityId: ward.provinceCode,
+              correspondenceCityName: ward.provinceName,
+              correspondenceDistrictId: ward.wardCode,
+              correspondenceDistrictName: ward.wardName
+            });
+          }
+          // Load wards for this province
+          this._mbaService.getWardsByProvinceCode(ward.provinceCode).subscribe({
+            next: (wards) => this.correspondenceWards.set(wards),
+            error: (err) => console.error('Error loading correspondence wards:', err)
+          });
+        },
+        error: (err) => console.error('Error loading correspondence ward info:', err)
+      });
+    }
+    
+    // Load ward info and wards list for permanent city
+    if (data?.personalDetails?.permanentCityId) {
+      this._mbaService.getWardById(data.personalDetails.permanentCityId).subscribe({
+        next: (ward) => {
+          this.permanentWardInfo.set(ward);
+          // Update form with province and ward codes
+          if (this.editForm) {
+            this.personalDetailsForm.patchValue({
+              permanentCityId: ward.provinceCode,
+              permanentCityName: ward.provinceName,
+              permanentDistrictId: ward.wardCode,
+              permanentDistrictName: ward.wardName
+            });
+          }
+          // Load wards for this province
+          this._mbaService.getWardsByProvinceCode(ward.provinceCode).subscribe({
+            next: (wards) => this.permanentWards.set(wards),
+            error: (err) => console.error('Error loading permanent wards:', err)
+          });
+        },
+        error: (err) => console.error('Error loading permanent ward info:', err)
+      });
+    }
+    
     this.initializeEditForm();
   }
 
@@ -147,6 +335,10 @@ export class ApplicationDetailComponent implements OnInit {
     const data = this.applicationData();
     const originalPassport = data.personalDetails.passportNo;
     const originalMobile = data.personalDetails.mobile;
+    
+    // correspondenceCityId and permanentCityId are actually Ward IDs
+    // We need to get ward info to extract provinceCode and wardCode
+    // These will be populated after ward info is loaded in toggleEditMode()
     
     this.editForm = this._fb.group({
       personalDetails: this._fb.group({
@@ -191,31 +383,49 @@ export class ApplicationDetailComponent implements OnInit {
         ],
         jobTitle: [data.personalDetails.jobTitle, Validators.required],
         organization: [data.personalDetails.organization, Validators.required],
+        correspondenceCityId: [data.personalDetails.correspondenceCityId || ''],
+        correspondenceCityName: [data.personalDetails.correspondenceCityName || ''],
+        correspondenceDistrictId: [data.personalDetails.correspondenceDistrictId || ''],
+        correspondenceDistrictName: [data.personalDetails.correspondenceDistrictName || ''],
         correspondenceAddress: [data.personalDetails.correspondenceAddress, Validators.required],
+        permanentCityId: [data.personalDetails.permanentCityId || ''],
+        permanentCityName: [data.personalDetails.permanentCityName || ''],
+        permanentDistrictId: [data.personalDetails.permanentDistrictId || ''],
+        permanentDistrictName: [data.personalDetails.permanentDistrictName || ''],
         permanentAddress: [data.personalDetails.permanentAddress, Validators.required],
       }),
       educationDetails: this._fb.group({
         undergraduates: this._fb.array(
-          data.educationDetails.undergraduates.map((ug: any, index: number) => this._fb.group({
-            id: [ug.id],
-            university: [ug.university, index === 0 ? Validators.required : null],
-            countryId: [ug.countryId, index === 0 ? Validators.required : null],
-            major: [ug.major, index === 0 ? Validators.required : null],
-            graduationYear: [ug.graduationYear, index === 0 ? [Validators.required, minYearValidator(1950)] : minYearValidator(1950)],
-            languageId: [ug.languageId, index === 0 ? Validators.required : null],
-            thesisTitle: [ug.thesisTitle]
-          }))
+          data.educationDetails.undergraduates.map((ug: any, index: number) => {
+            const validators = index === 0 
+              ? [Validators.required, minYearValidator(1950)]
+              : (ug.graduationYear ? [minYearValidator(1950)] : []);
+            
+            return this._fb.group({
+              id: [ug.id],
+              university: [ug.university, index === 0 ? Validators.required : null],
+              countryId: [ug.countryId, index === 0 ? Validators.required : null],
+              major: [ug.major, index === 0 ? Validators.required : null],
+              graduationYear: [ug.graduationYear || '', validators],
+              languageId: [ug.languageId, index === 0 ? Validators.required : null],
+              thesisTitle: [ug.thesisTitle || '']
+            });
+          })
         ),
         postgraduates: this._fb.array(
-          data.educationDetails.postgraduates.map((pg: any) => this._fb.group({
-            id: [pg.id],
-            university: [pg.university],
-            countryId: [pg.countryId],
-            major: [pg.major],
-            graduationYear: [pg.graduationYear, minYearValidator(1950)],
-            languageId: [pg.languageId],
-            thesisTitle: [pg.thesisTitle]
-          }))
+          data.educationDetails.postgraduates.map((pg: any) => {
+            const validators = pg.graduationYear ? [minYearValidator(1950)] : [];
+            
+            return this._fb.group({
+              id: [pg.id],
+              university: [pg.university || ''],
+              countryId: [pg.countryId || ''],
+              major: [pg.major || ''],
+              graduationYear: [pg.graduationYear || '', validators],
+              languageId: [pg.languageId || ''],
+              thesisTitle: [pg.thesisTitle || '']
+            });
+          })
         )
       }),
       englishQualifications: this._fb.group({
@@ -263,7 +473,10 @@ export class ApplicationDetailComponent implements OnInit {
 
   saveChanges(): void {
     if (this.editForm.invalid) {
+      // Log all validation errors for debugging
+      this.logValidationErrors();
       this._alertService.error('Error', 'Please fill in all required fields');
+      this.editForm.markAllAsTouched();
       return;
     }
 
@@ -283,7 +496,7 @@ export class ApplicationDetailComponent implements OnInit {
       },
       error: (err) => {
         console.error('Update error:', err);
-        this._alertService.error('Error', 'An error occurred while updating the application');
+        this._alertService.error('Error', err.message || 'An error occurred while updating the application');
         this.saving.set(false);
       }
     });
@@ -293,50 +506,117 @@ export class ApplicationDetailComponent implements OnInit {
     const rawValue = this.editForm.getRawValue();
     const data = this.applicationData();
 
+    // Extract phone number from intl-tel-input object if needed
+    let mobileValue = rawValue.personalDetails.mobile;
+    if (typeof mobileValue === 'object' && mobileValue?.e164Number) {
+      mobileValue = mobileValue.e164Number;
+    }
+
+    // Get ward.id for correspondence and permanent cities
+    // If user changed ward, use the new ward.id, otherwise use original
+    const correspondenceCityId = this.correspondenceWardInfo()?.id || data.personalDetails.correspondenceCityId;
+    const permanentCityId = this.permanentWardInfo()?.id || data.personalDetails.permanentCityId;
+
+    // Get file URLs from uploaded files (files already uploaded via file manager dialog)
+    const personalFiles = this.uploadedFiles().map((f: any) => f.fileUrl || f.fileName);
+    const englishFiles = this.englishFiles().map((f: any) => f.fileUrl || f.fileName);
+
     return {
       id: this.applicationId(),
       personalDetails: {
         id: data.personalDetails.id,
-        ...rawValue.personalDetails,
+        fullName: rawValue.personalDetails.fullName,
+        nationalityId: rawValue.personalDetails.nationalityId,
         nationalityName: this.countries().find(c => c.id === rawValue.personalDetails.nationalityId)?.name || '',
-        uploadedFiles: this.uploadedFiles()
+        gender: rawValue.personalDetails.gender,
+        dateOfBirth: rawValue.personalDetails.dateOfBirth,
+        placeOfBirth: rawValue.personalDetails.placeOfBirth,
+        passportNo: rawValue.personalDetails.passportNo,
+        dateIssued: rawValue.personalDetails.dateIssued,
+        email: rawValue.personalDetails.email,
+        mobile: mobileValue,
+        jobTitle: rawValue.personalDetails.jobTitle,
+        organization: rawValue.personalDetails.organization,
+        profileCode: data.personalDetails.profileCode || '',
+        correspondenceCityId: correspondenceCityId,
+        correspondenceAddress: rawValue.personalDetails.correspondenceAddress,
+        permanentCityId: permanentCityId,
+        permanentAddress: rawValue.personalDetails.permanentAddress,
+        files: personalFiles
       },
       applicationDetails: data.applicationDetails,
       educationDetails: {
-        undergraduates: rawValue.educationDetails.undergraduates.map((ug: any, index: number) => ({
-          ...ug,
-          countryName: this.countries().find(c => c.id === ug.countryId)?.name || '',
-          languageName: this.languages().find(l => l.id === ug.languageId)?.name || '',
-          uploadedFiles: this.undergraduateFiles()[index] || [],
-          sortOrder: index
-        })),
-        postgraduates: rawValue.educationDetails.postgraduates.map((pg: any, index: number) => ({
-          ...pg,
-          countryName: this.countries().find(c => c.id === pg.countryId)?.name || '',
-          languageName: this.languages().find(l => l.id === pg.languageId)?.name || '',
-          uploadedFiles: this.postgraduateFiles()[index] || [],
-          sortOrder: index
-        }))
+        undergraduates: rawValue.educationDetails.undergraduates.map((ug: any, index: number) => {
+          const files = this.undergraduateFiles()[index] || [];
+          return {
+            id: ug.id,
+            university: ug.university,
+            countryId: ug.countryId,
+            countryName: this.countries().find(c => c.id === ug.countryId)?.name || '',
+            major: ug.major,
+            graduationYear: ug.graduationYear,
+            languageId: ug.languageId,
+            languageName: this.languages().find(l => l.id === ug.languageId)?.name || '',
+            sortOrder: index,
+            thesisTitle: ug.thesisTitle || '',
+            files: files.map((f: any) => f.fileUrl || f.fileName)
+          };
+        }),
+        postgraduates: rawValue.educationDetails.postgraduates.map((pg: any, index: number) => {
+          const files = this.postgraduateFiles()[index] || [];
+          return {
+            id: pg.id,
+            university: pg.university,
+            countryId: pg.countryId,
+            countryName: this.countries().find(c => c.id === pg.countryId)?.name || '',
+            major: pg.major,
+            graduationYear: pg.graduationYear,
+            languageId: pg.languageId,
+            languageName: this.languages().find(l => l.id === pg.languageId)?.name || '',
+            sortOrder: index,
+            thesisTitle: pg.thesisTitle || '',
+            files: files.map((f: any) => f.fileUrl || f.fileName)
+          };
+        })
       },
       englishQualifications: {
         ielts: rawValue.englishQualifications.ielts.score ? {
-          ...rawValue.englishQualifications.ielts,
+          id: rawValue.englishQualifications.ielts.id,
           name: 'IELTS',
-          uploadedFiles: this.englishFiles()
-        } : undefined,
+          score: rawValue.englishQualifications.ielts.score,
+          date: rawValue.englishQualifications.ielts.date
+        } : null,
         toefl: rawValue.englishQualifications.toefl.score ? {
-          ...rawValue.englishQualifications.toefl,
+          id: rawValue.englishQualifications.toefl.id,
           name: 'TOEFL',
-          uploadedFiles: this.englishFiles()
-        } : undefined,
+          score: rawValue.englishQualifications.toefl.score,
+          date: rawValue.englishQualifications.toefl.date
+        } : null,
         other: rawValue.englishQualifications.other.name ? {
-          ...rawValue.englishQualifications.other,
-          uploadedFiles: this.englishFiles()
-        } : undefined
+          id: rawValue.englishQualifications.other.id,
+          name: rawValue.englishQualifications.other.name,
+          score: rawValue.englishQualifications.other.score,
+          date: rawValue.englishQualifications.other.date
+        } : null,
+        files: englishFiles
       },
       employmentHistory: {
-        position1: rawValue.employmentHistory.position1.organizationName ? rawValue.employmentHistory.position1 : undefined,
-        position2: rawValue.employmentHistory.position2.organizationName ? rawValue.employmentHistory.position2 : undefined
+        position1: rawValue.employmentHistory.position1.organizationName ? {
+          id: rawValue.employmentHistory.position1.id,
+          organizationName: rawValue.employmentHistory.position1.organizationName,
+          jobTitle: rawValue.employmentHistory.position1.jobTitle,
+          fromDate: rawValue.employmentHistory.position1.fromDate,
+          toDate: rawValue.employmentHistory.position1.toDate,
+          address: rawValue.employmentHistory.position1.address
+        } : null,
+        position2: rawValue.employmentHistory.position2.organizationName ? {
+          id: rawValue.employmentHistory.position2.id,
+          organizationName: rawValue.employmentHistory.position2.organizationName,
+          jobTitle: rawValue.employmentHistory.position2.jobTitle,
+          fromDate: rawValue.employmentHistory.position2.fromDate,
+          toDate: rawValue.employmentHistory.position2.toDate,
+          address: rawValue.employmentHistory.position2.address
+        } : null
       },
       declaration: data.declaration
     };
@@ -632,5 +912,243 @@ export class ApplicationDetailComponent implements OnInit {
 
   onEnglishFilesUpdate(files: any[]): void {
     this.englishFiles.set(files);
+  }
+
+  /**
+   * Handle when user selects correspondence province from dropdown
+   */
+  onCorrespondenceProvinceChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const provinceCode = selectElement.value;
+    
+    if (provinceCode) {
+      const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
+      if (selectedProvince) {
+        this.personalDetailsForm.patchValue({
+          correspondenceCityName: selectedProvince.provinceName
+        });
+      }
+      
+      // Load wards for selected province
+      this._mbaService.getWardsByProvinceCode(provinceCode).subscribe({
+        next: (wards) => {
+          this.correspondenceWards.set(wards);
+          // Reset ward selection
+          this.personalDetailsForm.patchValue({
+            correspondenceDistrictId: '',
+            correspondenceDistrictName: ''
+          });
+        },
+        error: (err) => {
+          console.error('Error loading correspondence wards:', err);
+          this.correspondenceWards.set([]);
+        }
+      });
+    } else {
+      this.personalDetailsForm.patchValue({
+        correspondenceCityName: '',
+        correspondenceDistrictId: '',
+        correspondenceDistrictName: ''
+      });
+      this.correspondenceWards.set([]);
+    }
+  }
+
+  /**
+   * Handle when user selects correspondence ward from dropdown
+   */
+  onCorrespondenceWardChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const wardCode = selectElement.value;
+    
+    if (wardCode) {
+      const selectedWard = this.correspondenceWards().find(w => w.wardCode === wardCode);
+      if (selectedWard) {
+        this.personalDetailsForm.patchValue({
+          correspondenceDistrictName: selectedWard.wardName
+        });
+        // Store ward.id separately for API update (don't overwrite correspondenceCityId which is provinceCode)
+        this.correspondenceWardInfo.set(selectedWard);
+      }
+    } else {
+      this.personalDetailsForm.patchValue({
+        correspondenceDistrictName: ''
+      });
+      this.correspondenceWardInfo.set(null);
+    }
+  }
+
+  /**
+   * Handle when user selects permanent province from dropdown
+   */
+  onPermanentProvinceChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const provinceCode = selectElement.value;
+    
+    if (provinceCode) {
+      const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
+      if (selectedProvince) {
+        this.personalDetailsForm.patchValue({
+          permanentCityName: selectedProvince.provinceName
+        });
+      }
+      
+      // Load wards for selected province
+      this._mbaService.getWardsByProvinceCode(provinceCode).subscribe({
+        next: (wards) => {
+          this.permanentWards.set(wards);
+          // Reset ward selection
+          this.personalDetailsForm.patchValue({
+            permanentDistrictId: '',
+            permanentDistrictName: ''
+          });
+        },
+        error: (err) => {
+          console.error('Error loading permanent wards:', err);
+          this.permanentWards.set([]);
+        }
+      });
+    } else {
+      this.personalDetailsForm.patchValue({
+        permanentCityName: '',
+        permanentDistrictId: '',
+        permanentDistrictName: ''
+      });
+      this.permanentWards.set([]);
+    }
+  }
+
+  /**
+   * Handle when user selects permanent ward from dropdown
+   */
+  onPermanentWardChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const wardCode = selectElement.value;
+    
+    if (wardCode) {
+      const selectedWard = this.permanentWards().find(w => w.wardCode === wardCode);
+      if (selectedWard) {
+        this.personalDetailsForm.patchValue({
+          permanentDistrictName: selectedWard.wardName
+        });
+        // Store ward.id separately for API update (don't overwrite permanentCityId which is provinceCode)
+        this.permanentWardInfo.set(selectedWard);
+      }
+    } else {
+      this.personalDetailsForm.patchValue({
+        permanentDistrictName: ''
+      });
+      this.permanentWardInfo.set(null);
+    }
+  }
+
+  /**
+   * Log all validation errors for debugging
+   */
+  private logValidationErrors(): void {
+    console.log('=== VALIDATION ERRORS ===');
+    
+    // Check personal details
+    const personalDetails = this.editForm.get('personalDetails') as FormGroup;
+    if (personalDetails && personalDetails.invalid) {
+      console.log('Personal Details Errors:');
+      Object.keys(personalDetails.controls).forEach(key => {
+        const control = personalDetails.get(key);
+        if (control && control.invalid) {
+          console.log(`  - ${key}:`, control.errors);
+        }
+      });
+    }
+
+    // Check education details
+    const educationDetails = this.editForm.get('educationDetails') as FormGroup;
+    if (educationDetails && educationDetails.invalid) {
+      console.log('Education Details Errors:');
+      
+      // Check undergraduates
+      const undergraduates = educationDetails.get('undergraduates') as FormArray;
+      if (undergraduates && undergraduates.invalid) {
+        undergraduates.controls.forEach((control, index) => {
+          if (control.invalid) {
+            console.log(`  Undergraduate ${index}:`);
+            Object.keys((control as FormGroup).controls).forEach(key => {
+              const fieldControl = control.get(key);
+              if (fieldControl && fieldControl.invalid) {
+                console.log(`    - ${key}:`, fieldControl.errors, 'Value:', fieldControl.value);
+              }
+            });
+          }
+        });
+      }
+
+      // Check postgraduates
+      const postgraduates = educationDetails.get('postgraduates') as FormArray;
+      if (postgraduates && postgraduates.invalid) {
+        postgraduates.controls.forEach((control, index) => {
+          if (control.invalid) {
+            console.log(`  Postgraduate ${index}:`);
+            Object.keys((control as FormGroup).controls).forEach(key => {
+              const fieldControl = control.get(key);
+              if (fieldControl && fieldControl.invalid) {
+                console.log(`    - ${key}:`, fieldControl.errors, 'Value:', fieldControl.value);
+              }
+            });
+          }
+        });
+      }
+    }
+
+    // Check english qualifications
+    const englishQualifications = this.editForm.get('englishQualifications') as FormGroup;
+    if (englishQualifications && englishQualifications.invalid) {
+      console.log('English Qualifications Errors:');
+      
+      // Check group-level errors
+      if (englishQualifications.errors) {
+        console.log('  Group errors:', englishQualifications.errors);
+      }
+
+      // Check individual fields
+      ['ielts', 'toefl', 'other'].forEach(type => {
+        const group = englishQualifications.get(type) as FormGroup;
+        if (group && group.invalid) {
+          console.log(`  ${type}:`);
+          Object.keys(group.controls).forEach(key => {
+            const control = group.get(key);
+            if (control && control.invalid) {
+              console.log(`    - ${key}:`, control.errors);
+            }
+          });
+        }
+      });
+    }
+
+    // Check employment history
+    const employmentHistory = this.editForm.get('employmentHistory') as FormGroup;
+    if (employmentHistory && employmentHistory.invalid) {
+      console.log('Employment History Errors:');
+      
+      ['position1', 'position2'].forEach(pos => {
+        const group = employmentHistory.get(pos) as FormGroup;
+        if (group && group.invalid) {
+          console.log(`  ${pos}:`);
+          
+          // Check group-level errors (dateRange validator)
+          if (group.errors) {
+            console.log(`    Group errors:`, group.errors);
+          }
+
+          // Check individual fields
+          Object.keys(group.controls).forEach(key => {
+            const control = group.get(key);
+            if (control && control.invalid) {
+              console.log(`    - ${key}:`, control.errors);
+            }
+          });
+        }
+      });
+    }
+
+    console.log('=== END VALIDATION ERRORS ===');
   }
 }

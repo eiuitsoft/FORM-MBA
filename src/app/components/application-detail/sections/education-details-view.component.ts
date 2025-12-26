@@ -152,6 +152,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
       [title]="currentDialogTitle"
+      [fileCategoryId]="currentCategoryId"
       [(files)]="currentFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>
@@ -170,17 +171,20 @@ export class EducationDetailsViewComponent {
   currentFiles: any[] = [];
   currentType = '';
   currentIndex = 0;
+  currentCategoryId = 2; // Default to undergraduate
 
   openFileManager(type: string, index: number): void {
     this.currentType = type;
     this.currentIndex = index;
     
     if (type === 'undergraduate') {
-      this.currentDialogTitle = `Quản lý tệp Undergraduate Degree ${index + 1}`;
+      this.currentDialogTitle = `Manage Undergraduate Degree ${index + 1} Files`;
       this.currentFiles = this.undergraduateFiles[index] || [];
+      this.currentCategoryId = 2; // BCDH - Undergraduate
     } else {
-      this.currentDialogTitle = `Quản lý tệp Postgraduate Degree ${index + 1}`;
+      this.currentDialogTitle = `Manage Postgraduate Degree ${index + 1} Files`;
       this.currentFiles = this.postgraduateFiles[index] || [];
+      this.currentCategoryId = 3; // BCCH - Postgraduate
     }
     
     this.isFileManagerOpen = true;

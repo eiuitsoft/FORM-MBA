@@ -1,4 +1,4 @@
 export interface LoginOTP {
-  profileCode: string | null; // Mã hồ sơ MBA Student
+  profileCode: string | null; // MBA Student profile code
   otp: string;
 }

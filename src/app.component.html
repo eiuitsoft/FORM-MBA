@@ -220,8 +220,8 @@
                   (change)="onCorrespondenceCityChange($event)"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   <option value="">-- Select city --</option>
-                  @for (city of cities(); track city.cityCode) {
-                    <option [value]="city.cityCode">{{ city.cityName }}</option>
+                  @for (province of provinces(); track province.provinceCode) {
+                    <option [value]="province.provinceCode">{{ province.provinceName }}</option>
                   }
                 </select>
               </div>
@@ -233,8 +233,8 @@
                   (change)="onCorrespondenceDistrictChange($event)"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
                   <option value="">-- Select district --</option>
-                  @for (district of correspondenceDistricts(); track district.distinctCode) {
-                    <option [value]="district.distinctCode">{{ district.distinctName }}</option>
+                  @for (ward of correspondenceWards(); track ward.wardCode) {
+                    <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                   }
                 </select>
               </div>
@@ -259,8 +259,8 @@
                   (change)="onPermanentCityChange($event)"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
                   <option value="">-- Select city --</option>
-                  @for (city of cities(); track city.cityCode) {
-                    <option [value]="city.cityCode">{{ city.cityName }}</option>
+                  @for (province of provinces(); track province.provinceCode) {
+                    <option [value]="province.provinceCode">{{ province.provinceName }}</option>
                   }
                 </select>
               </div>
@@ -272,8 +272,8 @@
                   (change)="onPermanentDistrictChange($event)"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
                   <option value="">-- Select district --</option>
-                  @for (district of permanentDistricts(); track district.distinctCode) {
-                    <option [value]="district.distinctCode">{{ district.distinctName }}</option>
+                  @for (ward of permanentWards(); track ward.wardCode) {
+                    <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                   }
                 </select>
               </div>
@@ -464,6 +464,9 @@
                     @if (undergraduates.at(ugIndex).get('graduationYear')?.hasError('required') && undergraduates.at(ugIndex).get('graduationYear')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Year of graduation is required</p>
                     }
+                    @if (undergraduates.at(ugIndex).get('graduationYear')?.hasError('minYear') && undergraduates.at(ugIndex).get('graduationYear')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Year of graduation must be at least 1950</p>
+                    }
                     @if (undergraduates.at(ugIndex).get('graduationYear')?.hasError('maxYear') && undergraduates.at(ugIndex).get('graduationYear')?.touched) {
                       <p class="text-red-600 text-sm mt-1">Year of graduation cannot be in the future</p>
                     }
@@ -554,7 +557,16 @@
                 </select>
               </div>
               <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-              <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Year of graduation</label>
+                <input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                @if (undergraduates.at(1).get('graduationYear')?.hasError('minYear') && undergraduates.at(1).get('graduationYear')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">Year of graduation must be at least 1950</p>
+                }
+                @if (undergraduates.at(1).get('graduationYear')?.hasError('maxYear') && undergraduates.at(1).get('graduationYear')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">Year of graduation cannot be in the future</p>
+                }
+              </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Language of instruction</label>
                 <select 
@@ -635,7 +647,16 @@
                     </select>
                   </div>
                   <div><label class="block text-sm font-medium text-gray-700">Major</label><input type="text" formControlName="major" placeholder="Enter your major" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
-                  <div><label class="block text-sm font-medium text-gray-700">Year of graduation</label><input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Year of graduation</label>
+                    <input type="number" placeholder="YYYY" formControlName="graduationYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    @if (postgraduates.at(pgIndex).get('graduationYear')?.hasError('minYear') && postgraduates.at(pgIndex).get('graduationYear')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Year of graduation must be at least 1950</p>
+                    }
+                    @if (postgraduates.at(pgIndex).get('graduationYear')?.hasError('maxYear') && postgraduates.at(pgIndex).get('graduationYear')?.touched) {
+                      <p class="text-red-600 text-sm mt-1">Year of graduation cannot be in the future</p>
+                    }
+                  </div>
                   <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Thesis title</label><input type="text" formControlName="thesisTitle" placeholder="Enter thesis title (if applicable)" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
                   <!-- Language & File Upload - Same Row -->
                   <div>

@@ -8,10 +8,10 @@ export interface LoginMethod {
 export const LOGIN_METHODS: LoginMethod[] = [
   {
     value: LoginMethodEnum.CODE,
-    name: 'Mã hồ sơ',
+    name: 'Profile Code',
   },
   {
     value: LoginMethodEnum.PHONE_NUMBER,
-    name: 'Số điện thoại đã đăng ký',
+    name: 'Registered Phone Number',
   },
 ];

@@ -62,8 +62,11 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               @if (i === 0 && degree.get('graduationYear')?.hasError('required') && degree.get('graduationYear')?.touched) {
                 <p class="text-red-600 text-xs mt-1">Graduation year is required</p>
               }
-              @if (i === 0 && degree.get('graduationYear')?.hasError('invalidYear') && degree.get('graduationYear')?.touched) {
+              @if (degree.get('graduationYear')?.hasError('invalidYear') && degree.get('graduationYear')?.touched) {
                 <p class="text-red-600 text-xs mt-1">Invalid graduation year</p>
+              }
+              @if (degree.get('graduationYear')?.hasError('minYear') && degree.get('graduationYear')?.touched) {
+                <p class="text-red-600 text-xs mt-1">Graduation year must be at least 1950</p>
               }
             </div>
             <div>
@@ -139,6 +142,12 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               <label class="block text-xs font-medium text-gray-600 mb-1">Graduation Year</label>
               <input type="number" formControlName="graduationYear" 
                      class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm">
+              @if (degree.get('graduationYear')?.hasError('invalidYear') && degree.get('graduationYear')?.touched) {
+                <p class="text-red-600 text-xs mt-1">Invalid graduation year</p>
+              }
+              @if (degree.get('graduationYear')?.hasError('minYear') && degree.get('graduationYear')?.touched) {
+                <p class="text-red-600 text-xs mt-1">Graduation year must be at least 1950</p>
+              }
             </div>
           </div>
           
@@ -189,6 +198,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
       [title]="currentDialogTitle"
+      [fileCategoryId]="currentCategoryId"
       [(files)]="currentFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>
@@ -212,6 +222,7 @@ export class EducationDetailsEditComponent {
   currentFiles: any[] = [];
   currentType = '';
   currentIndex = 0;
+  currentCategoryId = 2; // Default to undergraduate
 
   get undergraduates(): FormArray {
     return this.formGroup.get('undergraduates') as FormArray;
@@ -226,11 +237,13 @@ export class EducationDetailsEditComponent {
     this.currentIndex = index;
     
     if (type === 'undergraduate') {
-      this.currentDialogTitle = `Quản lý tệp Undergraduate Degree ${index + 1}`;
+      this.currentDialogTitle = `Manage Undergraduate Degree ${index + 1} Files`;
       this.currentFiles = this.undergraduateFiles[index] || [];
+      this.currentCategoryId = 2; // BCDH - Undergraduate
     } else {
-      this.currentDialogTitle = `Quản lý tệp Postgraduate Degree ${index + 1}`;
+      this.currentDialogTitle = `Manage Postgraduate Degree ${index + 1} Files`;
       this.currentFiles = this.postgraduateFiles[index] || [];
+      this.currentCategoryId = 3; // BCCH - Postgraduate
     }
     
     this.isFileManagerOpen = true;

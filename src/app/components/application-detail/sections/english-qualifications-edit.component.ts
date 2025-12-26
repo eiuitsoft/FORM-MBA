@@ -103,7 +103,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
     <!-- File Manager Dialog -->
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
-      [title]="'Quản lý tệp English Certificates'"
+      [title]="'Manage English Certificate Files'"
+      [fileCategoryId]="4"
       [(files)]="englishFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>

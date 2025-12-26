@@ -102,9 +102,16 @@
       <app-personal-details-edit 
         [formGroup]="personalDetailsForm" 
         [countries]="countries()"
+        [provinces]="provinces()"
+        [correspondenceWards]="correspondenceWards()"
+        [permanentWards]="permanentWards()"
         [uploadedFiles]="uploadedFiles()"
         [onFileChange]="onPassportFileChange.bind(this)"
-        [onRemoveFile]="removePassportFile.bind(this)" />
+        [onRemoveFile]="removePassportFile.bind(this)"
+        (onCorrespondenceProvinceChange)="onCorrespondenceProvinceChange($event)"
+        (onCorrespondenceWardChange)="onCorrespondenceWardChange($event)"
+        (onPermanentProvinceChange)="onPermanentProvinceChange($event)"
+        (onPermanentWardChange)="onPermanentWardChange($event)" />
       
       <!-- Application Details (Read-only in edit mode) -->
       <app-application-details-view [data]="applicationData()?.applicationDetails" />

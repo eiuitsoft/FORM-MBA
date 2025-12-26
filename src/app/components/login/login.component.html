@@ -26,10 +26,10 @@
             <label class="text-muted">
               {{
                 loginForm.value.method == LoginMethodEnum.CCCD
-                  ? 'Căn cước công dân'
+                  ? 'Citizen ID'
                   : loginForm.value.method == LoginMethodEnum.CODE
-                  ? 'Mã hồ sơ'
-                  : 'Số điện thoại đã đăng ký'
+                  ? 'Profile Code'
+                  : 'Registered Phone Number'
               }}
             </label>
             <input
@@ -39,8 +39,8 @@
                 loginForm.value.method == LoginMethodEnum.CCCD 
                   ? '284501234114' 
                   : loginForm.value.method == LoginMethodEnum.CODE
-                  ? 'Nhập mã hồ sơ*'
-                  : 'Nhập số điện thoại*'
+                  ? 'Enter profile code*'
+                  : 'Enter phone number*'
               "
               class="form-control"
               [class.is-invalid]="loginForm.get('value')?.invalid && loginForm.get('value')?.touched" />
@@ -59,7 +59,7 @@
             <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
-            &nbsp;Quay lại
+            &nbsp;Back
           </button>
           <button
             type="button"
@@ -69,7 +69,7 @@
             <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
             </svg>
-            &nbsp;Lấy mã OTP
+            &nbsp;Get OTP Code
           </button>
         </div>
       </div>
@@ -82,27 +82,27 @@
             <input
               formControlName="otp"
               type="text"
-              placeholder="Nhập mã OTP"
+              placeholder="Enter OTP code"
               maxlength="6"
               (input)="isErrorOTP.set(false)"
               class="form-control otp-input"
               [class.is-invalid]="isErrorOTP()" />
             <small *ngIf="loginForm.get('otp')?.errors?.['maxlength']" class="text-danger">
-              Mã OTP không được vượt quá 6 số.
+              OTP code must not exceed 6 digits.
             </small>
           </div>
           <div *ngIf="isErrorOTP()" class="error-icon-wrapper">
             <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
             </svg>&nbsp;
-            <small class="text-danger">Mã OTP không đúng hoặc đã hết hạn.</small>
+            <small class="text-danger">OTP code is incorrect or has expired.</small>
           </div>
         </div>
         <div class="container-login100-form-btn mt-3">
           <div class="text-timer">
             <span>
-              Hoặc gửi lại mã sau <span>{{ countdown() }}</span> giây.
-              <span *ngIf="showResendButton()" (click)="openModalChooseSendType()" class="resend-link">Gửi lại</span>
+              Or resend code after <span>{{ countdown() }}</span> seconds.
+              <span *ngIf="showResendButton()" (click)="openModalChooseSendType()" class="resend-link">Resend</span>
             </span>
           </div>
           <button
@@ -110,7 +110,7 @@
             class="button-login"
             (click)="onLogin()"
             [disabled]="isSendingOTP()">
-            {{ isSendingOTP() ? 'Đang xử lý...' : 'Đăng nhập' }}
+            {{ isSendingOTP() ? 'Processing...' : 'Login' }}
           </button>
         </div>
       </div>
@@ -121,8 +121,8 @@
   <div class="wrap-login-support mt-3">
     <ul>
       <li>
-        <b>Liên hệ hỗ trợ:</b><br />
-        <small class="pl-2">Điện thoại: 0274 9999 681</small><br />
+        <b>Contact Support:</b><br />
+        <small class="pl-2">Phone: 0274 9999 681</small><br />
         <small class="pl-2">Hotline: 0918 907 733 - 0971 819 681 - 0969 845 681</small><br />
         <small class="pl-2">Email: tuyensinh@eiu.edu.vn</small><br />
         <div class="row mt-3">
@@ -160,7 +160,7 @@
     
     <!-- Modal Header -->
     <div class="modal-header">
-      <h5 class="modal-title">Chọn cách thức nhận mã OTP</h5>
+      <h5 class="modal-title">Choose OTP Delivery Method</h5>
       <button type="button" class="btn-close" (click)="closeModal()">
         <svg class="icon-svg-large" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -180,7 +180,7 @@
           <span>{{ item.name }}</span>
         </label>
       </div>
-      <b class="text-danger">⚠ Lưu ý :</b>
+      <b class="text-danger">⚠ Note:</b>
       <span>
         {{ sendOtpTypeMap[loginForm.value.sendType]?.message }}
       </span>
@@ -189,10 +189,10 @@
     <!-- Modal Footer -->
     <div class="modal-footer">
       <button type="button" class="btn btn-primary button-login" (click)="sendOTP()" [disabled]="isSendingOTP()">
-        <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
-        &nbsp;{{ isSendingOTP() ? 'Đang gửi...' : 'Xác nhận' }}
+        </svg> -->
+        &nbsp;{{ isSendingOTP() ? 'Sending...' : 'Confirm' }}
       </button>
     </div>
   </div>

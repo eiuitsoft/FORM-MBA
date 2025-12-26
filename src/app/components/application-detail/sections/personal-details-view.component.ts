@@ -99,18 +99,49 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           </div>
         </div>
 
-        <!-- Row 4 - Addresses -->
+        <!-- Row 4 - Correspondence City & District -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Correspondence City</label>
+              <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+                {{ data?.correspondenceCityName || 'N/A' }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Correspondence District</label>
+              <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+                {{ data?.correspondenceDistrictName || 'N/A' }}
+              </div>
+            </div>
+          </div>
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Correspondence Address <span class="text-red-500">*</span></label>
-            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 min-h-[80px]">
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.correspondenceAddress || 'N/A' }}
             </div>
           </div>
+        </div>
 
+        <!-- Row 5 - Permanent City & District -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Permanent City</label>
+              <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+                {{ data?.permanentCityName || 'N/A' }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Permanent District</label>
+              <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+                {{ data?.permanentDistrictName || 'N/A' }}
+              </div>
+            </div>
+          </div>
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Permanent Address <span class="text-red-500">*</span></label>
-            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 min-h-[80px]">
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.permanentAddress || 'N/A' }}
             </div>
           </div>
@@ -136,7 +167,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
     <!-- File Manager Dialog -->
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
-      [title]="'Quản lý tệp ID/Passport'"
+      [title]="'Manage ID/Passport Files'"
+      [fileCategoryId]="1"
       [(files)]="uploadedFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>

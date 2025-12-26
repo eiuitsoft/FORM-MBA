@@ -7,7 +7,8 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
  */
 export function minYearValidator(minYear: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (!control.value) {
+    // If empty or null, don't validate (let required validator handle it)
+    if (!control.value || control.value === '' || control.value === 0) {
       return null;
     }
 

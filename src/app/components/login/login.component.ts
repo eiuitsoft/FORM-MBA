@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   showFormSendOTP = signal(true);
   showResendButton = signal(false);
   countdown = signal(0);
-  profileCode = signal<string | null>(null); // Đổi từ studentId sang profileCode
+  profileCode = signal<string | null>(null); // Changed from studentId to profileCode
   isErrorOTP = signal(false);
   showModalChooseOTP = signal(false);
   errorMessage = signal('');
@@ -110,7 +110,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.loginForm.get('value')?.valid) {
       this.showModalChooseOTP.set(true);
     } else {
-      this.errorMessage.set('Vui lòng nhập thông tin hợp lệ!');
+      this.errorMessage.set('Please enter valid information!');
       setTimeout(() => this.errorMessage.set(''), 3000);
     }
   }
@@ -127,7 +127,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   sendOTP(): void {
     if (!this.loginForm.valid) {
-      this.errorMessage.set('Thông tin chưa hợp lệ!');
+      this.errorMessage.set('Invalid information!');
       setTimeout(() => this.errorMessage.set(''), 3000);
       return;
     }
@@ -150,20 +150,20 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.profileCode.set(res.data?.profileCode || null);
           this.showFormSendOTP.set(false);
           this.setIntervalTimer();
-          this.successMessage.set('Mã OTP đã được gửi!');
-          this.alertService.successMin('Mã OTP đã được gửi!');
+          this.successMessage.set('OTP code has been sent!');
+          this.alertService.successMin('OTP code has been sent!');
           setTimeout(() => this.successMessage.set(''), 3000);
         } else {
-          this.errorMessage.set(res.message || 'Không thể gửi OTP. Vui lòng thử lại.');
-          this.alertService.error('Lỗi', res.message || 'Không thể gửi OTP. Vui lòng thử lại.');
+          this.errorMessage.set(res.message || 'Unable to send OTP. Please try again.');
+          this.alertService.error('Error', res.message || 'Unable to send OTP. Please try again.');
         }
       },
       error: (err) => {
         this.isSendingOTP.set(false);
-        this.closeModal(); // Đóng modal trước khi hiện toast lỗi
-        const errorMsg = err.message || 'Đã có lỗi xảy ra từ hệ thống!';
+        this.closeModal();
+        const errorMsg = err.message || 'A system error has occurred!';
         this.errorMessage.set(errorMsg);
-        this.alertService.error('Lỗi', errorMsg);
+        this.alertService.error('Error', errorMsg);
         console.error('Send OTP error:', err);
       }
     });
@@ -222,14 +222,14 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.isSendingOTP.set(false);
 
         if (res.success) {
-          // Lưu token và thông tin user vào TokenService
+          // Save token and user info to TokenService
           this.tokenService.token.set(res.data?.token || '');
           this.tokenService.studentId.set(res.data?.mbaStudentId || '');
           this.tokenService.fullName.set(res.data?.fullName || '');
           this.tokenService.profileCode.set(res.data?.profileCode || '');
           
-          this.successMessage.set('Đăng nhập thành công! Đang chuyển trang...');
-          this.alertService.success('Thành công!', 'Đăng nhập thành công! Đang chuyển trang...', 1500);
+          this.successMessage.set('Login successful! Redirecting...');
+          this.alertService.success('Success!', 'Login successful! Redirecting...', 1500);
           
           // Navigate to application detail page with studentId
           const studentId = res.data?.mbaStudentId;
@@ -242,17 +242,17 @@ export class LoginComponent implements OnInit, OnDestroy {
           }, 1500);
         } else {
           this.isErrorOTP.set(true);
-          const errorMsg = res.message || 'Mã OTP không đúng hoặc đã hết hạn.';
+          const errorMsg = res.message || 'OTP code is incorrect or has expired.';
           this.errorMessage.set(errorMsg);
-          this.alertService.error('Lỗi', errorMsg);
+          this.alertService.error('Error', errorMsg);
         }
       },
       error: (err) => {
         this.isSendingOTP.set(false);
         this.isErrorOTP.set(true);
-        const errorMsg = err.message || 'Đã có lỗi xảy ra từ hệ thống!';
+        const errorMsg = err.message || 'A system error has occurred!';
         this.errorMessage.set(errorMsg);
-        this.alertService.error('Lỗi', errorMsg);
+        this.alertService.error('Error', errorMsg);
         console.error('Login error:', err);
       }
     });
@@ -269,29 +269,29 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     if (control.errors['required']) {
       if (fieldName === 'value') {
-        if (method === LoginMethodEnum.CCCD) return 'Vui lòng nhập Căn Cước Công Dân';
-        if (method === LoginMethodEnum.CODE) return 'Vui lòng nhập mã hồ sơ';
-        return 'Vui lòng nhập số điện thoại đã đăng ký';
+        if (method === LoginMethodEnum.CCCD) return 'Please enter Citizen ID';
+        if (method === LoginMethodEnum.CODE) return 'Please enter profile code';
+        return 'Please enter registered phone number';
       }
     }
 
     if (control.errors['maxlength']) {
       if (fieldName === 'value') {
-        if (method === LoginMethodEnum.CCCD) return 'CCCD không quá 15 số';
-        if (method === LoginMethodEnum.CODE) return 'Mã hồ sơ không quá 7 số';
-        return 'Số điện thoại không quá 12 số';
+        if (method === LoginMethodEnum.CCCD) return 'Citizen ID must not exceed 15 digits';
+        if (method === LoginMethodEnum.CODE) return 'Profile code must not exceed 7 digits';
+        return 'Phone number must not exceed 12 digits';
       }
-      if (fieldName === 'otp') return 'Mã OTP không được vượt quá 6 số';
+      if (fieldName === 'otp') return 'OTP code must not exceed 6 digits';
     }
 
     if (control.errors['minlength']) {
       if (fieldName === 'value' && method === LoginMethodEnum.CODE) {
-        return 'Mã hồ sơ tối thiểu 5 số';
+        return 'Profile code must be at least 5 digits';
       }
     }
 
     if (control.errors['pattern']) {
-      return 'Chỉ được nhập số';
+      return 'Only numbers are allowed';
     }
 
     return '';
@@ -312,8 +312,8 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   getLabel(): string {
     const method = this.loginForm.value.method;
-    if (method === LoginMethodEnum.CCCD) return 'Căn cước công dân';
-    if (method === LoginMethodEnum.CODE) return 'Mã hồ sơ';
-    return 'Số điện thoại đã đăng ký';
+    if (method === LoginMethodEnum.CCCD) return 'Citizen ID';
+    if (method === LoginMethodEnum.CODE) return 'Profile Code';
+    return 'Registered Phone Number';
   }
 }

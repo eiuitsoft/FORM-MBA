@@ -22,10 +22,10 @@
           </a>
         </li>
         <li class="user-menu">
-          <button class="user-button" (click)="toggleUserMenu()">
+          <button class="user-button" (click)="toggleUserMenu(); $event.stopPropagation()">
             <span class="material-icons">account_circle</span> {{ fullName }}
           </button>
-          <div class="dropdown-menu" *ngIf="showUserMenu()">
+          <div class="dropdown-menu" *ngIf="showUserMenu()" (click)="$event.stopPropagation()">
             <button (click)="logout()" class="dropdown-item">
               <span class="material-icons">exit_to_app</span> Logout
             </button>

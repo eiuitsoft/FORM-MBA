@@ -13,18 +13,18 @@ export interface SendOtpType {
 export const SEND_OTP_TYPE_MAP: Record<string, SendOtpType> = {
   [SEND_OTP_TYPE.SMS]: {
     value: SEND_OTP_TYPE.SMS,
-    name: 'Nhận mã OTP qua tin nhắn SMS',
-    message: 'Vui lòng kiểm tra tin nhắn điện thoại để xem mã OTP!'
+    name: 'Receive OTP code via SMS',
+    message: 'Please check your phone messages for the OTP code!'
   },
   [SEND_OTP_TYPE.EMAIL]: {
     value: SEND_OTP_TYPE.EMAIL,
-    name: 'Nhận mã OTP qua Email',
-    message: 'Vui lòng kiểm tra Email, thư mục "Hộp thư đến" hoặc "Thư rác" để xem mã OTP!'
+    name: 'Receive OTP code via Email',
+    message: 'Please check your Email inbox or spam folder for the OTP code!'
   },
   [SEND_OTP_TYPE.ZALO]: {
     value: SEND_OTP_TYPE.ZALO,
-    name: 'Nhận mã OTP qua Zalo',
-    message: 'Vui lòng kiểm tra tin nhắn Zalo để xem mã OTP!'
+    name: 'Receive OTP code via Zalo',
+    message: 'Please check your Zalo messages for the OTP code!'
   }
 };
 
