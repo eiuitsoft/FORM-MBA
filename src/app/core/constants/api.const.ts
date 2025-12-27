@@ -47,6 +47,6 @@ export const FILE_API = {
   UPLOAD_ADMISSION_FILES: `${BASE_API_URL}/MBAFile/UploadAdmissionMultiFile`,
   DOWNLOAD_FILE: (fileUrl: string) => `${BASE_API_URL}/MBAFile/DownloadFile?fileUrl=${encodeURIComponent(fileUrl)}`,
   REMOVE_FILE: (pathFile: string) => `${BASE_API_URL}/MBAFile/RemoveFile?pathFile=${encodeURIComponent(pathFile)}`,
-  GET_FILES_BY_CATEGORY: (studentId: string, categoryId: number) => 
-    `${BASE_API_URL}/MBAFileData/GetFilesByCategory/files/${studentId}/${categoryId}`,
+  GET_FILES_BY_CATEGORY: (studentId: string, categoryId: number, entityId?: string) => 
+    `${BASE_API_URL}/MBAFileData/GetFilesByCategory/files/${studentId}/${categoryId}${entityId ? '?entityId=' + entityId : ''}`,
 };

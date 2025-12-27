@@ -159,9 +159,10 @@ export class MbaService {
 
   /**
    * Get files by category for a student
+   * @param entityId - Optional entity ID (e.g., education detail ID, employment ID, etc.)
    */
-  getFilesByCategory(studentId: string, categoryId: number): Observable<any> {
-    return this._httpClient.get<any>(FILE_API.GET_FILES_BY_CATEGORY(studentId, categoryId));
+  getFilesByCategory(studentId: string, categoryId: number, entityId?: string): Observable<any> {
+    return this._httpClient.get<any>(FILE_API.GET_FILES_BY_CATEGORY(studentId, categoryId, entityId));
   }
 
   /**

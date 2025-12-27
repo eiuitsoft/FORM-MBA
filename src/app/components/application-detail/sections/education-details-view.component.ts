@@ -60,11 +60,13 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
 
               <!-- Upload Button -->
               <button type="button" (click)="openFileManager('undergraduate', i)" 
-                      class="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded bg-white hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      [class]="undergraduateFiles && undergraduateFiles[i] && undergraduateFiles[i].length > 0
+                        ? 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-green-400 rounded bg-green-50 hover:border-green-500 hover:bg-green-100 transition-colors'
+                        : 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-blue-300 rounded bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-colors'">
+                <svg class="w-5 h-5 mr-2" [class]="undergraduateFiles && undergraduateFiles[i] && undergraduateFiles[i].length > 0 ? 'text-green-600' : 'text-blue-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <span class="text-sm text-gray-600">
+                <span class="text-sm font-medium" [class]="undergraduateFiles && undergraduateFiles[i] && undergraduateFiles[i].length > 0 ? 'text-green-700' : 'text-blue-700'">
                   {{ undergraduateFiles && undergraduateFiles[i] && undergraduateFiles[i].length > 0 ? undergraduateFiles[i].length + ' file(s) uploaded - Click to manage' : 'Upload degree certificate' }}
                 </span>
               </button>
@@ -131,11 +133,13 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
 
               <!-- Upload Button -->
               <button type="button" (click)="openFileManager('postgraduate', i)" 
-                      class="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded bg-white hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      [class]="postgraduateFiles && postgraduateFiles[i] && postgraduateFiles[i].length > 0
+                        ? 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-green-400 rounded bg-green-50 hover:border-green-500 hover:bg-green-100 transition-colors'
+                        : 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-blue-300 rounded bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-colors'">
+                <svg class="w-5 h-5 mr-2" [class]="postgraduateFiles && postgraduateFiles[i] && postgraduateFiles[i].length > 0 ? 'text-green-600' : 'text-blue-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <span class="text-sm text-gray-600">
+                <span class="text-sm font-medium" [class]="postgraduateFiles && postgraduateFiles[i] && postgraduateFiles[i].length > 0 ? 'text-green-700' : 'text-blue-700'">
                   {{ postgraduateFiles && postgraduateFiles[i] && postgraduateFiles[i].length > 0 ? postgraduateFiles[i].length + ' file(s) uploaded - Click to manage' : 'Upload degree certificate' }}
                 </span>
               </button>
@@ -153,6 +157,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
       [(isOpen)]="isFileManagerOpen"
       [title]="currentDialogTitle"
       [fileCategoryId]="currentCategoryId"
+      [entityId]="currentEntityId"
       [(files)]="currentFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>
@@ -172,6 +177,7 @@ export class EducationDetailsViewComponent {
   currentType = '';
   currentIndex = 0;
   currentCategoryId = 2; // Default to undergraduate
+  currentEntityId?: string; // Entity ID for the current degree
 
   openFileManager(type: string, index: number): void {
     this.currentType = type;
@@ -181,10 +187,16 @@ export class EducationDetailsViewComponent {
       this.currentDialogTitle = `Manage Undergraduate Degree ${index + 1} Files`;
       this.currentFiles = this.undergraduateFiles[index] || [];
       this.currentCategoryId = 2; // BCDH - Undergraduate
+      // Get entity ID from data - data is educationDetails, not full application
+      const degree = this.data?.undergraduates?.[index];
+      this.currentEntityId = degree?.id || undefined;
     } else {
       this.currentDialogTitle = `Manage Postgraduate Degree ${index + 1} Files`;
       this.currentFiles = this.postgraduateFiles[index] || [];
       this.currentCategoryId = 3; // BCCH - Postgraduate
+      // Get entity ID from data - data is educationDetails, not full application
+      const degree = this.data?.postgraduates?.[index];
+      this.currentEntityId = degree?.id || undefined;
     }
     
     this.isFileManagerOpen = true;

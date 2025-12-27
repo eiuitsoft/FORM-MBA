@@ -217,10 +217,11 @@ export class ApplicationDetailComponent implements OnInit {
           loadPromises.push(promise);
         }
         
-        // Wait for all ward info to load, then set data
+        // Wait for all ward info to load, then set data and load files
         Promise.all(loadPromises).then(() => {
           this.applicationData.set(data);
-          this.uploadedFiles.set(data.personalDetails?.uploadedFiles || []);
+          // Load files for all entities
+          this.loadAllFiles(id, data);
           this.loading.set(false);
         });
       },
@@ -250,35 +251,102 @@ export class ApplicationDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Load files for all entities (personal, education, english)
+   */
+  private loadAllFiles(studentId: string, data: any): void {
+    // Load personal details files (category 1, no entityId)
+    this._mbaService.getFilesByCategory(studentId, 1).subscribe({
+      next: (result) => {
+        if (result.success && result.data?.files) {
+          this.uploadedFiles.set(result.data.files);
+        } else {
+          this.uploadedFiles.set([]);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading personal files:', err);
+        this.uploadedFiles.set([]);
+      }
+    });
+
+    // Load undergraduate files for each degree
+    const ugFiles: any[][] = [];
+    data?.educationDetails?.undergraduates?.forEach((ug: any, index: number) => {
+      if (ug.id) {
+        this._mbaService.getFilesByCategory(studentId, 2, ug.id).subscribe({
+          next: (result) => {
+            ugFiles[index] = result.success && result.data?.files ? result.data.files : [];
+            this.undergraduateFiles.set([...ugFiles]);
+          },
+          error: (err) => {
+            console.error(`Error loading undergraduate files for degree ${index}:`, err);
+            ugFiles[index] = [];
+            this.undergraduateFiles.set([...ugFiles]);
+          }
+        });
+      } else {
+        ugFiles[index] = [];
+      }
+    });
+    if (ugFiles.length > 0) {
+      this.undergraduateFiles.set(ugFiles);
+    }
+
+    // Load postgraduate files for each degree
+    const pgFiles: any[][] = [];
+    data?.educationDetails?.postgraduates?.forEach((pg: any, index: number) => {
+      if (pg.id) {
+        this._mbaService.getFilesByCategory(studentId, 3, pg.id).subscribe({
+          next: (result) => {
+            pgFiles[index] = result.success && result.data?.files ? result.data.files : [];
+            this.postgraduateFiles.set([...pgFiles]);
+          },
+          error: (err) => {
+            console.error(`Error loading postgraduate files for degree ${index}:`, err);
+            pgFiles[index] = [];
+            this.postgraduateFiles.set([...pgFiles]);
+          }
+        });
+      } else {
+        pgFiles[index] = [];
+      }
+    });
+    if (pgFiles.length > 0) {
+      this.postgraduateFiles.set(pgFiles);
+    }
+
+    // Load english qualification files (category 4)
+    // Get entityId from first non-null english qualification
+    const englishEntityId = data?.englishQualifications?.ielts?.id 
+      || data?.englishQualifications?.toefl?.id 
+      || data?.englishQualifications?.other?.id;
+    
+    if (englishEntityId) {
+      this._mbaService.getFilesByCategory(studentId, 4, englishEntityId).subscribe({
+        next: (result) => {
+          if (result.success && result.data?.files) {
+            this.englishFiles.set(result.data.files);
+          } else {
+            this.englishFiles.set([]);
+          }
+        },
+        error: (err) => {
+          console.error('Error loading english files:', err);
+          this.englishFiles.set([]);
+        }
+      });
+    } else {
+      this.englishFiles.set([]);
+    }
+  }
+
   toggleEditMode(): void {
     this.isEditMode.set(true);
     const data = this.applicationData();
     
-    // Initialize uploaded files
-    this.uploadedFiles.set(data?.personalDetails?.uploadedFiles || []);
-    
-    // Initialize education files
-    const ugFiles: any[][] = [];
-    const pgFiles: any[][] = [];
-    
-    data?.educationDetails?.undergraduates?.forEach((ug: any) => {
-      ugFiles.push(ug.uploadedFiles || []);
-    });
-    
-    data?.educationDetails?.postgraduates?.forEach((pg: any) => {
-      pgFiles.push(pg.uploadedFiles || []);
-    });
-    
-    this.undergraduateFiles.set(ugFiles);
-    this.postgraduateFiles.set(pgFiles);
-    
-    // Initialize english files (combine all)
-    const allEnglishFiles = [
-      ...(data?.englishQualifications?.ielts?.uploadedFiles || []),
-      ...(data?.englishQualifications?.toefl?.uploadedFiles || []),
-      ...(data?.englishQualifications?.other?.uploadedFiles || [])
-    ];
-    this.englishFiles.set(allEnglishFiles);
+    // Load files for edit mode (reuse loadAllFiles method)
+    this.loadAllFiles(this.applicationId(), data);
     
     // Load ward info and wards list for correspondence city
     if (data?.personalDetails?.correspondenceCityId) {
@@ -517,9 +585,7 @@ export class ApplicationDetailComponent implements OnInit {
     const correspondenceCityId = this.correspondenceWardInfo()?.id || data.personalDetails.correspondenceCityId;
     const permanentCityId = this.permanentWardInfo()?.id || data.personalDetails.permanentCityId;
 
-    // Get file URLs from uploaded files (files already uploaded via file manager dialog)
-    const personalFiles = this.uploadedFiles().map((f: any) => f.fileUrl || f.fileName);
-    const englishFiles = this.englishFiles().map((f: any) => f.fileUrl || f.fileName);
+    // Files are already uploaded via file manager dialog, no need to send in payload
 
     return {
       id: this.applicationId(),
@@ -541,13 +607,12 @@ export class ApplicationDetailComponent implements OnInit {
         correspondenceCityId: correspondenceCityId,
         correspondenceAddress: rawValue.personalDetails.correspondenceAddress,
         permanentCityId: permanentCityId,
-        permanentAddress: rawValue.personalDetails.permanentAddress,
-        files: personalFiles
+        permanentAddress: rawValue.personalDetails.permanentAddress
+        // files removed - already uploaded via file manager
       },
       applicationDetails: data.applicationDetails,
       educationDetails: {
         undergraduates: rawValue.educationDetails.undergraduates.map((ug: any, index: number) => {
-          const files = this.undergraduateFiles()[index] || [];
           return {
             id: ug.id,
             university: ug.university,
@@ -558,12 +623,11 @@ export class ApplicationDetailComponent implements OnInit {
             languageId: ug.languageId,
             languageName: this.languages().find(l => l.id === ug.languageId)?.name || '',
             sortOrder: index,
-            thesisTitle: ug.thesisTitle || '',
-            files: files.map((f: any) => f.fileUrl || f.fileName)
+            thesisTitle: ug.thesisTitle || ''
+            // files removed - already uploaded via file manager
           };
         }),
         postgraduates: rawValue.educationDetails.postgraduates.map((pg: any, index: number) => {
-          const files = this.postgraduateFiles()[index] || [];
           return {
             id: pg.id,
             university: pg.university,
@@ -574,8 +638,8 @@ export class ApplicationDetailComponent implements OnInit {
             languageId: pg.languageId,
             languageName: this.languages().find(l => l.id === pg.languageId)?.name || '',
             sortOrder: index,
-            thesisTitle: pg.thesisTitle || '',
-            files: files.map((f: any) => f.fileUrl || f.fileName)
+            thesisTitle: pg.thesisTitle || ''
+            // files removed - already uploaded via file manager
           };
         })
       },
@@ -597,8 +661,8 @@ export class ApplicationDetailComponent implements OnInit {
           name: rawValue.englishQualifications.other.name,
           score: rawValue.englishQualifications.other.score,
           date: rawValue.englishQualifications.other.date
-        } : null,
-        files: englishFiles
+        } : null
+        // files removed - already uploaded via file manager
       },
       employmentHistory: {
         position1: rawValue.employmentHistory.position1.organizationName ? {

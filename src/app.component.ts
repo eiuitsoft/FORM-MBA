@@ -32,6 +32,7 @@ export class AppComponent implements OnInit {
   private readonly _route = inject(ActivatedRoute);
   
   loading = signal(false);
+  submitting = signal(false);
   
   submitted = signal(false);
   showConfirmDialog = signal(false);
@@ -163,12 +164,14 @@ export class AppComponent implements OnInit {
    */
   confirmSubmit(): void {
     this.showConfirmDialog.set(false);
+    this.submitting.set(true);
     
     // Transform form data to match API structure
     const formData = this.transformFormData();
     
     this._mbaService.add(formData).subscribe({
       next: (res) => {
+        this.submitting.set(false);
         if (res.success) {
           this._alertService.success('Success!', 'Application submitted successfully! Redirecting to login...', 3000);
           // Reset form after successful submission
@@ -184,6 +187,7 @@ export class AppComponent implements OnInit {
         }
       },
       error: (err) => {
+        this.submitting.set(false);
         console.error('Submit error:', err);
         this._alertService.error('Error', 'An error occurred while submitting the application');
       }
