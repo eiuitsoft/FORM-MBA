@@ -87,11 +87,13 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         <div class="border-t pt-4">
           <label class="block text-xs font-medium text-gray-700 mb-2">Upload English Certificates</label>
           <button type="button" (click)="openFileManager()" 
-                  class="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded bg-white hover:border-gray-400 hover:bg-gray-50 transition-colors">
-            <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  [class]="englishFiles && englishFiles.length > 0
+                    ? 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-green-400 rounded bg-green-50 hover:border-green-500 hover:bg-green-100 transition-colors'
+                    : 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-blue-300 rounded bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-colors'">
+            <svg class="w-5 h-5 mr-2" [class]="englishFiles && englishFiles.length > 0 ? 'text-green-600' : 'text-blue-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
-            <span class="text-sm text-gray-600">
+            <span class="text-sm font-medium" [class]="englishFiles && englishFiles.length > 0 ? 'text-green-700' : 'text-blue-700'">
               {{ englishFiles && englishFiles.length > 0 ? englishFiles.length + ' file(s) uploaded - Click to manage' : 'Click to upload files' }}
             </span>
           </button>
@@ -105,6 +107,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
       [(isOpen)]="isFileManagerOpen"
       [title]="'Manage English Certificate Files'"
       [fileCategoryId]="4"
+      [entityId]="getEnglishEntityId()"
       [(files)]="englishFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>
@@ -120,6 +123,17 @@ export class EnglishQualificationsEditComponent {
 
   openFileManager(): void {
     this.isFileManagerOpen = true;
+  }
+
+  /**
+   * Get entity ID for English qualifications
+   * Returns the first non-null ID from IELTS, TOEFL, or Other
+   */
+  getEnglishEntityId(): string | undefined {
+    const ieltsId = this.formGroup?.get('ielts.id')?.value;
+    const toeflId = this.formGroup?.get('toefl.id')?.value;
+    const otherId = this.formGroup?.get('other.id')?.value;
+    return ieltsId || toeflId || otherId || undefined;
   }
 
   onFilesSaved(files: any[]): void {

@@ -186,6 +186,7 @@ export class FileManagerDialogComponent implements OnChanges {
   @Input() title = 'File Attachments';
   @Input() files: any[] = [];
   @Input() fileCategoryId: number = 1;
+  @Input() entityId?: string; // Entity ID (e.g., education detail ID, employment ID, etc.)
   @Output() isOpenChange = new EventEmitter<boolean>();
   @Output() filesChange = new EventEmitter<any[]>();
   @Output() onSave = new EventEmitter<any[]>();
@@ -221,7 +222,7 @@ export class FileManagerDialogComponent implements OnChanges {
     }
 
     this.loading = true;
-    this._mbaService.getFilesByCategory(this.studentId, this.fileCategoryId).subscribe({
+    this._mbaService.getFilesByCategory(this.studentId, this.fileCategoryId, this.entityId).subscribe({
       next: (result) => {
         this.loading = false;
         if (result.success && result.data) {
