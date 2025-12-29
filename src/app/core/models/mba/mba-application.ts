@@ -53,7 +53,6 @@ export interface ApplicationDetails {
 
 export interface EducationDetails {
   undergraduate: EducationRecord;
-  secondDegree?: EducationRecord;
   postgraduate?: EducationRecord;
 }
 
