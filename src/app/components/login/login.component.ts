@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm: FormGroup = this.fb.group({
     method: [LoginMethodEnum.PHONE_NUMBER],
-    value: ['', [Validators.required, Validators.maxLength(12), Validators.pattern('^[0-9]+$')]],
+    value: ['', [Validators.required, Validators.maxLength(15), Validators.pattern('^\\+?[0-9]+$')]],
     otp: ['', Validators.maxLength(6)],
     sendType: [SEND_OTP_TYPE.SMS]
   });
@@ -93,10 +93,11 @@ export class LoginComponent implements OnInit, OnDestroy {
         Validators.pattern('^[0-9]+$')
       ]);
     } else {
+      // Phone number - allow international format with +
       valueControl?.setValidators([
         Validators.required,
-        Validators.maxLength(12),
-        Validators.pattern('^[0-9]+$')
+        Validators.maxLength(15),
+        Validators.pattern('^\\+?[0-9]+$')  // Allow optional + at start
       ]);
     }
 
@@ -279,7 +280,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (fieldName === 'value') {
         if (method === LoginMethodEnum.CCCD) return 'Citizen ID must not exceed 15 digits';
         if (method === LoginMethodEnum.CODE) return 'Profile code must not exceed 7 digits';
-        return 'Phone number must not exceed 12 digits';
+        return 'Phone number must not exceed 15 digits';
       }
       if (fieldName === 'otp') return 'OTP code must not exceed 6 digits';
     }
@@ -291,6 +292,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     if (control.errors['pattern']) {
+      if (fieldName === 'value' && method === LoginMethodEnum.PHONE_NUMBER) {
+        return 'Phone number can only contain + and numbers';
+      }
       return 'Only numbers are allowed';
     }
 
@@ -304,7 +308,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     const method = this.loginForm.value.method;
     if (method === LoginMethodEnum.CCCD) return '284501234114';
     if (method === LoginMethodEnum.CODE) return '12345';
-    return '0912345678';
+    return '0912345678 or +84912345678';
   }
 
   /**
