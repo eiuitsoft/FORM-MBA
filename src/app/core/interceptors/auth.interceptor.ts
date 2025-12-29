@@ -34,12 +34,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         // Unauthorized - redirect to login
         router.navigate(['/login']);
         errorMessage = 'Session expired. Please login again.';
-      } else if (error.status === 400) {
-        // Bad request
-        errorMessage = error.error?.message || 'Invalid request.';
       } else {
-        // Server-side error
-        errorMessage = error.message || 'A system error has occurred.';
+        // Server-side error - prioritize backend message
+        // Backend returns: { statusCode, message, success, data }
+        errorMessage = error.error?.message || error.message || 'A system error has occurred.';
       }
 
       console.error('HTTP Error:', {
