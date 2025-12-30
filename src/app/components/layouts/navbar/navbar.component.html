@@ -10,14 +10,14 @@
 
     <ul class="nav-menu" [class.show]="showMobileMenu()">
       <li *ngIf="!isLoggedIn">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+        <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
           <span class="material-icons">edit</span> MBA Application
         </a>
       </li>
-      
+
       <ng-container *ngIf="isLoggedIn; else loggedOut">
         <li>
-          <a [routerLink]="['/application', tokenService.studentId()]" routerLinkActive="active" class="nav-link">
+          <a [routerLink]="['/application']" routerLinkActive="active" class="nav-link">
             <span class="material-icons">assignment</span> My Application
           </a>
         </li>
@@ -32,7 +32,7 @@
           </div>
         </li>
       </ng-container>
-      
+
       <ng-template #loggedOut>
         <li>
           <a routerLink="/login" routerLinkActive="active" class="nav-link">

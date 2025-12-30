@@ -25,6 +25,7 @@ import { maxDateValidator, dateRangeValidator } from '../../../validators/date.v
 import { scoreRangeValidator } from '../../../validators/conditional.validator';
 import { atLeastOneEnglishQualificationValidator } from '../../../validators/english-qualification.validator';
 import { of } from 'rxjs';
+import { TokenService } from '../../core/services/auth/token.service';
 
 @Component({
   selector: 'app-application-detail',
@@ -49,9 +50,10 @@ import { of } from 'rxjs';
 export class ApplicationDetailComponent implements OnInit {
   private readonly _mbaService = inject(MbaService);
   private readonly _alertService = inject(AlertService);
-  private readonly _route = inject(ActivatedRoute);
+  // private readonly _route = inject(ActivatedRoute);
   private readonly _router = inject(Router);
   private readonly _fb = inject(FormBuilder);
+  private readonly tokenService = inject(TokenService);
 
   applicationId = signal<string>('');
   loading = signal(false);
@@ -63,7 +65,7 @@ export class ApplicationDetailComponent implements OnInit {
   undergraduateFiles = signal<any[][]>([]);
   postgraduateFiles = signal<any[][]>([]);
   englishFiles = signal<any[]>([]);
-  
+
   // Dropdown data
   countries = signal<any[]>([]);
   languages = signal<any[]>([]);
@@ -72,12 +74,13 @@ export class ApplicationDetailComponent implements OnInit {
   permanentWards = signal<any[]>([]);
   correspondenceWardInfo = signal<any>(null);
   permanentWardInfo = signal<any>(null);
-  
+
   // Edit form
   editForm!: FormGroup;
 
   ngOnInit(): void {
-    const id = this._route.snapshot.paramMap.get('id');
+    // const id = this._route.snapshot.paramMap.get('id');
+    const id = this.tokenService.studentId();
     if (id) {
       this.applicationId.set(id);
       this.loadApplicationData(id);
@@ -170,7 +173,7 @@ export class ApplicationDetailComponent implements OnInit {
           agreed: true
         }
       };
-      
+
       this.applicationData.set(mockData);
       this.uploadedFiles.set([]);
       this.loading.set(false);
@@ -181,7 +184,7 @@ export class ApplicationDetailComponent implements OnInit {
       next: (data) => {
         // Load ward info for correspondence and permanent cities
         const loadPromises: Promise<void>[] = [];
-        
+
         // Load correspondence ward info
         if (data.personalDetails?.correspondenceCityId) {
           const promise = new Promise<void>((resolve) => {
@@ -200,7 +203,7 @@ export class ApplicationDetailComponent implements OnInit {
           });
           loadPromises.push(promise);
         }
-        
+
         // Load permanent ward info
         if (data.personalDetails?.permanentCityId) {
           const promise = new Promise<void>((resolve) => {
@@ -219,7 +222,7 @@ export class ApplicationDetailComponent implements OnInit {
           });
           loadPromises.push(promise);
         }
-        
+
         // Wait for all ward info to load, then set data and load files
         Promise.all(loadPromises).then(() => {
           this.applicationData.set(data);
@@ -321,10 +324,10 @@ export class ApplicationDetailComponent implements OnInit {
 
     // Load english qualification files (category 4)
     // Get entityId from first non-null english qualification
-    const englishEntityId = data?.englishQualifications?.ielts?.id 
-      || data?.englishQualifications?.toefl?.id 
+    const englishEntityId = data?.englishQualifications?.ielts?.id
+      || data?.englishQualifications?.toefl?.id
       || data?.englishQualifications?.other?.id;
-    
+
     if (englishEntityId) {
       this._mbaService.getFilesByCategory(studentId, 4, englishEntityId).subscribe({
         next: (result) => {
@@ -347,10 +350,10 @@ export class ApplicationDetailComponent implements OnInit {
   toggleEditMode(): void {
     this.isEditMode.set(true);
     const data = this.applicationData();
-    
+
     // Load files for edit mode (reuse loadAllFiles method)
     this.loadAllFiles(this.applicationId(), data);
-    
+
     // Load ward info and wards list for correspondence city
     if (data?.personalDetails?.correspondenceCityId) {
       this._mbaService.getWardById(data.personalDetails.correspondenceCityId).subscribe({
@@ -374,7 +377,7 @@ export class ApplicationDetailComponent implements OnInit {
         error: (err) => console.error('Error loading correspondence ward info:', err)
       });
     }
-    
+
     // Load ward info and wards list for permanent city
     if (data?.personalDetails?.permanentCityId) {
       this._mbaService.getWardById(data.personalDetails.permanentCityId).subscribe({
@@ -398,7 +401,7 @@ export class ApplicationDetailComponent implements OnInit {
         error: (err) => console.error('Error loading permanent ward info:', err)
       });
     }
-    
+
     this.initializeEditForm();
   }
 
@@ -406,11 +409,11 @@ export class ApplicationDetailComponent implements OnInit {
     const data = this.applicationData();
     const originalPassport = data.personalDetails.passportNo;
     const originalMobile = data.personalDetails.mobile;
-    
+
     // correspondenceCityId and permanentCityId are actually Ward IDs
     // We need to get ward info to extract provinceCode and wardCode
     // These will be populated after ward info is loaded in toggleEditMode()
-    
+
     this.editForm = this._fb.group({
       personalDetails: this._fb.group({
         fullName: [data.personalDetails.fullName, [Validators.required, Validators.minLength(2)]],
@@ -419,7 +422,7 @@ export class ApplicationDetailComponent implements OnInit {
         dateOfBirth: [this.formatDateForInput(data.personalDetails.dateOfBirth), [Validators.required, minAgeValidator(18)]],
         placeOfBirth: [data.personalDetails.placeOfBirth, Validators.required],
         passportNo: [
-          data.personalDetails.passportNo, 
+          data.personalDetails.passportNo,
           [
             Validators.required,
             Validators.minLength(6),
@@ -438,7 +441,7 @@ export class ApplicationDetailComponent implements OnInit {
         dateIssued: [this.formatDateForInput(data.personalDetails.dateIssued), Validators.required],
         email: [data.personalDetails.email, [Validators.required, Validators.email, emailFormatValidator()]],
         mobile: [
-          data.personalDetails.mobile, 
+          data.personalDetails.mobile,
           [Validators.required],
           [uniqueFieldValidator(
             (val: any) => {
@@ -471,10 +474,10 @@ export class ApplicationDetailComponent implements OnInit {
       educationDetails: this._fb.group({
         undergraduates: this._fb.array(
           data.educationDetails.undergraduates.map((ug: any, index: number) => {
-            const validators = index === 0 
+            const validators = index === 0
               ? [Validators.required, minYearValidator(1950)]
               : (ug.graduationYear ? [minYearValidator(1950)] : []);
-            
+
             return this._fb.group({
               id: [ug.id],
               university: [ug.university, index === 0 ? Validators.required : null],
@@ -489,7 +492,7 @@ export class ApplicationDetailComponent implements OnInit {
         postgraduates: this._fb.array(
           data.educationDetails.postgraduates.map((pg: any) => {
             const validators = pg.graduationYear ? [minYearValidator(1950)] : [];
-            
+
             return this._fb.group({
               id: [pg.id],
               university: [pg.university || ''],
@@ -715,7 +718,7 @@ export class ApplicationDetailComponent implements OnInit {
       languageId: [''],
       thesisTitle: ['']
     }));
-    
+
     // Add empty file array for new degree
     this.undergraduateFiles.update(files => [...files, []]);
   }
@@ -738,7 +741,7 @@ export class ApplicationDetailComponent implements OnInit {
       languageId: [''],
       thesisTitle: ['']
     }));
-    
+
     // Add empty file array for new degree
     this.postgraduateFiles.update(files => [...files, []]);
   }
@@ -781,7 +784,7 @@ export class ApplicationDetailComponent implements OnInit {
    */
   exportToPDF(): void {
     this.exporting.set(true);
-    
+
     this._mbaService.exportToPDF(this.applicationId()).subscribe({
       next: (blob) => {
         // Create download link
@@ -790,10 +793,10 @@ export class ApplicationDetailComponent implements OnInit {
         link.href = url;
         link.download = `MBA_Application_${this.applicationId()}.pdf`;
         link.click();
-        
+
         // Cleanup
         window.URL.revokeObjectURL(url);
-        
+
         this.exporting.set(false);
         this._alertService.success('Success!', 'PDF exported successfully!');
       },
@@ -836,10 +839,10 @@ export class ApplicationDetailComponent implements OnInit {
     const files = event.target.files;
     if (files && files.length > 0) {
       const newFiles: any[] = [];
-      
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
           this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`);
@@ -883,10 +886,10 @@ export class ApplicationDetailComponent implements OnInit {
     const files = event.target.files;
     if (files && files.length > 0) {
       const newFiles: any[] = [];
-      
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         if (file.size > 5 * 1024 * 1024) {
           this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`);
           continue;
@@ -956,10 +959,10 @@ export class ApplicationDetailComponent implements OnInit {
     const files = event.target.files;
     if (files && files.length > 0) {
       const newFiles: any[] = [];
-      
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         if (file.size > 5 * 1024 * 1024) {
           this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`);
           continue;
@@ -1026,7 +1029,7 @@ export class ApplicationDetailComponent implements OnInit {
   onCorrespondenceProvinceChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const provinceCode = selectElement.value;
-    
+
     if (provinceCode) {
       const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
       if (selectedProvince) {
@@ -1034,7 +1037,7 @@ export class ApplicationDetailComponent implements OnInit {
           correspondenceCityName: selectedProvince.provinceName
         });
       }
-      
+
       // Load wards for selected province
       this._mbaService.getWardsByProvinceCode(provinceCode).subscribe({
         next: (wards) => {
@@ -1066,7 +1069,7 @@ export class ApplicationDetailComponent implements OnInit {
   onCorrespondenceWardChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const wardCode = selectElement.value;
-    
+
     if (wardCode) {
       const selectedWard = this.correspondenceWards().find(w => w.wardCode === wardCode);
       if (selectedWard) {
@@ -1090,7 +1093,7 @@ export class ApplicationDetailComponent implements OnInit {
   onPermanentProvinceChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const provinceCode = selectElement.value;
-    
+
     if (provinceCode) {
       const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
       if (selectedProvince) {
@@ -1098,7 +1101,7 @@ export class ApplicationDetailComponent implements OnInit {
           permanentCityName: selectedProvince.provinceName
         });
       }
-      
+
       // Load wards for selected province
       this._mbaService.getWardsByProvinceCode(provinceCode).subscribe({
         next: (wards) => {
@@ -1130,7 +1133,7 @@ export class ApplicationDetailComponent implements OnInit {
   onPermanentWardChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const wardCode = selectElement.value;
-    
+
     if (wardCode) {
       const selectedWard = this.permanentWards().find(w => w.wardCode === wardCode);
       if (selectedWard) {
@@ -1153,7 +1156,7 @@ export class ApplicationDetailComponent implements OnInit {
    */
   private logValidationErrors(): void {
     console.log('=== VALIDATION ERRORS ===');
-    
+
     // Check personal details
     const personalDetails = this.editForm.get('personalDetails') as FormGroup;
     if (personalDetails && personalDetails.invalid) {
@@ -1182,7 +1185,7 @@ export class ApplicationDetailComponent implements OnInit {
     const educationDetails = this.editForm.get('educationDetails') as FormGroup;
     if (educationDetails && educationDetails.invalid) {
       console.log('Education Details Errors:');
-      
+
       // Check undergraduates
       const undergraduates = educationDetails.get('undergraduates') as FormArray;
       if (undergraduates && undergraduates.invalid) {
@@ -1220,7 +1223,7 @@ export class ApplicationDetailComponent implements OnInit {
     const englishQualifications = this.editForm.get('englishQualifications') as FormGroup;
     if (englishQualifications && englishQualifications.invalid) {
       console.log('English Qualifications Errors:');
-      
+
       // Check group-level errors
       if (englishQualifications.errors) {
         console.log('  Group errors:', englishQualifications.errors);
@@ -1245,12 +1248,12 @@ export class ApplicationDetailComponent implements OnInit {
     const employmentHistory = this.editForm.get('employmentHistory') as FormGroup;
     if (employmentHistory && employmentHistory.invalid) {
       console.log('Employment History Errors:');
-      
+
       ['position1', 'position2'].forEach(pos => {
         const group = employmentHistory.get(pos) as FormGroup;
         if (group && group.invalid) {
           console.log(`  ${pos}:`);
-          
+
           // Check group-level errors (dateRange validator)
           if (group.errors) {
             console.log(`    Group errors:`, group.errors);

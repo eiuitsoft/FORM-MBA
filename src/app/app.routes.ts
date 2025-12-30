@@ -1,27 +1,37 @@
-import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { ApplicationDetailComponent } from './components/application-detail/application-detail.component';
-import { AppComponent } from '../app.component';
-import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { Routes } from "@angular/router";
+import { LoginComponent } from "./components/login/login.component";
+import { ApplicationDetailComponent } from "./components/application-detail/application-detail.component";
+import { AppComponent } from "../app.component";
+import { authGuard } from "./core/guards/auth.guard";
 
 export const routes: Routes = [
+  // {
+  //   path: 'application/:id',
+  //   component: ApplicationDetailComponent,
+  //   canActivate: [authGuard] // Requires authentication
+  // },
+  // {
+  //   path: 'edit/:id',
+  //   // canActivate: [authGuard],
+  //   redirectTo: 'application/:id',
+  //   pathMatch: 'full'
+  // },
   {
-    path: 'login',
-    component: LoginComponent
+    path: "login",
+    component: LoginComponent,
   },
   {
-    path: 'application/:id',
+    path: "register",
+    component: AppComponent,
+  },
+  {
+    path: "application",
     component: ApplicationDetailComponent,
-    canActivate: [authGuard] // Requires authentication
+    canActivate: [authGuard], // Requires authentication
   },
   {
-    path: 'edit/:id',
-    // canActivate: [authGuard],
-    redirectTo: 'application/:id',
-    pathMatch: 'full'
+    path: "",
+    redirectTo: "application",
+    pathMatch: "full"
   },
-  {
-    path: '',
-    component: AppComponent
-  }
 ];

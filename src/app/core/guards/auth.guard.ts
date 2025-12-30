@@ -6,7 +6,7 @@ import { TokenService } from '../services/auth/token.service';
 /**
  * Auth Guard - Protects routes that require authentication
  * Redirects to login if user is not authenticated
- * 
+ *
  * Usage:
  * {
  *   path: 'application/:id',
@@ -26,7 +26,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     //   router.navigate(['/unauthorized']);
     //   return false;
     // }
-    
+
     return true;
   }
 
@@ -51,7 +51,7 @@ export const guestGuard: CanActivateFn = (route, state) => {
   // User is logged in, redirect to their application detail
   const studentId = tokenService.studentId();
   if (studentId) {
-    router.navigate(['/application', studentId]);
+    router.navigate(['/application']);
   } else {
     router.navigate(['/login']);
   }

@@ -156,7 +156,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         const errorMsg = err.message || 'A system error has occurred!';
         this.errorMessage.set(errorMsg);
         this.alertService.error('Error', errorMsg);
-        console.error('Send OTP error:', err);
       }
     });
   }
@@ -195,7 +194,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   onLogin(): void {
     const otpValue = this.loginForm.value.otp;
-    
+
     if (!otpValue || otpValue.length !== 6) {
       this.isErrorOTP.set(true);
       return;
@@ -219,15 +218,16 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.tokenService.studentId.set(res.data?.mbaStudentId || '');
           this.tokenService.fullName.set(res.data?.fullName || '');
           this.tokenService.profileCode.set(res.data?.profileCode || '');
-          
+
           this.successMessage.set('Login successful! Redirecting...');
           this.alertService.success('Success!', 'Login successful! Redirecting...', 1500);
-          
+
           // Navigate to application detail page with studentId
           const studentId = res.data?.mbaStudentId;
           setTimeout(() => {
             if (studentId) {
-              this.router.navigate(['/application', studentId]);
+              // this.router.navigate(['/application', studentId]);
+              this.router.navigate(['/application']);
             } else {
               this.router.navigate(['/']);
             }
@@ -245,7 +245,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         const errorMsg = err.message || 'A system error has occurred!';
         this.errorMessage.set(errorMsg);
         this.alertService.error('Error', errorMsg);
-        console.error('Login error:', err);
       }
     });
   }
