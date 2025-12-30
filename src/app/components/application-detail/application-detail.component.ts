@@ -54,6 +54,7 @@ export class ApplicationDetailComponent implements OnInit {
   applicationId = signal<string>('');
   loading = signal(false);
   saving = signal(false);
+  exporting = signal(false);
   isEditMode = signal(false);
   applicationData = signal<any>(null);
   uploadedFiles = signal<any[]>([]);
@@ -761,6 +762,35 @@ export class ApplicationDetailComponent implements OnInit {
 
   goBack(): void {
     this._router.navigate(['/login']);
+  }
+
+  /**
+   * Export application to PDF
+   */
+  exportToPDF(): void {
+    this.exporting.set(true);
+    
+    this._mbaService.exportToPDF(this.applicationId()).subscribe({
+      next: (blob) => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `MBA_Application_${this.applicationId()}.pdf`;
+        link.click();
+        
+        // Cleanup
+        window.URL.revokeObjectURL(url);
+        
+        this.exporting.set(false);
+        this._alertService.success('Success!', 'PDF exported successfully!');
+      },
+      error: (err) => {
+        console.error('Export PDF error:', err);
+        this._alertService.error('Error', 'Failed to export PDF');
+        this.exporting.set(false);
+      }
+    });
   }
 
   formatDateTime(dateString: string | null): string {
