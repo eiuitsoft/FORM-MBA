@@ -100,7 +100,7 @@ export class AppComponent implements OnInit {
       programCode: [{ value: '', disabled: true }],
       programName: [''],
       track: [{ value: 'Application', disabled: true }, Validators.required],
-      admissionYear: [{ value: this.currentYear + 1, disabled: true }, [Validators.required, minYearValidator(this.currentYear)]],
+      admissionYear: [this.currentYear, [Validators.required, minYearValidator(this.currentYear)]],
       admissionIntake: [{ value: '1', disabled: true }, Validators.required],
     }),
     educationDetails: this.fb.group({

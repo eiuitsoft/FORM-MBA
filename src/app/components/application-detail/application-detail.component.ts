@@ -8,6 +8,7 @@ import { PageLayoutComponent } from '../layouts/page-layout/page-layout.componen
 import { PersonalDetailsViewComponent } from './sections/personal-details-view.component';
 import { PersonalDetailsEditComponent } from './sections/personal-details-edit.component';
 import { ApplicationDetailsViewComponent } from './sections/application-details-view.component';
+import { ApplicationDetailsEditComponent } from './sections/application-details-edit.component';
 import { EducationDetailsViewComponent } from './sections/education-details-view.component';
 import { EducationDetailsEditComponent } from './sections/education-details-edit.component';
 import { EnglishQualificationsViewComponent } from './sections/english-qualifications-view.component';
@@ -35,6 +36,7 @@ import { of } from 'rxjs';
     PersonalDetailsViewComponent,
     PersonalDetailsEditComponent,
     ApplicationDetailsViewComponent,
+    ApplicationDetailsEditComponent,
     EducationDetailsViewComponent,
     EducationDetailsEditComponent,
     EnglishQualificationsViewComponent,
@@ -463,6 +465,9 @@ export class ApplicationDetailComponent implements OnInit {
         permanentDistrictName: [data.personalDetails.permanentDistrictName || ''],
         permanentAddress: [data.personalDetails.permanentAddress, Validators.required],
       }),
+      applicationDetails: this._fb.group({
+        admissionYear: [data.applicationDetails.admissionYear || new Date().getFullYear(), [Validators.required, minYearValidator(new Date().getFullYear())]]
+      }),
       educationDetails: this._fb.group({
         undergraduates: this._fb.array(
           data.educationDetails.undergraduates.map((ug: any, index: number) => {
@@ -611,7 +616,10 @@ export class ApplicationDetailComponent implements OnInit {
         permanentAddress: rawValue.personalDetails.permanentAddress
         // files removed - already uploaded via file manager
       },
-      applicationDetails: data.applicationDetails,
+      applicationDetails: {
+        ...data.applicationDetails,
+        admissionYear: rawValue.applicationDetails.admissionYear
+      },
       educationDetails: {
         undergraduates: rawValue.educationDetails.undergraduates.map((ug: any, index: number) => {
           return {
@@ -746,6 +754,10 @@ export class ApplicationDetailComponent implements OnInit {
   // Form group getters
   get personalDetailsForm(): FormGroup {
     return this.editForm?.get('personalDetails') as FormGroup;
+  }
+
+  get applicationDetailsForm(): FormGroup {
+    return this.editForm?.get('applicationDetails') as FormGroup;
   }
 
   get educationDetailsForm(): FormGroup {
@@ -1148,6 +1160,18 @@ export class ApplicationDetailComponent implements OnInit {
       console.log('Personal Details Errors:');
       Object.keys(personalDetails.controls).forEach(key => {
         const control = personalDetails.get(key);
+        if (control && control.invalid) {
+          console.log(`  - ${key}:`, control.errors);
+        }
+      });
+    }
+
+    // Check application details
+    const applicationDetails = this.editForm.get('applicationDetails') as FormGroup;
+    if (applicationDetails && applicationDetails.invalid) {
+      console.log('Application Details Errors:');
+      Object.keys(applicationDetails.controls).forEach(key => {
+        const control = applicationDetails.get(key);
         if (control && control.invalid) {
           console.log(`  - ${key}:`, control.errors);
         }

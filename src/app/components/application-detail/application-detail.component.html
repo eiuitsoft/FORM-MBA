@@ -132,8 +132,11 @@
         (onPermanentProvinceChange)="onPermanentProvinceChange($event)"
         (onPermanentWardChange)="onPermanentWardChange($event)" />
       
-      <!-- Application Details (Read-only in edit mode) -->
-      <app-application-details-view class="block mb-8" [data]="applicationData()?.applicationDetails" />
+      <!-- Application Details Edit -->
+      <app-application-details-edit 
+        class="block mb-8" 
+        [formGroup]="applicationDetailsForm"
+        [data]="applicationData()?.applicationDetails" />
       
       <!-- Education Details Edit -->
       <app-education-details-edit 
