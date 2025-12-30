@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -44,7 +44,8 @@ import { of } from 'rxjs';
     EmploymentHistoryViewComponent,
     EmploymentHistoryEditComponent
   ],
-  templateUrl: './application-detail.component.html'
+  templateUrl: './application-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ApplicationDetailComponent implements OnInit {
   private readonly _mbaService = inject(MbaService);

@@ -14,7 +14,8 @@
     "ADD_MORE": "Add More",
     "CHECKING": "Checking...",
     "VALID_NUMBER": "Valid number",
-    "FILE_SELECTED": "file(s) selected",
+    "FILE_SELECTED": "file(s) uploaded - Click to manage",
+    "FILE_UPLOAD": "Click to upload files",
     "FILE_HINT": "PDF, JPG, or PNG, max 5MB per file",
     "SUBMIT": "Submit Application",
     "SUBMITTING": "Submitting...",
@@ -26,8 +27,9 @@
     "PERSONAL": "SECTION A - PERSONAL DETAILS",
     "APPLICATION": "SECTION B - APPLICATION DETAILS",
     "EDUCATION": "SECTION C - PREVIOUS EDUCATION DETAILS",
-    "EMPLOYMENT": "SECTION D - EMPLOYMENT HISTORY",
-    "DECLARATION": "SECTION E - DECLARATION"
+    "ENGLISH": "SECTION D - ENGLISH QUALIFICATIONS",
+    "EMPLOYMENT": "SECTION E - EMPLOYMENT HISTORY",
+    "DECLARATION": "SECTION F - DECLARATION"
   },
   "PERSONAL_DETAILS": {
     "FULL_NAME": "Full name",
@@ -50,17 +52,22 @@
     "EMAIL": "Email",
     "EMAIL_INVALID": "Please enter a valid email address",
     "EMAIL_DOMAIN": "Email domain is invalid",
+    "EMAIL_DOMAIN_INVALID": "Email domain is invalid",
     "MOBILE": "Mobile",
     "MOBILE_INVALID": "Please enter a valid phone number",
     "MOBILE_EXISTS": "This mobile number is already registered",
     "JOB_TITLE": "Job title",
+    "ENTER_JOB_TITLE": "Enter job title",
     "ORGANIZATION": "Organization",
+    "ENTER_ORGANIZATION": "Enter organization",
     "CORR_CITY": "Correspondence City",
     "CORR_DISTRICT": "Correspondence District",
     "CORR_ADDRESS": "Correspondence Address",
+    "ENTER_CORR_ADDRESS": "Enter correspondence address",
     "PERM_CITY": "Permanent City",
     "PERM_DISTRICT": "Permanent District",
     "PERM_ADDRESS": "Permanent Address",
+    "ENTER_PERM_ADDRESS": "Enter permanent address",
     "UPLOAD_PASSPORT": "Upload ID/Passport Document"
   },
   "APPLICATION_DETAILS": {
@@ -68,6 +75,7 @@
     "PROGRAM_CODE": "Program code",
     "TRACK": "Track",
     "ADMISSION_YEAR": "Admission Year",
+    "ADMISSION_YEAR_MIN": "Admission year must be current year or later",
     "ADMISSION_YEAR_ERROR": "Admission year must be {{year}} or later",
     "ADMISSION_INTAKE": "Admission Intake"
   },
@@ -89,7 +97,9 @@
     "UPLOAD_CERT": "Upload Certificate (Optional)",
     "THESIS": "Thesis title",
     "ADD_UNDERGRAD": "Add More Undergraduate",
-    "ADD_POSTGRAD": "Add More Postgraduate"
+    "ADD_POSTGRAD": "Add More Postgraduate",
+    "NO_UNDERGRAD": "No undergraduate degrees recorded",
+    "NO_POSTGRAD": "No postgraduate degrees recorded"
   },
   "ENGLISH": {
     "TITLE": "3. English qualifications",
@@ -102,8 +112,10 @@
     "TOEFL_RANGE": "TOEFL score must be between 0 and 120",
     "INVALID_NUMBER": "Please enter a valid number",
     "OTHER_TEST": "Other Test",
+    "TEST_NAME": "Test Name",
     "UPLOAD_CERT": "Upload English Certificate (for all qualifications)",
-    "AT_LEAST_ONE": "Please provide at least one English qualification (IELTS, TOEFL or Other)"
+    "AT_LEAST_ONE": "Please provide at least one English qualification (IELTS, TOEFL or Other)",
+    "NO_QUALIFICATIONS": "No English qualifications recorded"
   },
   "EMPLOYMENT": {
     "POSITION_1": "Position 1 (Most recent)",
@@ -113,7 +125,8 @@
     "FROM": "From",
     "TO": "To",
     "DATE_ERROR": "End date must be after or equal to start date",
-    "ADDRESS": "Organization address"
+    "ADDRESS": "Organization address",
+    "NO_HISTORY": "No employment history recorded"
   },
   "DECLARATION": {
     "P1": "By applying for admission to the Master of Business Administration program at Eastern International University, I hereby commit to fulfilling all academic, research, and financial obligations upon admission as follows:",
@@ -127,5 +140,25 @@
   "CONFIRM_DIALOG": {
     "TITLE": "Confirm Submission",
     "MESSAGE": "Are you sure you want to submit this application?"
+  },
+  "FILE_DIALOG": {
+    "LOADING": "Loading files...",
+    "CLICK_TO_UPLOAD": "Click to upload files",
+    "SELECTED_NOT_SAVED": "Selected files (not saved)",
+    "FILES": "file(s)",
+    "UPLOADING": "Uploading...",
+    "SAVE": "Save",
+    "NO": "No.",
+    "FILE_NAME": "File Name",
+    "FILE_TYPE": "File Type",
+    "ACTIONS": "Actions",
+    "DOWNLOAD": "Download",
+    "DELETE": "Delete",
+    "NO_FILES": "No files uploaded yet",
+    "CLOSE": "Close",
+    "TITLE_PASSPORT": "Manage ID/Passport Files",
+    "TITLE_UNDERGRAD": "Manage Undergraduate Degree Files",
+    "TITLE_POSTGRAD": "Manage Postgraduate Degree Files",
+    "TITLE_ENGLISH": "Manage English Certificate Files"
   }
 }

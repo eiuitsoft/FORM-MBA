@@ -1,5 +1,6 @@
-import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AlertService } from '../../../core/services/alert/alert.service';
 import { MbaService } from '../../../core/services/mba/mba.service';
 import { TokenService } from '../../../core/services/auth/token.service';
@@ -7,17 +8,15 @@ import { TokenService } from '../../../core/services/auth/token.service';
 @Component({
   selector: 'app-file-manager-dialog',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div *ngIf="isOpen" class="fixed inset-0 z-50 overflow-y-auto" (click)="onBackdropClick($event)">
+    @if (isOpen) {
+    <div class="fixed inset-0 z-50 overflow-y-auto" (click)="onBackdropClick($event)">
       <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Background overlay -->
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"></div>
-
-        <!-- Center modal -->
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
 
-        <!-- Modal panel -->
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
              (click)="$event.stopPropagation()">
           
@@ -35,14 +34,13 @@ import { TokenService } from '../../../core/services/auth/token.service';
 
           <!-- Body -->
           <div class="bg-gray-50 px-6 py-4">
-            <!-- Loading indicator -->
             @if (loading) {
               <div class="flex items-center justify-center py-8">
                 <svg class="animate-spin h-8 w-8 text-[#a68557]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span class="ml-3 text-gray-600">Loading files...</span>
+                <span class="ml-3 text-gray-600">{{ 'FILE_DIALOG.LOADING' | translate }}</span>
               </div>
             }
             
@@ -54,19 +52,19 @@ import { TokenService } from '../../../core/services/auth/token.service';
                   <svg class="w-10 h-10 mb-3 text-[#a68557]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
-                  <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload files</span></p>
-                  <p class="text-xs text-gray-500">PDF, JPG, PNG (max 5MB)</p>
+                  <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</span></p>
+                  <p class="text-xs text-gray-500">{{ 'COMMON.FILE_HINT' | translate }}</p>
                 </div>
                 <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple (change)="onFileSelect($event)" />
               </label>
             </div>
 
-            <!-- Pending files preview (newly selected files) -->
+            <!-- Pending files preview -->
             @if (pendingFiles.length > 0) {
               <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div class="flex items-center justify-between mb-3">
-                  <h4 class="text-sm font-semibold text-gray-700">Selected files (not saved)</h4>
-                  <span class="text-xs text-gray-500">{{ pendingFiles.length }} file(s)</span>
+                  <h4 class="text-sm font-semibold text-gray-700">{{ 'FILE_DIALOG.SELECTED_NOT_SAVED' | translate }}</h4>
+                  <span class="text-xs text-gray-500">{{ pendingFiles.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
                 </div>
                 <div class="space-y-2">
                   @for (file of pendingFiles; track $index) {
@@ -80,8 +78,7 @@ import { TokenService } from '../../../core/services/auth/token.service';
                           <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
                         </div>
                       </div>
-                      <button type="button" (click)="removePendingFile($index)" 
-                              class="ml-2 p-1 text-red-600 hover:text-red-800 shrink-0">
+                      <button type="button" (click)="removePendingFile($index)" class="ml-2 p-1 text-red-600 hover:text-red-800 shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -102,12 +99,12 @@ import { TokenService } from '../../../core/services/auth/token.service';
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Uploading...</span>
+                  <span>{{ 'FILE_DIALOG.UPLOADING' | translate }}</span>
                 } @else {
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                   </svg>
-                  <span>Save {{ pendingFiles.length > 0 ? '(' + pendingFiles.length + ' file' + (pendingFiles.length > 1 ? 's' : '') + ')' : '' }}</span>
+                  <span>{{ 'FILE_DIALOG.SAVE' | translate }} {{ pendingFiles.length > 0 ? '(' + pendingFiles.length + ')' : '' }}</span>
                 }
               </button>
             </div>
@@ -117,10 +114,10 @@ import { TokenService } from '../../../core/services/auth/token.service';
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">No.</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">File Type</th>
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Actions</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">{{ 'FILE_DIALOG.NO' | translate }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'FILE_DIALOG.FILE_NAME' | translate }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">{{ 'FILE_DIALOG.FILE_TYPE' | translate }}</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ 'FILE_DIALOG.ACTIONS' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -132,13 +129,13 @@ import { TokenService } from '../../../core/services/auth/token.service';
                       <td class="px-4 py-3 text-sm text-center">
                         <div class="flex items-center justify-center space-x-2">
                           <button type="button" (click)="downloadFile(file)" 
-                                  class="p-2 text-white bg-[#a68557] rounded hover:bg-[#8b6d47]" title="Download">
+                                  class="p-2 text-white bg-[#a68557] rounded hover:bg-[#8b6d47]" [title]="'FILE_DIALOG.DOWNLOAD' | translate">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                           </button>
                           <button type="button" (click)="deleteUploadedFile($index)" 
-                                  class="p-2 text-white bg-red-600 rounded hover:bg-red-700" title="Delete">
+                                  class="p-2 text-white bg-red-600 rounded hover:bg-red-700" [title]="'FILE_DIALOG.DELETE' | translate">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -150,7 +147,7 @@ import { TokenService } from '../../../core/services/auth/token.service';
                   @if (uploadedFiles.length === 0) {
                     <tr>
                       <td colspan="4" class="px-4 py-8 text-center text-sm text-gray-500">
-                        No files uploaded yet
+                        {{ 'FILE_DIALOG.NO_FILES' | translate }}
                       </td>
                     </tr>
                   }
@@ -164,18 +161,15 @@ import { TokenService } from '../../../core/services/auth/token.service';
           <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
             <button type="button" (click)="close()" 
                     class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              Close
+              {{ 'FILE_DIALOG.CLOSE' | translate }}
             </button>
           </div>
         </div>
       </div>
     </div>
-  `,
-  styles: [`
-    :host {
-      display: contents;
     }
-  `]
+  `,
+  styles: [`:host { display: contents; }`]
 })
 export class FileManagerDialogComponent implements OnChanges {
   private readonly _alertService = inject(AlertService);
@@ -186,7 +180,7 @@ export class FileManagerDialogComponent implements OnChanges {
   @Input() title = 'File Attachments';
   @Input() files: any[] = [];
   @Input() fileCategoryId: number = 1;
-  @Input() entityId?: string; // Entity ID (e.g., education detail ID, employment ID, etc.)
+  @Input() entityId?: string;
   @Output() isOpenChange = new EventEmitter<boolean>();
   @Output() filesChange = new EventEmitter<any[]>();
   @Output() onSave = new EventEmitter<any[]>();
@@ -195,314 +189,129 @@ export class FileManagerDialogComponent implements OnChanges {
   loading = false;
   pendingFiles: File[] = [];
   
-  // Get studentId from TokenService
-  get studentId(): string {
-    return this._tokenService.studentId();
-  }
+  get studentId(): string { return this._tokenService.studentId(); }
+  get uploadedFiles(): any[] { return this.files.filter(f => !f.isPending); }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // When dialog opens, load existing files from API
     if (changes['isOpen'] && changes['isOpen'].currentValue === true && !changes['isOpen'].firstChange) {
       this.loadExistingFiles();
     }
   }
 
-  // Computed: Uploaded files only
-  get uploadedFiles(): any[] {
-    return this.files.filter(f => !f.isPending);
-  }
-
-  /**
-   * Load existing files from API when dialog opens
-   */
   private loadExistingFiles(): void {
-    if (!this.studentId || !this.fileCategoryId) {
-      console.warn('Cannot load files: studentId or fileCategoryId is missing');
-      return;
-    }
-
+    if (!this.studentId || !this.fileCategoryId) return;
     this.loading = true;
     this._mbaService.getFilesByCategory(this.studentId, this.fileCategoryId, this.entityId).subscribe({
       next: (result) => {
         this.loading = false;
         if (result.success && result.data) {
-          // API returns: { data: { files: [...] } }
           const filesArray = result.data.files || [];
-          
-          // Map API response to file objects
-          const loadedFiles = filesArray.map((file: any) => ({
-            id: file.id,
-            fileName: file.fileOriginalName || file.fileName,
-            fileLocalName: file.fileLocalName,
-            fileSize: file.fileSize || 0,
-            fileType: file.fileType || 'application/octet-stream',
-            fileFullPath: file.fileFullPath,
-            sortOrder: file.sortOrder || 0,
-            isPending: false
+          this.files = filesArray.map((file: any) => ({
+            id: file.id, fileName: file.fileOriginalName || file.fileName, fileLocalName: file.fileLocalName,
+            fileSize: file.fileSize || 0, fileType: file.fileType || 'application/octet-stream',
+            fileFullPath: file.fileFullPath, sortOrder: file.sortOrder || 0, isPending: false
           }));
-          
-          // Replace files array with loaded files
-          this.files = loadedFiles;
           this.filesChange.emit(this.files);
         } else {
-          // No files found - clear the array
           this.files = [];
           this.filesChange.emit(this.files);
         }
       },
-      error: (err) => {
-        this.loading = false;
-        console.error('Error loading files:', err);
-        // Don't show error to user - just keep existing files
-      }
+      error: () => { this.loading = false; }
     });
   }
 
-  onBackdropClick(): void {
-    this.close();
-  }
-
-  close(): void {
-    this.isOpen = false;
-    this.isOpenChange.emit(false);
-  }
+  onBackdropClick(): void { this.close(); }
+  close(): void { this.isOpen = false; this.isOpenChange.emit(false); }
 
   onFileSelect(event: any): void {
     const selectedFiles = event.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
-    
-    // Validate and add files to pending list
     for (let i = 0; i < selectedFiles.length; i++) {
       const file = selectedFiles[i];
-      
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`);
-        continue;
-      }
-
-      // Validate file type
+      if (file.size > 5 * 1024 * 1024) { this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`); continue; }
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-      if (!allowedTypes.includes(file.type)) {
-        this._alertService.error('Error', `File ${file.name} has invalid type. Only PDF, JPG, PNG are allowed`);
-        continue;
-      }
-      
-      // Add to pending files
+      if (!allowedTypes.includes(file.type)) { this._alertService.error('Error', `File ${file.name} has invalid type`); continue; }
       this.pendingFiles.push(file);
     }
-    
-    // Reset input
     event.target.value = '';
   }
 
-  /**
-   * Remove file from pending list
-   */
-  removePendingFile(index: number): void {
-    this.pendingFiles.splice(index, 1);
-  }
+  removePendingFile(index: number): void { this.pendingFiles.splice(index, 1); }
 
-  /**
-   * Format file size
-   */
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB'];
+    const k = 1024, sizes = ['Bytes', 'KB', 'MB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 
-  /**
-   * Save files - Upload pending files to server
-   */
   saveFiles(): void {
-    // If no pending files
-    if (this.pendingFiles.length === 0) {
-      this.onSave.emit(this.files);
-      this._alertService.successMin('Saved successfully');
-      return;
-    }
-    
-    // Upload pending files to server
+    if (this.pendingFiles.length === 0) { this.onSave.emit(this.files); this._alertService.successMin('Saved successfully'); return; }
     this.uploading = true;
-    
     const formData = new FormData();
     formData.append('StudentId', this.studentId);
     formData.append('FileCategoryId', this.fileCategoryId.toString());
-    formData.append('StudentFileType', '1'); // 1 = FileRegister
-    
-    this.pendingFiles.forEach(file => {
-      formData.append('Files', file);
-    });
+    formData.append('StudentFileType', '1');
+    this.pendingFiles.forEach(file => formData.append('Files', file));
     
     this._mbaService.uploadAdmissionFiles(formData).subscribe({
       next: (result: any) => {
         this.uploading = false;
-        
-        // API returns array directly: [{id, fileName, ...}, ...]
-        let uploadedData: any[] = [];
-        
-        if (Array.isArray(result)) {
-          // Direct array response
-          uploadedData = result;
-        } else if (result && result.success && result.data) {
-          // Wrapped response (fallback)
-          uploadedData = Array.isArray(result.data) ? result.data : [result.data];
-        } else if (result && result.id) {
-          // Single object response
-          uploadedData = [result];
-        }
-        
+        let uploadedData: any[] = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : [result.data]) : (result?.id ? [result] : []));
         if (uploadedData.length > 0) {
-          // Remove pending files from display list
           this.files = this.files.filter(f => !f.isPending);
-          
-          // Add uploaded files to list
           const uploadedFiles = uploadedData.map((file: any) => ({
-            id: file.id,
-            fileName: file.fileOriginalName || file.fileName,
-            fileLocalName: file.fileLocalName,
-            fileSize: file.fileSize || 0,
-            fileType: file.fileType,
-            fileFullPath: file.fileFullPath,
-            sortOrder: file.sortOrder,
-            isPending: false
+            id: file.id, fileName: file.fileOriginalName || file.fileName, fileLocalName: file.fileLocalName,
+            fileSize: file.fileSize || 0, fileType: file.fileType, fileFullPath: file.fileFullPath, sortOrder: file.sortOrder, isPending: false
           }));
-          
           this.files.push(...uploadedFiles);
           this.filesChange.emit(this.files);
           this.onSave.emit(this.files);
-          
-          // Clear pending files
           this.pendingFiles = [];
-          
           this._alertService.successMin(`Successfully uploaded ${uploadedFiles.length} file(s)`);
         } else {
-          console.error('Upload failed - no data in response');
           this._alertService.error('Error', 'Upload failed - no data returned');
         }
       },
-      error: (err) => {
-        this.uploading = false;
-        console.error('Upload error:', err);
-        this._alertService.error('Error', 'An error occurred while uploading files');
-      }
+      error: () => { this.uploading = false; this._alertService.error('Error', 'An error occurred while uploading files'); }
     });
   }
 
-  async deleteFile(index: number): Promise<void> {
-    const file = this.files[index];
-    
-    const confirmed = await this._alertService.confirmSwal(
-      'Confirm Delete',
-      `Are you sure you want to delete "${file.fileName}"?`
-    );
-    
-    if (confirmed) {
-      // If file is uploaded to server (has fileLocalName), call API to delete
-      if (file.fileLocalName) {
-        this._mbaService.removeFile(file.fileLocalName).subscribe({
-          next: (result) => {
-            if (result.success) {
-              this.files.splice(index, 1);
-              this.filesChange.emit(this.files);
-              this._alertService.successMin('File deleted');
-            } else {
-              this._alertService.error('Error', result.message || 'Failed to delete file');
-            }
-          },
-          error: (err) => {
-            console.error('Delete error:', err);
-            this._alertService.error('Error', 'An error occurred while deleting file');
-          }
-        });
-      } else if (file.isPending) {
-        // Pending file (not uploaded), remove from pending list and display list
-        const pendingIndex = this.pendingFiles.findIndex(f => f.name === file.fileName && f.size === file.fileSize);
-        if (pendingIndex !== -1) {
-          this.pendingFiles.splice(pendingIndex, 1);
-        }
-        this.files.splice(index, 1);
-        this.filesChange.emit(this.files);
-        this._alertService.successMin('File removed');
-      } else {
-        // Local file (fallback)
-        this.files.splice(index, 1);
-        this.filesChange.emit(this.files);
-        this._alertService.successMin('File removed');
-      }
-    }
-  }
-
-  /**
-   * Delete uploaded file from server
-   */
   async deleteUploadedFile(index: number): Promise<void> {
     const file = this.uploadedFiles[index];
-    
-    const confirmed = await this._alertService.confirmSwal(
-      'Confirm Delete',
-      `Are you sure you want to delete "${file.fileName}"?`
-    );
-    
-    if (confirmed) {
-      // Call API to delete file from server
-      if (file.fileLocalName) {
-        this._mbaService.removeFile(file.fileLocalName).subscribe({
-          next: (result) => {
-            if (result.success) {
-              // Find and remove file from files array
-              const fileIndex = this.files.findIndex(f => f.fileLocalName === file.fileLocalName);
-              if (fileIndex !== -1) {
-                this.files.splice(fileIndex, 1);
-                this.filesChange.emit(this.files);
-              }
-              this._alertService.successMin('File deleted');
-            } else {
-              this._alertService.error('Error', result.message || 'Failed to delete file');
-            }
-          },
-          error: (err) => {
-            console.error('Delete error:', err);
-            this._alertService.error('Error', 'An error occurred while deleting file');
-          }
-        });
-      }
+    const confirmed = await this._alertService.confirmSwal('Confirm Delete', `Are you sure you want to delete "${file.fileName}"?`);
+    if (confirmed && file.fileLocalName) {
+      this._mbaService.removeFile(file.fileLocalName).subscribe({
+        next: (result) => {
+          if (result.success) {
+            const fileIndex = this.files.findIndex(f => f.fileLocalName === file.fileLocalName);
+            if (fileIndex !== -1) { this.files.splice(fileIndex, 1); this.filesChange.emit(this.files); }
+            this._alertService.successMin('File deleted');
+          } else { this._alertService.error('Error', result.message || 'Failed to delete file'); }
+        },
+        error: () => { this._alertService.error('Error', 'An error occurred while deleting file'); }
+      });
     }
   }
 
   downloadFile(file: any): void {
-    // If file has fileFullPath (uploaded to server), download from server
     if (file.fileFullPath) {
       this._mbaService.downloadFile(file.fileFullPath).subscribe({
         next: (blob) => {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
-          link.href = url;
-          link.download = file.fileName;
-          link.click();
+          link.href = url; link.download = file.fileName; link.click();
           window.URL.revokeObjectURL(url);
         },
-        error: (err) => {
-          console.error('Download error:', err);
-          this._alertService.error('Error', 'Unable to download file');
-        }
+        error: () => { this._alertService.error('Error', 'Unable to download file'); }
       });
-    } else if (file.fileData) {
-      // Fallback: Download from base64 (local file not uploaded)
-      const linkSource = `data:${file.fileType};base64,${file.fileData}`;
-      const downloadLink = document.createElement('a');
-      downloadLink.href = linkSource;
-      downloadLink.download = file.fileName;
-      downloadLink.click();
     }
   }
 
   getFileTypeLabel(fileType: string): string {
-    if (fileType.includes('pdf')) return 'Document';
-    if (fileType.includes('image')) return 'Image';
+    if (fileType?.includes('pdf')) return 'Document';
+    if (fileType?.includes('image')) return 'Image';
     return 'File';
   }
 }

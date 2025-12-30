@@ -14,7 +14,8 @@
     "ADD_MORE": "Thêm mới",
     "CHECKING": "Đang kiểm tra...",
     "VALID_NUMBER": "Số hợp lệ",
-    "FILE_SELECTED": "tệp đã chọn",
+    "FILE_SELECTED": "tệp đã tải lên - Nhấn để quản lý",
+    "FILE_UPLOAD": "Nhấn để tải tệp lên",
     "FILE_HINT": "PDF, JPG, hoặc PNG, tối đa 5MB mỗi tệp",
     "SUBMIT": "Gửi Đơn Đăng Ký",
     "SUBMITTING": "Đang gửi...",
@@ -26,8 +27,9 @@
     "PERSONAL": "PHẦN A - THÔNG TIN CÁ NHÂN",
     "APPLICATION": "PHẦN B - CHI TIẾT ĐĂNG KÝ",
     "EDUCATION": "PHẦN C - THÔNG TIN QUÁ TRÌNH HỌC TẬP",
-    "EMPLOYMENT": "PHẦN D - KINH NGHIỆM LÀM VIỆC",
-    "DECLARATION": "PHẦN E - LỜI CAM ĐOAN"
+    "ENGLISH": "PHẦN D - CHỨNG CHỈ TIẾNG ANH",
+    "EMPLOYMENT": "PHẦN E - KINH NGHIỆM LÀM VIỆC",
+    "DECLARATION": "PHẦN F - LỜI CAM ĐOAN"
   },
   "PERSONAL_DETAILS": {
     "FULL_NAME": "Họ và tên",
@@ -50,17 +52,22 @@
     "EMAIL": "Email",
     "EMAIL_INVALID": "Vui lòng nhập email hợp lệ",
     "EMAIL_DOMAIN": "Tên miền email không hợp lệ",
+    "EMAIL_DOMAIN_INVALID": "Tên miền email không hợp lệ",
     "MOBILE": "Số điện thoại",
     "MOBILE_INVALID": "Vui lòng nhập số điện thoại hợp lệ",
     "MOBILE_EXISTS": "Số điện thoại này đã được đăng ký",
     "JOB_TITLE": "Chức danh công việc",
+    "ENTER_JOB_TITLE": "Nhập chức danh công việc",
     "ORGANIZATION": "Cơ quan/Tổ chức",
+    "ENTER_ORGANIZATION": "Nhập tên cơ quan/tổ chức",
     "CORR_CITY": "Tỉnh/Thành phố liên lạc",
     "CORR_DISTRICT": "Quận/Huyện liên lạc",
     "CORR_ADDRESS": "Địa chỉ liên lạc",
+    "ENTER_CORR_ADDRESS": "Nhập địa chỉ liên lạc",
     "PERM_CITY": "Tỉnh/Thành phố thường trú",
     "PERM_DISTRICT": "Quận/Huyện thường trú",
     "PERM_ADDRESS": "Địa chỉ thường trú",
+    "ENTER_PERM_ADDRESS": "Nhập địa chỉ thường trú",
     "UPLOAD_PASSPORT": "Tải lên tài liệu ID/Hộ chiếu"
   },
   "APPLICATION_DETAILS": {
@@ -68,6 +75,7 @@
     "PROGRAM_CODE": "Mã chương trình",
     "TRACK": "Hệ đào tạo",
     "ADMISSION_YEAR": "Năm nhập học",
+    "ADMISSION_YEAR_MIN": "Năm nhập học phải từ năm hiện tại trở đi",
     "ADMISSION_YEAR_ERROR": "Năm nhập học phải từ {{year}} trở đi",
     "ADMISSION_INTAKE": "Kỳ nhập học"
   },
@@ -89,7 +97,9 @@
     "UPLOAD_CERT": "Tải lên chứng chỉ (Tùy chọn)",
     "THESIS": "Tên luận văn",
     "ADD_UNDERGRAD": "Thêm bằng đại học",
-    "ADD_POSTGRAD": "Thêm bằng sau đại học"
+    "ADD_POSTGRAD": "Thêm bằng sau đại học",
+    "NO_UNDERGRAD": "Chưa có bằng đại học nào được ghi nhận",
+    "NO_POSTGRAD": "Chưa có bằng sau đại học nào được ghi nhận"
   },
   "ENGLISH": {
     "TITLE": "3. Chứng chỉ tiếng Anh",
@@ -102,8 +112,10 @@
     "TOEFL_RANGE": "Điểm TOEFL phải từ 0 đến 120",
     "INVALID_NUMBER": "Vui lòng nhập số hợp lệ",
     "OTHER_TEST": "Chứng chỉ khác",
+    "TEST_NAME": "Tên chứng chỉ",
     "UPLOAD_CERT": "Tải lên chứng chỉ tiếng Anh (tất cả các loại)",
-    "AT_LEAST_ONE": "Vui lòng cung cấp ít nhất một chứng chỉ tiếng Anh (IELTS, TOEFL hoặc khác)"
+    "AT_LEAST_ONE": "Vui lòng cung cấp ít nhất một chứng chỉ tiếng Anh (IELTS, TOEFL hoặc khác)",
+    "NO_QUALIFICATIONS": "Chưa có chứng chỉ tiếng Anh nào được ghi nhận"
   },
   "EMPLOYMENT": {
     "POSITION_1": "Vị trí 1 (Gần nhất)",
@@ -113,7 +125,8 @@
     "FROM": "Từ tháng",
     "TO": "Đến tháng",
     "DATE_ERROR": "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu",
-    "ADDRESS": "Địa chỉ cơ quan"
+    "ADDRESS": "Địa chỉ cơ quan",
+    "NO_HISTORY": "Chưa có kinh nghiệm làm việc nào được ghi nhận"
   },
   "DECLARATION": {
     "P1": "Khi nộp đơn xét tuyển vào chương trình Thạc sĩ Quản trị Kinh doanh tại Trường Đại học Quốc tế Miền Đông, tôi cam kết thực hiện đầy đủ các nghĩa vụ về học thuật, nghiên cứu và tài chính như sau:",
@@ -127,5 +140,25 @@
   "CONFIRM_DIALOG": {
     "TITLE": "Xác Nhận Gửi",
     "MESSAGE": "Bạn có chắc chắn muốn gửi đơn đăng ký này không?"
+  },
+  "FILE_DIALOG": {
+    "LOADING": "Đang tải tệp...",
+    "CLICK_TO_UPLOAD": "Nhấn để tải tệp lên",
+    "SELECTED_NOT_SAVED": "Tệp đã chọn (chưa lưu)",
+    "FILES": "tệp",
+    "UPLOADING": "Đang tải lên...",
+    "SAVE": "Lưu",
+    "NO": "STT",
+    "FILE_NAME": "Tên tệp",
+    "FILE_TYPE": "Loại tệp",
+    "ACTIONS": "Thao tác",
+    "DOWNLOAD": "Tải xuống",
+    "DELETE": "Xóa",
+    "NO_FILES": "Chưa có tệp nào được tải lên",
+    "CLOSE": "Đóng",
+    "TITLE_PASSPORT": "Quản lý tệp CMND/Hộ chiếu",
+    "TITLE_UNDERGRAD": "Quản lý tệp bằng đại học",
+    "TITLE_POSTGRAD": "Quản lý tệp bằng sau đại học",
+    "TITLE_ENGLISH": "Quản lý tệp chứng chỉ tiếng Anh"
   }
 }
