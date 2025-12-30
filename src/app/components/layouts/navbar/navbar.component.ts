@@ -21,7 +21,11 @@ export class NavbarComponent {
   // Signals
   showMobileMenu = signal(false);
   showUserMenu = signal(false);
-  currentLang = 'en';
+  currentLang: string = localStorage.getItem('lang') || 'en';
+
+  constructor() {
+    this.translate.use(this.currentLang);
+  }
 
   // Close dropdown when clicking outside
   @HostListener('document:click', ['$event'])
@@ -62,6 +66,7 @@ export class NavbarComponent {
   switchLanguage(): void {
     this.currentLang = this.currentLang === 'en' ? 'vi' : 'en';
     this.translate.use(this.currentLang);
+    localStorage.setItem('lang', this.currentLang);
     // Implement actual language switching logic here
   }
 }
