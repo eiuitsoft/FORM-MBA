@@ -13,6 +13,21 @@
       <div class="flex gap-3">
         <button
           *ngIf="!isEditMode()"
+          (click)="exportToPDF()"
+          [disabled]="exporting()"
+          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 flex items-center gap-2"
+        >
+          <svg *ngIf="!exporting()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <svg *ngIf="exporting()" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ exporting() ? 'Exporting...' : 'Export PDF' }}
+        </button>
+        <button
+          *ngIf="!isEditMode()"
           (click)="toggleEditMode()"
           class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#a68557] hover:bg-[#8b6d47]"
         >
@@ -43,18 +58,20 @@
     </div>
 
     <!-- View Mode -->
-    <div *ngIf="!loading() && !isEditMode() && applicationData()" class="space-y-6">
+    <div *ngIf="!loading() && !isEditMode() && applicationData()">
       <!-- Personal Details -->
       <app-personal-details-view 
+        class="block mb-8"
         [data]="applicationData()?.personalDetails"
         [uploadedFiles]="uploadedFiles()"
         (onFilesUpdate)="onViewFilesUpdate($event)" />
 
       <!-- Application Details -->
-      <app-application-details-view [data]="applicationData()?.applicationDetails" />
+      <app-application-details-view class="block mb-8" [data]="applicationData()?.applicationDetails" />
 
       <!-- Education Details -->
       <app-education-details-view 
+        class="block mb-8"
         [data]="applicationData()?.educationDetails"
         [undergraduateFiles]="undergraduateFiles()"
         [postgraduateFiles]="postgraduateFiles()"
@@ -62,12 +79,13 @@
 
       <!-- English Qualifications -->
       <app-english-qualifications-view 
+        class="block mb-8"
         [data]="applicationData()?.englishQualifications"
         [englishFiles]="englishFiles()"
         (onFilesUpdate)="onEnglishFilesUpdate($event)" />
 
       <!-- Employment History -->
-      <app-employment-history-view [data]="applicationData()?.employmentHistory" />
+      <app-employment-history-view class="block mb-8" [data]="applicationData()?.employmentHistory" />
 
       <!-- Declaration -->
       <!-- <div class="bg-white shadow rounded-lg p-6">
@@ -81,7 +99,7 @@
       </div> -->
 
       <!-- Application Timeline -->
-      <div class="bg-gray-50 shadow rounded-lg p-6">
+      <!-- <div class="bg-gray-50 shadow rounded-lg p-6">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Application Timeline</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -93,13 +111,14 @@
             <p class="mt-1 text-sm text-gray-900">{{ formatDateTime(applicationData()?.updatedTime) }}</p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Edit Mode -->
-    <form *ngIf="!loading() && isEditMode() && editForm" [formGroup]="editForm" class="space-y-6">
+    <form *ngIf="!loading() && isEditMode() && editForm" [formGroup]="editForm">
       <!-- Personal Details Edit -->
       <app-personal-details-edit 
+        class="block mb-8"
         [formGroup]="personalDetailsForm" 
         [countries]="countries()"
         [provinces]="provinces()"
@@ -114,10 +133,11 @@
         (onPermanentWardChange)="onPermanentWardChange($event)" />
       
       <!-- Application Details (Read-only in edit mode) -->
-      <app-application-details-view [data]="applicationData()?.applicationDetails" />
+      <app-application-details-view class="block mb-8" [data]="applicationData()?.applicationDetails" />
       
       <!-- Education Details Edit -->
       <app-education-details-edit 
+        class="block mb-8"
         [formGroup]="educationDetailsForm"
         [countries]="countries()"
         [languages]="languages()"
@@ -132,6 +152,7 @@
       
       <!-- English Qualifications Edit -->
       <app-english-qualifications-edit 
+        class="block mb-8"
         [formGroup]="englishQualificationsForm"
         [englishFiles]="englishFiles()"
         [onEnglishFileChange]="onEnglishFileChange.bind(this)"
@@ -139,6 +160,7 @@
       
       <!-- Employment History Edit -->
       <app-employment-history-edit 
+        class="block mb-8"
         [formGroup]="employmentHistoryForm" />
       
       <!-- Bottom Action Buttons -->

@@ -193,4 +193,13 @@ export class MbaService {
   removeFile(fileLocalName: string): Observable<OperationResult> {
     return this._httpClient.delete<OperationResult>(FILE_API.REMOVE_FILE(fileLocalName));
   }
+
+  /**
+   * Export application to PDF
+   */
+  exportToPDF(id: string): Observable<Blob> {
+    return this._httpClient.get(MBA_API.EXPORT_TO_PDF(id), {
+      responseType: 'blob'
+    });
+  }
 }

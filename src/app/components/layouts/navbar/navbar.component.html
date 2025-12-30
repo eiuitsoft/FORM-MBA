@@ -9,7 +9,7 @@
     </button>
 
     <ul class="nav-menu" [class.show]="showMobileMenu()">
-      <li>
+      <li *ngIf="!isLoggedIn">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
           <span class="material-icons">edit</span> MBA Application
         </a>
