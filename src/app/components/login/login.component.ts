@@ -54,21 +54,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.checkLogin();
+    // Component initialization
   }
 
   ngOnDestroy(): void {
     if (this.countdownTimer) {
       clearInterval(this.countdownTimer);
-    }
-  }
-
-  /**
-   * Check if user is already logged in
-   */
-  checkLogin(): void {
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/']);
     }
   }
 

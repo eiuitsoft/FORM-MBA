@@ -7,8 +7,6 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { of } from 'rxjs';
 import { MbaService } from './app/core/services/mba/mba.service';
 import { AlertService } from './app/core/services/alert/alert.service';
-import { AuthService } from './app/core/services/auth/auth.service';
-import { TokenService } from './app/core/services/auth/token.service';
 import { PageLayoutComponent } from './app/components/layouts/page-layout/page-layout.component';
 import { uniqueFieldValidator } from './validators/unique-field.validator';
 import { passportFormatValidator } from './validators/passport-format.validator';
@@ -30,8 +28,6 @@ export class AppComponent implements OnInit {
   private fb = inject(FormBuilder);
   private readonly _mbaService = inject(MbaService);
   private readonly _alertService = inject(AlertService);
-  private readonly _authService = inject(AuthService);
-  private readonly _tokenService = inject(TokenService);
   private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
   
@@ -454,15 +450,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Check if user is logged in, redirect to their application detail page
-    if (this._authService.isLoggedIn()) {
-      const studentId = this._tokenService.studentId();
-      if (studentId) {
-        this._router.navigate(['/application', studentId]);
-        return;
-      }
-    }
-    
     // Load programs
     this.loadPrograms();
     
