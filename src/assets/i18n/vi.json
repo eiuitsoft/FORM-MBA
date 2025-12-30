@@ -217,5 +217,11 @@
     "OTP_SMS_NOTE": "Vui lòng kiểm tra tin nhắn điện thoại để lấy mã OTP!",
     "OTP_EMAIL_NOTE": "Vui lòng kiểm tra hộp thư đến hoặc thư rác để lấy mã OTP!",
     "OTP_ZALO_NOTE": "Vui lòng kiểm tra tin nhắn Zalo để lấy mã OTP!"
+  },
+  "NAVBAR": {
+    "MBA_APPLICATION": "Đơn Đăng Ký MBA",
+    "MY_APPLICATION": "Đơn Của Tôi",
+    "LOGIN": "Đăng Nhập",
+    "LOGOUT": "Đăng Xuất"
   }
 }

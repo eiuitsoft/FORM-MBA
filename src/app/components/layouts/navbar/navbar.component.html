@@ -9,11 +9,13 @@
     </button>
 
     <ul class="nav-menu" [class.show]="showMobileMenu()">
-      <li *ngIf="!isLoggedIn">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
-          <span class="material-icons">edit</span> MBA Application
-        </a>
-      </li>
+      @if (!isLoggedIn) {
+        <li>
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+            <span class="material-icons">edit</span> {{ 'NAVBAR.MBA_APPLICATION' | translate }}
+          </a>
+        </li>
+      }
 
       <!-- Switch language -->
       <li>
@@ -22,31 +24,31 @@
         </button>
       </li>
       
-      <ng-container *ngIf="isLoggedIn; else loggedOut">
+      @if (isLoggedIn) {
         <li>
           <a [routerLink]="['/application', tokenService.studentId()]" routerLinkActive="active" class="nav-link">
-            <span class="material-icons">assignment</span> My Application
+            <span class="material-icons">assignment</span> {{ 'NAVBAR.MY_APPLICATION' | translate }}
           </a>
         </li>
         <li class="user-menu">
           <button class="user-button" (click)="toggleUserMenu(); $event.stopPropagation()">
             <span class="material-icons">account_circle</span> {{ fullName }}
           </button>
-          <div class="dropdown-menu" *ngIf="showUserMenu()" (click)="$event.stopPropagation()">
-            <button (click)="logout()" class="dropdown-item">
-              <span class="material-icons">exit_to_app</span> Logout
-            </button>
-          </div>
+          @if (showUserMenu()) {
+            <div class="dropdown-menu" (click)="$event.stopPropagation()">
+              <button (click)="logout()" class="dropdown-item">
+                <span class="material-icons">exit_to_app</span> {{ 'NAVBAR.LOGOUT' | translate }}
+              </button>
+            </div>
+          }
         </li>
-      </ng-container>
-      
-      <ng-template #loggedOut>
+      } @else {
         <li>
           <a routerLink="/login" routerLinkActive="active" class="nav-link">
-            <span class="material-icons">power_settings_new</span> Login
+            <span class="material-icons">power_settings_new</span> {{ 'NAVBAR.LOGIN' | translate }}
           </a>
         </li>
-      </ng-template>
+      }
     </ul>
   </div>
 </nav>

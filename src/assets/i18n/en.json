@@ -217,5 +217,11 @@
     "OTP_SMS_NOTE": "Please check your phone messages for the OTP code!",
     "OTP_EMAIL_NOTE": "Please check your Email inbox or spam folder for the OTP code!",
     "OTP_ZALO_NOTE": "Please check your Zalo messages for the OTP code!"
+  },
+  "NAVBAR": {
+    "MBA_APPLICATION": "MBA Application",
+    "MY_APPLICATION": "My Application",
+    "LOGIN": "Login",
+    "LOGOUT": "Logout"
   }
 }
