@@ -15,15 +15,15 @@ import { CommonModule } from '@angular/common';
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Program</label>
-            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.programName || data?.program || 'N/A' }}">
-              {{ data?.programName || data?.program || 'N/A' }}
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.programName || data?.program || '--' }}">
+              {{ data?.programName || data?.program || '--' }}
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Program Code</label>
-            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.programCode || 'N/A' }}">
-              {{ data?.programCode || 'N/A' }}
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.programCode || '--' }}">
+              {{ data?.programCode || '--' }}
             </div>
           </div>
 
@@ -36,15 +36,15 @@ import { CommonModule } from '@angular/common';
 
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Admission Year</label>
-            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.admissionYear || 'N/A' }}">
-              {{ data?.admissionYear || 'N/A' }}
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.admissionYear || '--' }}">
+              {{ data?.admissionYear || '--' }}
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Admission Intake</label>
-            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.admissionIntake || data?.intake || 'N/A' }}">
-              {{ data?.admissionIntake || data?.intake || 'N/A' }}
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.admissionIntake || data?.intake || '--' }}">
+              {{ data?.admissionIntake || data?.intake || '--' }}
             </div>
           </div>
         </div>
@@ -59,6 +59,6 @@ export class ApplicationDetailsViewComponent {
     const track = this.data?.track;
     if (track === 0 || track === '0' || track?.toLowerCase() === 'application') return 'Application';
     if (track === 1 || track === '1' || track?.toLowerCase() === 'research') return 'Research';
-    return track || 'N/A';
+    return track || '--';
   }
 }

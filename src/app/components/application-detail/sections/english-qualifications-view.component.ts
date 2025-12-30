@@ -58,7 +58,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">Score</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data.other.score || 'N/A' }}
+                {{ data.other.score || '--' }}
               </div>
             </div>
             <div>
@@ -135,7 +135,7 @@ export class EnglishQualificationsViewComponent {
   }
 
   formatDate(dateString: string | null): string {
-    if (!dateString) return 'N/A';
+    if (!dateString) return '--';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',

@@ -24,36 +24,36 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-3">
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">University</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.university || 'N/A' }}">
-                    {{ degree.university || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.university || '--' }}">
+                    {{ degree.university || '--' }}
                   </div>
                 </div>
 
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">Country</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.countryName || 'N/A' }}">
-                    {{ degree.countryName || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.countryName || '--' }}">
+                    {{ degree.countryName || '--' }}
                   </div>
                 </div>
 
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">Major</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.major || 'N/A' }}">
-                    {{ degree.major || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.major || '--' }}">
+                    {{ degree.major || '--' }}
                   </div>
                 </div>
 
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">Graduation Year</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.graduationYear || 'N/A' }}">
-                    {{ degree.graduationYear || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.graduationYear || '--' }}">
+                    {{ degree.graduationYear || '--' }}
                   </div>
                 </div>
 
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">Language</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.languageName || 'N/A' }}">
-                    {{ degree.languageName || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.languageName || '--' }}">
+                    {{ degree.languageName || '--' }}
                   </div>
                 </div>
               </div>
@@ -88,29 +88,29 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">University</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.university || 'N/A' }}">
-                    {{ degree.university || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.university || '--' }}">
+                    {{ degree.university || '--' }}
                   </div>
                 </div>
 
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">Country</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.countryName || 'N/A' }}">
-                    {{ degree.countryName || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.countryName || '--' }}">
+                    {{ degree.countryName || '--' }}
                   </div>
                 </div>
 
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">Major</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.major || 'N/A' }}">
-                    {{ degree.major || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.major || '--' }}">
+                    {{ degree.major || '--' }}
                   </div>
                 </div>
 
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">Graduation Year</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.graduationYear || 'N/A' }}">
-                    {{ degree.graduationYear || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.graduationYear || '--' }}">
+                    {{ degree.graduationYear || '--' }}
                   </div>
                 </div>
               </div>
@@ -118,15 +118,15 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
                 <div>
                   <label class="block text-xs font-medium text-gray-600 mb-1">Language</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.languageName || 'N/A' }}">
-                    {{ degree.languageName || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.languageName || '--' }}">
+                    {{ degree.languageName || '--' }}
                   </div>
                 </div>
 
                 <div class="md:col-span-3">
                   <label class="block text-xs font-medium text-gray-600 mb-1">Thesis Title</label>
-                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.thesisTitle || 'N/A' }}">
-                    {{ degree.thesisTitle || 'N/A' }}
+                  <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ degree.thesisTitle || '--' }}">
+                    {{ degree.thesisTitle || '--' }}
                   </div>
                 </div>
               </div>

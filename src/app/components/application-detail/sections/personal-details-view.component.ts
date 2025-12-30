@@ -18,14 +18,14 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Full Name <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.fullName || 'N/A' }}
+              {{ data?.fullName || '--' }}
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Nationality <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.nationalityName || 'N/A' }}
+              {{ data?.nationalityName || '--' }}
             </div>
           </div>
 
@@ -49,14 +49,14 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Place of Birth <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.placeOfBirth || 'N/A' }}
+              {{ data?.placeOfBirth || '--' }}
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">ID/Passport No. <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 font-mono">
-              {{ data?.passportNo || 'N/A' }}
+              {{ data?.passportNo || '--' }}
             </div>
           </div>
 
@@ -70,7 +70,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Email <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.email || 'N/A' }}
+              {{ data?.email || '--' }}
             </div>
           </div>
         </div>
@@ -80,21 +80,21 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Mobile <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.mobile || 'N/A' }}
+              {{ data?.mobile || '--' }}
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Job Title <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.jobTitle || 'N/A' }}
+              {{ data?.jobTitle || '--' }}
             </div>
           </div>
 
           <div class="md:col-span-2">
             <label class="block text-xs font-medium text-gray-600 mb-1">Organization <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.organization || 'N/A' }}
+              {{ data?.organization || '--' }}
             </div>
           </div>
         </div>
@@ -105,20 +105,20 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">Correspondence City</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data?.correspondenceCityName || 'N/A' }}
+                {{ data?.correspondenceCityName || '--' }}
               </div>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">Correspondence District</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data?.correspondenceDistrictName || 'N/A' }}
+                {{ data?.correspondenceDistrictName || '--' }}
               </div>
             </div>
           </div>
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Correspondence Address <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.correspondenceAddress || 'N/A' }}
+              {{ data?.correspondenceAddress || '--' }}
             </div>
           </div>
         </div>
@@ -129,20 +129,20 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">Permanent City</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data?.permanentCityName || 'N/A' }}
+                {{ data?.permanentCityName || '--' }}
               </div>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">Permanent District</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data?.permanentDistrictName || 'N/A' }}
+                {{ data?.permanentDistrictName || '--' }}
               </div>
             </div>
           </div>
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Permanent Address <span class="text-red-500">*</span></label>
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.permanentAddress || 'N/A' }}
+              {{ data?.permanentAddress || '--' }}
             </div>
           </div>
         </div>
@@ -206,7 +206,7 @@ export class PersonalDetailsViewComponent {
   }
 
   formatDate(dateString: string | null): string {
-    if (!dateString) return 'N/A';
+    if (!dateString) return '--';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',

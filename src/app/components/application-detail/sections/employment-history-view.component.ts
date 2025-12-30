@@ -25,7 +25,7 @@ import { CommonModule } from '@angular/common';
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">Job Title</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data.position1.jobTitle || 'N/A' }}
+                {{ data.position1.jobTitle || '--' }}
               </div>
             </div>
             <div>
@@ -43,7 +43,7 @@ import { CommonModule } from '@angular/common';
             <div class="md:col-span-4">
               <label class="block text-xs font-medium text-gray-600 mb-1">Address</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data.position1.address || 'N/A' }}
+                {{ data.position1.address || '--' }}
               </div>
             </div>
           </div>
@@ -62,7 +62,7 @@ import { CommonModule } from '@angular/common';
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">Job Title</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data.position2.jobTitle || 'N/A' }}
+                {{ data.position2.jobTitle || '--' }}
               </div>
             </div>
             <div>
@@ -80,7 +80,7 @@ import { CommonModule } from '@angular/common';
             <div class="md:col-span-4">
               <label class="block text-xs font-medium text-gray-600 mb-1">Address</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data.position2.address || 'N/A' }}
+                {{ data.position2.address || '--' }}
               </div>
             </div>
           </div>
@@ -98,12 +98,11 @@ export class EmploymentHistoryViewComponent {
   @Input() data: any;
 
   formatMonth(dateString: string | null): string {
-    if (!dateString) return 'N/A';
+    if (!dateString) return '--';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long'
-    });
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${month}/${year}`;
   }
 
   hasAnyPosition(): boolean {
