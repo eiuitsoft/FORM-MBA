@@ -8,112 +8,118 @@
       </span>
       
       <!-- Send OTP Form -->
-      <div *ngIf="showFormSendOTP()">
-        <div class="wrap-input100">
-          <!-- Login Method Select -->
-          <div class="form-group">
-            <select formControlName="method"
-                    (change)="changeLoginMethod($any($event.target).value)"
-                    class="form-control">
-              <option *ngFor="let item of loginMethods" [value]="item.value">
-                {{ item.name }}
-              </option>
-            </select>
-          </div>
-          
-          <!-- Value Input -->
-          <div class="form-group">
-            <label class="text-muted">
-              {{
-                loginForm.value.method == LoginMethodEnum.CCCD
-                  ? 'Citizen ID'
-                  : loginForm.value.method == LoginMethodEnum.CODE
-                  ? 'Profile Code'
-                  : 'Registered Phone Number'
-              }}
-            </label>
-            <input
-              formControlName="value"
-              type="text"
-              [placeholder]="
-                loginForm.value.method == LoginMethodEnum.CCCD 
+      @if (showFormSendOTP()) {
+        <div>
+          <div class="wrap-input100">
+            <!-- Login Method Select -->
+            <div class="form-group">
+              <select formControlName="method"
+                      (change)="changeLoginMethod($any($event.target).value)"
+                      class="form-control">
+                @for (item of loginMethods; track item.value) {
+                  <option [value]="item.value">{{ item.translationKey | translate }}</option>
+                }
+              </select>
+            </div>
+            
+            <!-- Value Input -->
+            <div class="form-group">
+              <label class="text-muted">
+                @if (loginForm.value.method == LoginMethodEnum.CCCD) {
+                  {{ 'LOGIN.CITIZEN_ID' | translate }}
+                } @else if (loginForm.value.method == LoginMethodEnum.CODE) {
+                  {{ 'LOGIN.PROFILE_CODE' | translate }}
+                } @else {
+                  {{ 'LOGIN.PHONE_NUMBER' | translate }}
+                }
+              </label>
+              <input
+                formControlName="value"
+                type="text"
+                [placeholder]="loginForm.value.method == LoginMethodEnum.CCCD 
                   ? '284501234114' 
                   : loginForm.value.method == LoginMethodEnum.CODE
-                  ? 'Enter profile code*'
-                  : 'Enter phone number*'
-              "
-              class="form-control"
-              [class.is-invalid]="loginForm.get('value')?.invalid && loginForm.get('value')?.touched" />
-            <small *ngIf="loginForm.get('value')?.invalid && loginForm.get('value')?.touched" class="text-danger">
-              {{ getFieldError('value') }}
-            </small>
+                  ? ('LOGIN.ENTER_PROFILE_CODE' | translate)
+                  : ('LOGIN.ENTER_PHONE' | translate)"
+                class="form-control"
+                [class.is-invalid]="loginForm.get('value')?.invalid && loginForm.get('value')?.touched" />
+              @if (loginForm.get('value')?.invalid && loginForm.get('value')?.touched) {
+                <small class="text-danger">{{ getFieldError('value') }}</small>
+              }
+            </div>
+          </div>
+          
+          <div class="container-login100-form-btn group-btn-get-otp mt-3">
+            <button
+              type="button"
+              class="login100-form-btn mr-4"
+              routerLink="/"
+              [disabled]="isSendingOTP()">
+              <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+              &nbsp;{{ 'LOGIN.BACK' | translate }}
+            </button>
+            <button
+              type="button"
+              class="login100-form-btn"
+              (click)="openModalChooseSendType()"
+              [disabled]="isSendingOTP()">
+              <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+              &nbsp;{{ 'LOGIN.GET_OTP' | translate }}
+            </button>
           </div>
         </div>
-        
-        <div class="container-login100-form-btn group-btn-get-otp mt-3">
-          <button
-            type="button"
-            class="login100-form-btn mr-4"
-            routerLink="/"
-            [disabled]="isSendingOTP()">
-            <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            &nbsp;Back
-          </button>
-          <button
-            type="button"
-            class="login100-form-btn"
-            (click)="openModalChooseSendType()"
-            [disabled]="isSendingOTP()">
-            <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-            </svg>
-            &nbsp;Get OTP Code
-          </button>
-        </div>
-      </div>
+      }
       
       <!-- OTP Input Form -->
-      <div *ngIf="!showFormSendOTP()">
-        <div class="wrap-input100">
-          <div class="form-group">
-            <label class="text-muted">OTP</label>
-            <input
-              formControlName="otp"
-              type="text"
-              placeholder="Enter OTP code"
-              maxlength="6"
-              (input)="isErrorOTP.set(false)"
-              class="form-control otp-input"
-              [class.is-invalid]="isErrorOTP()" />
-            <small *ngIf="loginForm.get('otp')?.errors?.['maxlength']" class="text-danger">
-              OTP code must not exceed 6 digits.
-            </small>
+      @if (!showFormSendOTP()) {
+        <div>
+          <div class="wrap-input100">
+            <div class="form-group">
+              <label class="text-muted">{{ 'LOGIN.OTP' | translate }}</label>
+              <input
+                formControlName="otp"
+                type="text"
+                [placeholder]="'LOGIN.ENTER_OTP' | translate"
+                maxlength="6"
+                (input)="isErrorOTP.set(false)"
+                class="form-control otp-input"
+                [class.is-invalid]="isErrorOTP()" />
+              @if (loginForm.get('otp')?.errors?.['maxlength']) {
+                <small class="text-danger">{{ 'LOGIN.OTP_MAX_LENGTH' | translate }}</small>
+              }
+            </div>
+            @if (isErrorOTP()) {
+              <div class="error-icon-wrapper">
+                <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>&nbsp;
+                <small class="text-danger">{{ 'LOGIN.OTP_INVALID' | translate }}</small>
+              </div>
+            }
           </div>
-          <div *ngIf="isErrorOTP()" class="error-icon-wrapper">
-            <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>&nbsp;
-            <small class="text-danger">OTP code is incorrect or has expired.</small>
+          <div class="container-login100-form-btn mt-3">
+            <div class="text-timer">
+              <span>
+                {{ 'LOGIN.RESEND_AFTER' | translate }} <span>{{ countdown() }}</span> {{ 'LOGIN.SECONDS' | translate }}.
+                @if (showResendButton()) {
+                  <span (click)="openModalChooseSendType()" class="resend-link">{{ 'LOGIN.RESEND' | translate }}</span>
+                }
+              </span>
+            </div>
+            <button
+              type="button"
+              class="button-login"
+              (click)="onLogin()"
+              [disabled]="isSendingOTP()">
+              {{ isSendingOTP() ? ('LOGIN.PROCESSING' | translate) : ('LOGIN.LOGIN' | translate) }}
+            </button>
           </div>
         </div>
-        <div class="container-login100-form-btn mt-3">
-          <div class="text-timer">
-            <span>
-              Or resend code after <span>{{ countdown() }}</span> seconds.
-              <span *ngIf="showResendButton()" (click)="openModalChooseSendType()" class="resend-link">Resend</span>
-            </span>
-          </div>
-          <button
-            type="button"
-            class="button-login"
-            (click)="onLogin()"
-            [disabled]="isSendingOTP()">
-            {{ isSendingOTP() ? 'Processing...' : 'Login' }}
-          </button>
-        </div>
-      </div>
+      }
 
     </form>
   </div>
@@ -121,10 +127,10 @@
   <div class="wrap-login-support mt-3">
     <ul>
       <li>
-        <b>Contact Support:</b><br />
-        <small class="pl-2">Phone: 0274 9999 681</small><br />
-        <small class="pl-2">Hotline: 0918 907 733 - 0971 819 681 - 0969 845 681</small><br />
-        <small class="pl-2">Email: tuyensinh@eiu.edu.vn</small><br />
+        <b>{{ 'LOGIN.CONTACT_SUPPORT' | translate }}:</b><br />
+        <small class="pl-2">{{ 'LOGIN.PHONE' | translate }}: 0274 9999 681</small><br />
+        <small class="pl-2">{{ 'LOGIN.HOTLINE' | translate }}: 0918 907 733 - 0971 819 681 - 0969 845 681</small><br />
+        <small class="pl-2">{{ 'LOGIN.EMAIL' | translate }}: tuyensinh@eiu.edu.vn</small><br />
         <div class="row mt-3">
           <div class="col text-center">
             <img
@@ -153,47 +159,40 @@
 </div>
 
 <!-- Modal Choose OTP Type -->
-<div *ngIf="showModalChooseOTP()" 
-     class="modal-backdrop"
-     (click)="closeModal()">
-  <div class="modal-content-wrapper" (click)="$event.stopPropagation()">
-    
-    <!-- Modal Header -->
-    <div class="modal-header">
-      <h5 class="modal-title">Choose OTP Delivery Method</h5>
-      <button type="button" class="btn-close" (click)="closeModal()">
-        <svg class="icon-svg-large" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    
-    <!-- Modal Body -->
-    <div class="modal-body" [formGroup]="loginForm">
-      <div class="radio-group">
-        <label *ngFor="let item of sendOtpTypeList" 
-               class="radio-label"
-               [class.active]="loginForm.value.sendType === item.value">
-          <input type="radio" 
-                 formControlName="sendType" 
-                 [value]="item.value">
-          <span>{{ item.name }}</span>
-        </label>
+@if (showModalChooseOTP()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-content-wrapper" (click)="$event.stopPropagation()">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">{{ 'LOGIN.CHOOSE_OTP_METHOD' | translate }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()">
+          <svg class="icon-svg-large" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
-      <b class="text-danger">⚠ Note:</b>
-      <span>
-        {{ sendOtpTypeMap[loginForm.value.sendType]?.message }}
-      </span>
-    </div>
-    
-    <!-- Modal Footer -->
-    <div class="modal-footer">
-      <button type="button" class="btn btn-primary button-login" (click)="sendOTP()" [disabled]="isSendingOTP()">
-        <!-- <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg> -->
-        &nbsp;{{ isSendingOTP() ? 'Sending...' : 'Confirm' }}
-      </button>
+      
+      <!-- Modal Body -->
+      <div class="modal-body" [formGroup]="loginForm">
+        <div class="radio-group">
+          @for (item of sendOtpTypeList; track item.value) {
+            <label class="radio-label" [class.active]="loginForm.value.sendType === item.value">
+              <input type="radio" formControlName="sendType" [value]="item.value">
+              <span>{{ item.nameKey | translate }}</span>
+            </label>
+          }
+        </div>
+        <b class="text-danger">⚠ {{ 'LOGIN.NOTE' | translate }}:</b>
+        <span>{{ sendOtpTypeMap[loginForm.value.sendType]?.messageKey | translate }}</span>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary button-login" (click)="sendOTP()" [disabled]="isSendingOTP()">
+          &nbsp;{{ isSendingOTP() ? ('LOGIN.SENDING' | translate) : ('COMMON.CONFIRM' | translate) }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}
