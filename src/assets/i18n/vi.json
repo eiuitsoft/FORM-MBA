@@ -3,6 +3,7 @@
   "FORM_TITLE": "Đơn Đăng Ký Nhập Học MBA",
   "COMMON": {
     "SELECT_DEFAULT": "-- Chọn --",
+    "SELECT_COUNTRY": "-- Chọn quốc gia --",
     "SELECT_NATIONALITY": "-- Chọn quốc tịch --",
     "SELECT_CITY": "-- Chọn tỉnh/thành phố --",
     "SELECT_DISTRICT": "-- Chọn quận/huyện --",
@@ -134,8 +135,8 @@
     "ENTER_ORGANIZATION": "Nhập cơ quan/tổ chức",
     "TITLE": "Chức vụ",
     "ENTER_TITLE": "Nhập chức vụ của bạn",
-    "FROM": "Từ tháng",
-    "TO": "Đến tháng",
+    "FROM": "Từ",
+    "TO": "Đến",
     "DATE_ERROR": "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu",
     "ADDRESS": "Địa chỉ cơ quan",
     "ENTER_ADDRESS": "Nhập địa chỉ cơ quan",

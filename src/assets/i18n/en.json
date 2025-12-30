@@ -3,6 +3,7 @@
   "FORM_TITLE": "MBA Application Form",
   "COMMON": {
     "SELECT_DEFAULT": "-- Select --",
+    "SELECT_COUNTRY": "-- Select country --",
     "SELECT_NATIONALITY": "-- Select nationality --",
     "SELECT_CITY": "-- Select city --",
     "SELECT_DISTRICT": "-- Select district --",

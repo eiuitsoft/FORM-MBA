@@ -426,7 +426,7 @@
                       formControlName="countryId" 
                       (change)="onCountryChange($event, 'undergraduates', ugIndex)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                      <option value="">-- Select country --</option>
+                      <option value="">{{ 'COMMON.SELECT_COUNTRY' | translate }}</option>
                       @for (country of countries(); track country.id) {
                         <option [value]="country.id" [textContent]="country.name"></option>
                       }
@@ -634,7 +634,7 @@
                       formControlName="countryId"
                       (change)="onCountryChange($event, 'postgraduates', pgIndex)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                      <option value="">{{ 'COMMON.SELECT_NATIONALITY' | translate }}</option>
+                      <option value="">{{ 'COMMON.SELECT_COUNTRY' | translate }}</option>
                       @for (country of countries(); track country.id) {
                         <option [value]="country.id" [textContent]="country.name"></option>
                       }
@@ -848,7 +848,7 @@
           <div class="border border-gray-200 rounded-md p-4" formGroupName="position1">
             <h4 class="font-semibold text-lg text-[#153a5e] mb-2">{{ 'EMPLOYMENT.POSITION_1' | translate }}</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-              <div><label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.ORGANIZATION' | translate }}</label><input type="text" formControlName="organization" placeholder="{{ 'EMPLOYMENT.ENTER_ORGANIZATION' | translate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.ORG' | translate }}</label><input type="text" formControlName="organization" placeholder="{{ 'EMPLOYMENT.ENTER_ORGANIZATION' | translate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TITLE' | translate }}</label><input type="text" formControlName="title" placeholder="{{ 'EMPLOYMENT.ENTER_TITLE' | translate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.FROM' | translate }}</label><input type="month" formControlName="from" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div>
@@ -864,7 +864,7 @@
           <div class="border border-gray-200 rounded-md p-4" formGroupName="position2">
             <h4 class="font-semibold text-lg text-[#153a5e] mb-2">{{ 'EMPLOYMENT.POSITION_2' | translate }}</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-              <div><label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.ORGANIZATION' | translate }}</label><input type="text" formControlName="organization" placeholder="{{ 'EMPLOYMENT.ENTER_ORGANIZATION' | translate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
+              <div><label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.ORG' | translate }}</label><input type="text" formControlName="organization" placeholder="{{ 'EMPLOYMENT.ENTER_ORGANIZATION' | translate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TITLE' | translate }}</label><input type="text" formControlName="title" placeholder="{{ 'EMPLOYMENT.ENTER_TITLE' | translate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div><label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.FROM' | translate }}</label><input type="month" formControlName="from" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></div>
               <div>
