@@ -14,7 +14,8 @@
     "ADD_MORE": "Thêm mới",
     "CHECKING": "Đang kiểm tra...",
     "VALID_NUMBER": "Số hợp lệ",
-    "FILE_SELECTED": "tệp đã chọn",
+    "FILE_SELECTED": "tệp đã tải lên - Nhấn để quản lý",
+    "FILE_UPLOAD": "Nhấn để tải tệp lên",
     "FILE_HINT": "PDF, JPG, hoặc PNG, tối đa 5MB mỗi tệp",
     "SUBMIT": "Gửi Đơn Đăng Ký",
     "SUBMITTING": "Đang gửi...",
@@ -27,8 +28,9 @@
     "PERSONAL": "PHẦN A - THÔNG TIN CÁ NHÂN",
     "APPLICATION": "PHẦN B - CHI TIẾT ĐĂNG KÝ",
     "EDUCATION": "PHẦN C - THÔNG TIN QUÁ TRÌNH HỌC TẬP",
-    "EMPLOYMENT": "PHẦN D - KINH NGHIỆM LÀM VIỆC",
-    "DECLARATION": "PHẦN E - LỜI CAM ĐOAN"
+    "ENGLISH": "PHẦN D - CHỨNG CHỈ TIẾNG ANH",
+    "EMPLOYMENT": "PHẦN E - KINH NGHIỆM LÀM VIỆC",
+    "DECLARATION": "PHẦN F - LỜI CAM ĐOAN"
   },
   "PERSONAL_DETAILS": {
     "FULL_NAME": "Họ và tên",
@@ -51,21 +53,22 @@
     "EMAIL": "Email",
     "EMAIL_INVALID": "Vui lòng nhập email hợp lệ",
     "EMAIL_DOMAIN": "Tên miền email không hợp lệ",
+    "EMAIL_DOMAIN_INVALID": "Tên miền email không hợp lệ",
     "MOBILE": "Số điện thoại",
     "MOBILE_INVALID": "Vui lòng nhập số điện thoại hợp lệ",
     "MOBILE_EXISTS": "Số điện thoại này đã được đăng ký",
     "JOB_TITLE": "Chức danh công việc",
-    "ENTER_JOB_TITLE": "Nhập chức danh công việc của bạn",
+    "ENTER_JOB_TITLE": "Nhập chức danh công việc",
     "ORGANIZATION": "Cơ quan/Tổ chức",
-    "ENTER_ORGANIZATION": "Nhập cơ quan/tổ chức của bạn",
+    "ENTER_ORGANIZATION": "Nhập tên cơ quan/tổ chức",
     "CORR_CITY": "Tỉnh/Thành phố liên lạc",
     "CORR_DISTRICT": "Quận/Huyện liên lạc",
     "CORR_ADDRESS": "Địa chỉ liên lạc",
-    "ENTER_CORR_ADDRESS": "Nhập địa chỉ liên lạc của bạn",
+    "ENTER_CORR_ADDRESS": "Nhập địa chỉ liên lạc",
     "PERM_CITY": "Tỉnh/Thành phố thường trú",
     "PERM_DISTRICT": "Quận/Huyện thường trú",
     "PERM_ADDRESS": "Địa chỉ thường trú",
-    "ENTER_PERM_ADDRESS": "Nhập địa chỉ thường trú của bạn",
+    "ENTER_PERM_ADDRESS": "Nhập địa chỉ thường trú",
     "UPLOAD_PASSPORT": "Tải lên tài liệu ID/Hộ chiếu"
   },
   "APPLICATION_DETAILS": {
@@ -75,6 +78,7 @@
     "APPLICATION": "Ứng dụng",
     "RESEARCH": "Nghiên cứu",
     "ADMISSION_YEAR": "Năm nhập học",
+    "ADMISSION_YEAR_MIN": "Năm nhập học phải từ năm hiện tại trở đi",
     "ADMISSION_YEAR_ERROR": "Năm nhập học phải từ {{year}} trở đi",
     "ADMISSION_INTAKE": "Kỳ nhập học"
   },
@@ -103,7 +107,9 @@
     "UPLOAD_CERT": "Tải lên chứng chỉ (Tùy chọn)",
     "THESIS": "Tên luận văn",
     "ADD_UNDERGRAD": "Thêm bằng đại học",
-    "ADD_POSTGRAD": "Thêm bằng sau đại học"
+    "ADD_POSTGRAD": "Thêm bằng sau đại học",
+    "NO_UNDERGRAD": "Chưa có bằng đại học nào được ghi nhận",
+    "NO_POSTGRAD": "Chưa có bằng sau đại học nào được ghi nhận"
   },
   "ENGLISH": {
     "TITLE": "3. Chứng chỉ tiếng Anh",
@@ -116,8 +122,10 @@
     "TOEFL_RANGE": "Điểm TOEFL phải từ 0 đến 120",
     "INVALID_NUMBER": "Vui lòng nhập số hợp lệ",
     "OTHER_TEST": "Chứng chỉ khác",
+    "TEST_NAME": "Tên chứng chỉ",
     "UPLOAD_CERT": "Tải lên chứng chỉ tiếng Anh (tất cả các loại)",
-    "AT_LEAST_ONE": "Vui lòng cung cấp ít nhất một chứng chỉ tiếng Anh (IELTS, TOEFL hoặc khác)"
+    "AT_LEAST_ONE": "Vui lòng cung cấp ít nhất một chứng chỉ tiếng Anh (IELTS, TOEFL hoặc khác)",
+    "NO_QUALIFICATIONS": "Chưa có chứng chỉ tiếng Anh nào được ghi nhận"
   },
   "EMPLOYMENT": {
     "POSITION_1": "Vị trí 1 (Gần nhất)",
@@ -130,7 +138,8 @@
     "TO": "Đến tháng",
     "DATE_ERROR": "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu",
     "ADDRESS": "Địa chỉ cơ quan",
-    "ENTER_ADDRESS": "Nhập địa chỉ cơ quan"
+    "ENTER_ADDRESS": "Nhập địa chỉ cơ quan",
+    "NO_HISTORY": "Chưa có kinh nghiệm làm việc nào được ghi nhận"
   },
   "DECLARATION": {
     "P1": "Khi nộp đơn xét tuyển vào chương trình Thạc sĩ Quản trị Kinh doanh tại Trường Đại học Quốc tế Miền Đông, tôi cam kết thực hiện đầy đủ các nghĩa vụ về học thuật, nghiên cứu và tài chính như sau:",
@@ -144,5 +153,88 @@
   "CONFIRM_DIALOG": {
     "TITLE": "Xác Nhận Gửi",
     "MESSAGE": "Bạn có chắc chắn muốn gửi đơn đăng ký này không?"
+  },
+  "APPLICATION_PAGE": {
+    "TITLE": "Đơn Đăng Ký MBA",
+    "TITLE_EDIT": "Đơn Đăng Ký MBA - Chế Độ Chỉnh Sửa",
+    "TITLE_DETAILS": "Chi Tiết Đơn Đăng Ký MBA",
+    "EXPORT_PDF": "Xuất PDF",
+    "EXPORTING": "Đang xuất...",
+    "EDIT_APPLICATION": "Chỉnh Sửa Đơn",
+    "SAVE_CHANGES": "Lưu Thay Đổi",
+    "SAVING": "Đang lưu...",
+    "LOADING": "Đang tải dữ liệu đơn đăng ký..."
+  },
+  "FILE_DIALOG": {
+    "LOADING": "Đang tải tệp...",
+    "CLICK_TO_UPLOAD": "Nhấn để tải tệp lên",
+    "SELECTED_NOT_SAVED": "Tệp đã chọn (chưa lưu)",
+    "FILES": "tệp",
+    "UPLOADING": "Đang tải lên...",
+    "SAVE": "Lưu",
+    "NO": "STT",
+    "FILE_NAME": "Tên tệp",
+    "FILE_TYPE": "Loại tệp",
+    "ACTIONS": "Thao tác",
+    "DOWNLOAD": "Tải xuống",
+    "DELETE": "Xóa",
+    "NO_FILES": "Chưa có tệp nào được tải lên",
+    "CLOSE": "Đóng",
+    "TITLE_PASSPORT": "Quản lý tệp CMND/Hộ chiếu",
+    "TITLE_UNDERGRAD": "Quản lý tệp bằng đại học",
+    "TITLE_POSTGRAD": "Quản lý tệp bằng sau đại học",
+    "TITLE_ENGLISH": "Quản lý tệp chứng chỉ tiếng Anh"
+  },
+  "LOGIN": {
+    "CITIZEN_ID": "Số CCCD",
+    "PROFILE_CODE": "Mã hồ sơ",
+    "PHONE_NUMBER": "Số điện thoại đã đăng ký",
+    "ENTER_CITIZEN_ID": "Nhập số CCCD",
+    "ENTER_PROFILE_CODE": "Nhập mã hồ sơ*",
+    "ENTER_PHONE": "Nhập số điện thoại*",
+    "BACK": "Quay lại",
+    "GET_OTP": "Lấy mã OTP",
+    "OTP": "Mã OTP",
+    "ENTER_OTP": "Nhập mã OTP",
+    "OTP_MAX_LENGTH": "Mã OTP không được quá 6 chữ số",
+    "OTP_INVALID": "Mã OTP không đúng hoặc đã hết hạn",
+    "RESEND_AFTER": "Hoặc gửi lại mã sau",
+    "SECONDS": "giây",
+    "RESEND": "Gửi lại",
+    "PROCESSING": "Đang xử lý...",
+    "LOGIN": "Đăng nhập",
+    "SENDING": "Đang gửi...",
+    "CHOOSE_OTP_METHOD": "Chọn phương thức nhận OTP",
+    "NOTE": "Lưu ý",
+    "CONTACT_SUPPORT": "Liên hệ hỗ trợ",
+    "PHONE": "Điện thoại",
+    "HOTLINE": "Hotline",
+    "EMAIL": "Email",
+    "ERR_REQUIRED_CITIZEN_ID": "Vui lòng nhập số CCCD",
+    "ERR_REQUIRED_PROFILE_CODE": "Vui lòng nhập mã hồ sơ",
+    "ERR_REQUIRED_PHONE": "Vui lòng nhập số điện thoại đã đăng ký",
+    "ERR_MAX_CITIZEN_ID": "Số CCCD không được quá 15 chữ số",
+    "ERR_MAX_PROFILE_CODE": "Mã hồ sơ không được quá 7 chữ số",
+    "ERR_MAX_PHONE": "Số điện thoại không được quá 15 chữ số",
+    "ERR_MIN_PROFILE_CODE": "Mã hồ sơ phải có ít nhất 5 chữ số",
+    "ERR_PATTERN_PHONE": "Số điện thoại chỉ được chứa + và số",
+    "ERR_PATTERN_NUMBER": "Chỉ được nhập số",
+    "ERR_INVALID_INFO": "Vui lòng nhập thông tin hợp lệ!",
+    "OTP_SENT": "Mã OTP đã được gửi!",
+    "OTP_SEND_FAILED": "Không thể gửi OTP. Vui lòng thử lại.",
+    "SYSTEM_ERROR": "Đã xảy ra lỗi hệ thống!",
+    "LOGIN_SUCCESS": "Đăng nhập thành công! Đang chuyển hướng...",
+    "OTP_VIA_SMS": "Nhận mã OTP qua SMS",
+    "OTP_VIA_EMAIL": "Nhận mã OTP qua Email",
+    "OTP_VIA_ZALO": "Nhận mã OTP qua Zalo",
+    "OTP_SMS_NOTE": "Vui lòng kiểm tra tin nhắn điện thoại để lấy mã OTP!",
+    "OTP_EMAIL_NOTE": "Vui lòng kiểm tra hộp thư đến hoặc thư rác để lấy mã OTP!",
+    "OTP_ZALO_NOTE": "Vui lòng kiểm tra tin nhắn Zalo để lấy mã OTP!"
+  },
+  "NAVBAR": {
+    "MBA_APPLICATION": "Đơn Đăng Ký MBA",
+    "MY_APPLICATION": "Đơn Của Tôi",
+    "LOGIN": "Đăng Nhập",
+    "LOGOUT": "Đăng Xuất"
   }
 }

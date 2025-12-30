@@ -1,87 +1,89 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-dialog.component';
 
 @Component({
   selector: 'app-personal-details-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgxIntlTelInputModule, FileManagerDialogComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgxIntlTelInputModule, FileManagerDialogComponent, TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="bg-white rounded-lg shadow-md overflow-hidden" [formGroup]="formGroup">
       <div class="px-6 py-4 bg-[#1e3a5f]">
-        <h3 class="text-lg font-bold text-white tracking-wide">SECTION A - PERSONAL DETAILS</h3>
+        <h3 class="text-lg font-bold text-white tracking-wide">{{ 'SECTIONS.PERSONAL' | translate }}</h3>
       </div>
       <div class="p-6 bg-gray-50 grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4">
         <!-- Full Name -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Full Name <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.FULL_NAME' | translate }} <span class="text-red-600">*</span></label>
           <input type="text" formControlName="fullName" 
                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           @if (formGroup.get('fullName')?.hasError('required') && formGroup.get('fullName')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Full name is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.FULL_NAME' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
           @if (formGroup.get('fullName')?.hasError('minlength') && formGroup.get('fullName')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Full name must be at least 2 characters</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.FULL_NAME_MIN' | translate }}</p>
           }
         </div>
 
         <!-- Nationality -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Nationality <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.NATIONALITY' | translate }} <span class="text-red-600">*</span></label>
           <select formControlName="nationalityId" 
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-            <option value="">-- Select --</option>
+            <option value="">{{ 'COMMON.SELECT_DEFAULT' | translate }}</option>
             @for (country of countries; track country.id) {
               <option [value]="country.id">{{ country.name }}</option>
             }
           </select>
           @if (formGroup.get('nationalityId')?.hasError('required') && formGroup.get('nationalityId')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Nationality is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.NATIONALITY' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
         </div>
 
         <!-- Gender -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Gender <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.GENDER' | translate }} <span class="text-red-600">*</span></label>
           <select formControlName="gender" 
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-            <option value="1">Male</option>
-            <option value="0">Female</option>
+            <option value="1">{{ 'PERSONAL_DETAILS.MALE' | translate }}</option>
+            <option value="0">{{ 'PERSONAL_DETAILS.FEMALE' | translate }}</option>
           </select>
         </div>
 
         <!-- Date of Birth -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Date of Birth <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.DOB' | translate }} <span class="text-red-600">*</span></label>
           <input type="date" formControlName="dateOfBirth" 
                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           @if (formGroup.get('dateOfBirth')?.hasError('required') && formGroup.get('dateOfBirth')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Date of birth is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.DOB' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
           @if (formGroup.get('dateOfBirth')?.hasError('minAge') && formGroup.get('dateOfBirth')?.touched) {
-            <p class="text-red-600 text-sm mt-1">You must be at least 18 years old</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.MIN_AGE' | translate }}</p>
           }
         </div>
 
         <!-- Place of Birth -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Place of Birth <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.POB' | translate }} <span class="text-red-600">*</span></label>
           <input type="text" formControlName="placeOfBirth" 
                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           @if (formGroup.get('placeOfBirth')?.hasError('required') && formGroup.get('placeOfBirth')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Place of Birth is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.POB' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
         </div>
 
         <!-- Passport No -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">ID/Passport No. <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.PASSPORT' | translate }} <span class="text-red-600">*</span></label>
           <div class="relative">
             <input type="text" formControlName="passportNo" 
                    (input)="formatPassportInput($event)"
-                   placeholder="Enter ID or Passport number"
+                   [placeholder]="'PERSONAL_DETAILS.PASSPORT_PLACEHOLDER' | translate"
                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10">
             @if (formGroup.get('passportNo')?.pending) {
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -100,32 +102,32 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             }
           </div>
           @if (formGroup.get('passportNo')?.hasError('required') && formGroup.get('passportNo')?.touched) {
-            <p class="text-red-600 text-sm mt-1">ID/Passport is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.PASSPORT' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
           @if (formGroup.get('passportNo')?.hasError('minlength') || formGroup.get('passportNo')?.hasError('maxlength')) {
-            <p class="text-red-600 text-sm mt-1">ID/Passport must be 6-12 characters</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.PASSPORT_LENGTH' | translate }}</p>
           }
           @if (formGroup.get('passportNo')?.hasError('invalidFormat')) {
-            <p class="text-red-600 text-sm mt-1">ID/Passport can only contain letters and numbers</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.PASSPORT_FORMAT' | translate }}</p>
           }
           @if (formGroup.get('passportNo')?.hasError('passportExists') && formGroup.get('passportNo')?.touched) {
-            <p class="text-red-600 text-sm mt-1">This ID/Passport number is already registered</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.PASSPORT_EXISTS' | translate }}</p>
           }
         </div>
 
         <!-- Date Issued -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Date Issued <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }} <span class="text-red-600">*</span></label>
           <input type="date" formControlName="dateIssued" 
                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           @if (formGroup.get('dateIssued')?.hasError('required') && formGroup.get('dateIssued')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Date Issued is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
         </div>
 
         <!-- Email -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.EMAIL' | translate }} <span class="text-red-600">*</span></label>
           <div class="relative">
             <input type="email" formControlName="email" 
                    (input)="formatEmailInput($event)"
@@ -140,19 +142,19 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             }
           </div>
           @if (formGroup.get('email')?.hasError('required') && formGroup.get('email')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Email is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.EMAIL' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
           @if ((formGroup.get('email')?.hasError('email') || formGroup.get('email')?.hasError('invalidEmailFormat')) && formGroup.get('email')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Please enter a valid email address</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.EMAIL_INVALID' | translate }}</p>
           }
           @if (formGroup.get('email')?.hasError('invalidDomain') && formGroup.get('email')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Email domain is invalid</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.EMAIL_DOMAIN_INVALID' | translate }}</p>
           }
         </div>
 
         <!-- Mobile -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Mobile <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.MOBILE' | translate }} <span class="text-red-600">*</span></label>
           <ngx-intl-tel-input
             [cssClass]="'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2'"
             [preferredCountries]="['vn', 'us', 'gb']"
@@ -173,7 +175,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span class="text-sm text-gray-500">Checking...</span>
+              <span class="text-sm text-gray-500">{{ 'COMMON.CHECKING' | translate }}</span>
             </div>
           }
           @if (formGroup.get('mobile')?.valid && formGroup.get('mobile')?.touched && !formGroup.get('mobile')?.pending) {
@@ -181,37 +183,37 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
-              <span class="text-sm text-green-600">Valid number</span>
+              <span class="text-sm text-green-600">{{ 'COMMON.VALID_NUMBER' | translate }}</span>
             </div>
           }
           @if (formGroup.get('mobile')?.hasError('validatePhoneNumber') && formGroup.get('mobile')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Please enter a valid phone number</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.MOBILE_INVALID' | translate }}</p>
           }
           @if (formGroup.get('mobile')?.hasError('required') && formGroup.get('mobile')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Mobile is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.MOBILE' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
           @if (formGroup.get('mobile')?.hasError('mobileExists') && formGroup.get('mobile')?.touched) {
-            <p class="text-red-600 text-sm mt-1">This mobile number is already registered</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.MOBILE_EXISTS' | translate }}</p>
           }
         </div>
 
         <!-- Job Title -->
         <div>
-          <label class="block text-sm font-medium text-gray-700">Job Title <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.JOB_TITLE' | translate }} <span class="text-red-600">*</span></label>
           <input type="text" formControlName="jobTitle" 
                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           @if (formGroup.get('jobTitle')?.hasError('required') && formGroup.get('jobTitle')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Job title is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.JOB_TITLE' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
         </div>
 
         <!-- Organization -->
         <div class="md:col-span-2">
-          <label class="block text-sm font-medium text-gray-700">Organization <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.ORGANIZATION' | translate }} <span class="text-red-600">*</span></label>
           <input type="text" formControlName="organization" 
                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
           @if (formGroup.get('organization')?.hasError('required') && formGroup.get('organization')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Organization is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.ORGANIZATION' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
         </div>
 
@@ -219,22 +221,22 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         <div class="md:col-span-2">
           <div class="grid grid-cols-2 gap-x-3">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Correspondence City</label>
+              <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.CORR_CITY' | translate }}</label>
               <select formControlName="correspondenceCityId"
                       (change)="onCorrespondenceProvinceChange.emit($event)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">-- Select city --</option>
+                <option value="">{{ 'COMMON.SELECT_CITY' | translate }}</option>
                 @for (province of provinces; track province.provinceCode) {
                   <option [value]="province.provinceCode">{{ province.provinceName }}</option>
                 }
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Correspondence District</label>
+              <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.CORR_DISTRICT' | translate }}</label>
               <select formControlName="correspondenceDistrictId"
                       (change)="onCorrespondenceWardChange.emit($event)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">-- Select district --</option>
+                <option value="">{{ 'COMMON.SELECT_DISTRICT' | translate }}</option>
                 @for (ward of correspondenceWards; track ward.wardCode) {
                   <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                 }
@@ -245,11 +247,11 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
 
         <!-- Correspondence Address -->
         <div class="md:col-span-2">
-          <label class="block text-sm font-medium text-gray-700">Correspondence Address <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.CORR_ADDRESS' | translate }} <span class="text-red-600">*</span></label>
           <textarea formControlName="correspondenceAddress" rows="2"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
           @if (formGroup.get('correspondenceAddress')?.hasError('required') && formGroup.get('correspondenceAddress')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Correspondence Address is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.CORR_ADDRESS' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
         </div>
 
@@ -257,22 +259,22 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         <div class="md:col-span-2">
           <div class="grid grid-cols-2 gap-x-3">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Permanent City</label>
+              <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.PERM_CITY' | translate }}</label>
               <select formControlName="permanentCityId"
                       (change)="onPermanentProvinceChange.emit($event)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">-- Select city --</option>
+                <option value="">{{ 'COMMON.SELECT_CITY' | translate }}</option>
                 @for (province of provinces; track province.provinceCode) {
                   <option [value]="province.provinceCode">{{ province.provinceName }}</option>
                 }
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Permanent District</label>
+              <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.PERM_DISTRICT' | translate }}</label>
               <select formControlName="permanentDistrictId"
                       (change)="onPermanentWardChange.emit($event)"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">-- Select district --</option>
+                <option value="">{{ 'COMMON.SELECT_DISTRICT' | translate }}</option>
                 @for (ward of permanentWards; track ward.wardCode) {
                   <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                 }
@@ -283,17 +285,17 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
 
         <!-- Permanent Address -->
         <div class="md:col-span-2">
-          <label class="block text-sm font-medium text-gray-700">Permanent Address <span class="text-red-600">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">{{ 'PERSONAL_DETAILS.PERM_ADDRESS' | translate }} <span class="text-red-600">*</span></label>
           <textarea formControlName="permanentAddress" rows="2"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
           @if (formGroup.get('permanentAddress')?.hasError('required') && formGroup.get('permanentAddress')?.touched) {
-            <p class="text-red-600 text-sm mt-1">Permanent Address is required</p>
+            <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.PERM_ADDRESS' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}</p>
           }
         </div>
 
         <!-- Passport File Upload -->
         <div class="md:col-span-4">
-          <label class="block text-xs font-medium text-gray-600 mb-2">Upload ID/Passport Document</label>
+          <label class="block text-xs font-medium text-gray-600 mb-2">{{ 'PERSONAL_DETAILS.UPLOAD_PASSPORT' | translate }}</label>
           <button type="button" (click)="openFileManager()" 
                   [class]="uploadedFiles && uploadedFiles.length > 0 
                     ? 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-green-400 rounded bg-green-50 hover:border-green-500 hover:bg-green-100 transition-colors'
@@ -302,10 +304,10 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
             <span class="text-sm font-medium" [class]="uploadedFiles && uploadedFiles.length > 0 ? 'text-green-700' : 'text-blue-700'">
-              {{ uploadedFiles && uploadedFiles.length > 0 ? uploadedFiles.length + ' file(s) uploaded - Click to manage' : 'Click to upload files' }}
+              {{ uploadedFiles && uploadedFiles.length > 0 ? (uploadedFiles.length + ' ' + ('COMMON.FILE_SELECTED' | translate)) : ('COMMON.FILE_UPLOAD' | translate) }}
             </span>
           </button>
-          <p class="text-xs text-gray-500 mt-1">Upload single or multiple files (PDF, JPG, or PNG, max 5MB per file)</p>
+          <p class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</p>
         </div>
       </div>
     </section>
@@ -313,7 +315,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
     <!-- File Manager Dialog -->
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
-      [title]="'Manage ID/Passport Files'"
+      [title]="dialogTitle"
       [fileCategoryId]="1"
       [entityId]="getPersonalDetailsEntityId()"
       [(files)]="uploadedFiles"
@@ -322,6 +324,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
   `
 })
 export class PersonalDetailsEditComponent {
+  private readonly translate = inject(TranslateService);
+  
   @Input() formGroup!: FormGroup;
   @Input() countries: any[] = [];
   @Input() provinces: any[] = [];
@@ -338,8 +342,10 @@ export class PersonalDetailsEditComponent {
   @Output() onPermanentWardChange = new EventEmitter<Event>();
 
   isFileManagerOpen = false;
+  dialogTitle = '';
 
   openFileManager(): void {
+    this.dialogTitle = this.translate.instant('FILE_DIALOG.TITLE_PASSPORT');
     this.isFileManagerOpen = true;
   }
 

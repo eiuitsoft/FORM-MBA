@@ -1,7 +1,8 @@
-import { Component, inject, signal, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, signal, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { AlertService } from '../../core/services/alert/alert.service';
 import { TokenService } from '../../core/services/auth/token.service';
@@ -14,9 +15,10 @@ import { SEND_OTP_TYPE, SEND_OTP_TYPE_LIST, SEND_OTP_TYPE_MAP } from '../../core
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
@@ -24,6 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private readonly alertService = inject(AlertService);
   private readonly tokenService = inject(TokenService);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
 
   // Signals for reactive state
   isSubmitted = signal(false);
@@ -260,32 +263,32 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     if (control.errors['required']) {
       if (fieldName === 'value') {
-        if (method === LoginMethodEnum.CCCD) return 'Please enter Citizen ID';
-        if (method === LoginMethodEnum.CODE) return 'Please enter profile code';
-        return 'Please enter registered phone number';
+        if (method === LoginMethodEnum.CCCD) return this.translate.instant('LOGIN.ERR_REQUIRED_CITIZEN_ID');
+        if (method === LoginMethodEnum.CODE) return this.translate.instant('LOGIN.ERR_REQUIRED_PROFILE_CODE');
+        return this.translate.instant('LOGIN.ERR_REQUIRED_PHONE');
       }
     }
 
     if (control.errors['maxlength']) {
       if (fieldName === 'value') {
-        if (method === LoginMethodEnum.CCCD) return 'Citizen ID must not exceed 15 digits';
-        if (method === LoginMethodEnum.CODE) return 'Profile code must not exceed 7 digits';
-        return 'Phone number must not exceed 15 digits';
+        if (method === LoginMethodEnum.CCCD) return this.translate.instant('LOGIN.ERR_MAX_CITIZEN_ID');
+        if (method === LoginMethodEnum.CODE) return this.translate.instant('LOGIN.ERR_MAX_PROFILE_CODE');
+        return this.translate.instant('LOGIN.ERR_MAX_PHONE');
       }
-      if (fieldName === 'otp') return 'OTP code must not exceed 6 digits';
+      if (fieldName === 'otp') return this.translate.instant('LOGIN.OTP_MAX_LENGTH');
     }
 
     if (control.errors['minlength']) {
       if (fieldName === 'value' && method === LoginMethodEnum.CODE) {
-        return 'Profile code must be at least 5 digits';
+        return this.translate.instant('LOGIN.ERR_MIN_PROFILE_CODE');
       }
     }
 
     if (control.errors['pattern']) {
       if (fieldName === 'value' && method === LoginMethodEnum.PHONE_NUMBER) {
-        return 'Phone number can only contain + and numbers';
+        return this.translate.instant('LOGIN.ERR_PATTERN_PHONE');
       }
-      return 'Only numbers are allowed';
+      return this.translate.instant('LOGIN.ERR_PATTERN_NUMBER');
     }
 
     return '';
@@ -297,8 +300,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   getPlaceholder(): string {
     const method = this.loginForm.value.method;
     if (method === LoginMethodEnum.CCCD) return '284501234114';
-    if (method === LoginMethodEnum.CODE) return '12345';
-    return '0912345678 or +84912345678';
+    if (method === LoginMethodEnum.CODE) return this.translate.instant('LOGIN.ENTER_PROFILE_CODE');
+    return this.translate.instant('LOGIN.ENTER_PHONE');
   }
 
   /**
@@ -306,8 +309,8 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   getLabel(): string {
     const method = this.loginForm.value.method;
-    if (method === LoginMethodEnum.CCCD) return 'Citizen ID';
-    if (method === LoginMethodEnum.CODE) return 'Profile Code';
-    return 'Registered Phone Number';
+    if (method === LoginMethodEnum.CCCD) return this.translate.instant('LOGIN.CITIZEN_ID');
+    if (method === LoginMethodEnum.CODE) return this.translate.instant('LOGIN.PROFILE_CODE');
+    return this.translate.instant('LOGIN.PHONE_NUMBER');
   }
 }

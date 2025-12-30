@@ -14,7 +14,8 @@
     "ADD_MORE": "Add More",
     "CHECKING": "Checking...",
     "VALID_NUMBER": "Valid number",
-    "FILE_SELECTED": "file(s) selected",
+    "FILE_SELECTED": "file(s) uploaded - Click to manage",
+    "FILE_UPLOAD": "Click to upload files",
     "FILE_HINT": "PDF, JPG, or PNG, max 5MB per file",
     "SUBMIT": "Submit Application",
     "SUBMITTING": "Submitting...",
@@ -27,8 +28,9 @@
     "PERSONAL": "SECTION A - PERSONAL DETAILS",
     "APPLICATION": "SECTION B - APPLICATION DETAILS",
     "EDUCATION": "SECTION C - PREVIOUS EDUCATION DETAILS",
-    "EMPLOYMENT": "SECTION D - EMPLOYMENT HISTORY",
-    "DECLARATION": "SECTION E - DECLARATION"
+    "ENGLISH": "SECTION D - ENGLISH QUALIFICATIONS",
+    "EMPLOYMENT": "SECTION E - EMPLOYMENT HISTORY",
+    "DECLARATION": "SECTION F - DECLARATION"
   },
   "PERSONAL_DETAILS": {
     "FULL_NAME": "Full name",
@@ -51,21 +53,22 @@
     "EMAIL": "Email",
     "EMAIL_INVALID": "Please enter a valid email address",
     "EMAIL_DOMAIN": "Email domain is invalid",
+    "EMAIL_DOMAIN_INVALID": "Email domain is invalid",
     "MOBILE": "Mobile",
     "MOBILE_INVALID": "Please enter a valid phone number",
     "MOBILE_EXISTS": "This mobile number is already registered",
     "JOB_TITLE": "Job title",
-    "ENTER_JOB_TITLE": "Enter your job title",
+    "ENTER_JOB_TITLE": "Enter job title",
     "ORGANIZATION": "Organization",
-    "ENTER_ORGANIZATION": "Enter your organization",
+    "ENTER_ORGANIZATION": "Enter organization",
     "CORR_CITY": "Correspondence City",
     "CORR_DISTRICT": "Correspondence District",
     "CORR_ADDRESS": "Correspondence Address",
-    "ENTER_CORR_ADDRESS": "Enter your correspondence address",
+    "ENTER_CORR_ADDRESS": "Enter correspondence address",
     "PERM_CITY": "Permanent City",
     "PERM_DISTRICT": "Permanent District",
     "PERM_ADDRESS": "Permanent Address",
-    "ENTER_PERM_ADDRESS": "Enter your permanent address",
+    "ENTER_PERM_ADDRESS": "Enter permanent address",
     "UPLOAD_PASSPORT": "Upload ID/Passport Document"
   },
   "APPLICATION_DETAILS": {
@@ -75,6 +78,7 @@
     "APPLICATION": "Application",
     "RESEARCH": "Research",
     "ADMISSION_YEAR": "Admission Year",
+    "ADMISSION_YEAR_MIN": "Admission year must be current year or later",
     "ADMISSION_YEAR_ERROR": "Admission year must be {{year}} or later",
     "ADMISSION_INTAKE": "Admission Intake"
   },
@@ -103,7 +107,9 @@
     "UPLOAD_CERT": "Upload Certificate (Optional)",
     "THESIS": "Thesis title",
     "ADD_UNDERGRAD": "Add More Undergraduate",
-    "ADD_POSTGRAD": "Add More Postgraduate"
+    "ADD_POSTGRAD": "Add More Postgraduate",
+    "NO_UNDERGRAD": "No undergraduate degrees recorded",
+    "NO_POSTGRAD": "No postgraduate degrees recorded"
   },
   "ENGLISH": {
     "TITLE": "3. English qualifications",
@@ -116,8 +122,10 @@
     "TOEFL_RANGE": "TOEFL score must be between 0 and 120",
     "INVALID_NUMBER": "Please enter a valid number",
     "OTHER_TEST": "Other Test",
+    "TEST_NAME": "Test Name",
     "UPLOAD_CERT": "Upload English Certificate (for all qualifications)",
-    "AT_LEAST_ONE": "Please provide at least one English qualification (IELTS, TOEFL or Other)"
+    "AT_LEAST_ONE": "Please provide at least one English qualification (IELTS, TOEFL or Other)",
+    "NO_QUALIFICATIONS": "No English qualifications recorded"
   },
   "EMPLOYMENT": {
     "POSITION_1": "Position 1 (Most recent)",
@@ -130,7 +138,8 @@
     "TO": "To",
     "DATE_ERROR": "End date must be after or equal to start date",
     "ADDRESS": "Organization address",
-    "ENTER_ADDRESS": "Enter organization address"
+    "ENTER_ADDRESS": "Enter organization address",
+    "NO_HISTORY": "No employment history recorded"
   },
   "DECLARATION": {
     "P1": "By applying for admission to the Master of Business Administration program at Eastern International University, I hereby commit to fulfilling all academic, research, and financial obligations upon admission as follows:",
@@ -144,5 +153,88 @@
   "CONFIRM_DIALOG": {
     "TITLE": "Confirm Submission",
     "MESSAGE": "Are you sure you want to submit this application?"
+  },
+  "APPLICATION_PAGE": {
+    "TITLE": "MBA Application",
+    "TITLE_EDIT": "MBA Application - Edit Mode",
+    "TITLE_DETAILS": "MBA Application Details",
+    "EXPORT_PDF": "Export PDF",
+    "EXPORTING": "Exporting...",
+    "EDIT_APPLICATION": "Edit Application",
+    "SAVE_CHANGES": "Save Changes",
+    "SAVING": "Saving...",
+    "LOADING": "Loading application data..."
+  },
+  "FILE_DIALOG": {
+    "LOADING": "Loading files...",
+    "CLICK_TO_UPLOAD": "Click to upload files",
+    "SELECTED_NOT_SAVED": "Selected files (not saved)",
+    "FILES": "file(s)",
+    "UPLOADING": "Uploading...",
+    "SAVE": "Save",
+    "NO": "No.",
+    "FILE_NAME": "File Name",
+    "FILE_TYPE": "File Type",
+    "ACTIONS": "Actions",
+    "DOWNLOAD": "Download",
+    "DELETE": "Delete",
+    "NO_FILES": "No files uploaded yet",
+    "CLOSE": "Close",
+    "TITLE_PASSPORT": "Manage ID/Passport Files",
+    "TITLE_UNDERGRAD": "Manage Undergraduate Degree Files",
+    "TITLE_POSTGRAD": "Manage Postgraduate Degree Files",
+    "TITLE_ENGLISH": "Manage English Certificate Files"
+  },
+  "LOGIN": {
+    "CITIZEN_ID": "Citizen ID",
+    "PROFILE_CODE": "Profile Code",
+    "PHONE_NUMBER": "Registered Phone Number",
+    "ENTER_CITIZEN_ID": "Enter Citizen ID",
+    "ENTER_PROFILE_CODE": "Enter profile code*",
+    "ENTER_PHONE": "Enter phone number*",
+    "BACK": "Back",
+    "GET_OTP": "Get OTP Code",
+    "OTP": "OTP",
+    "ENTER_OTP": "Enter OTP code",
+    "OTP_MAX_LENGTH": "OTP code must not exceed 6 digits",
+    "OTP_INVALID": "OTP code is incorrect or has expired",
+    "RESEND_AFTER": "Or resend code after",
+    "SECONDS": "seconds",
+    "RESEND": "Resend",
+    "PROCESSING": "Processing...",
+    "LOGIN": "Login",
+    "SENDING": "Sending...",
+    "CHOOSE_OTP_METHOD": "Choose OTP Delivery Method",
+    "NOTE": "Note",
+    "CONTACT_SUPPORT": "Contact Support",
+    "PHONE": "Phone",
+    "HOTLINE": "Hotline",
+    "EMAIL": "Email",
+    "ERR_REQUIRED_CITIZEN_ID": "Please enter Citizen ID",
+    "ERR_REQUIRED_PROFILE_CODE": "Please enter profile code",
+    "ERR_REQUIRED_PHONE": "Please enter registered phone number",
+    "ERR_MAX_CITIZEN_ID": "Citizen ID must not exceed 15 digits",
+    "ERR_MAX_PROFILE_CODE": "Profile code must not exceed 7 digits",
+    "ERR_MAX_PHONE": "Phone number must not exceed 15 digits",
+    "ERR_MIN_PROFILE_CODE": "Profile code must be at least 5 digits",
+    "ERR_PATTERN_PHONE": "Phone number can only contain + and numbers",
+    "ERR_PATTERN_NUMBER": "Only numbers are allowed",
+    "ERR_INVALID_INFO": "Please enter valid information!",
+    "OTP_SENT": "OTP code has been sent!",
+    "OTP_SEND_FAILED": "Unable to send OTP. Please try again.",
+    "SYSTEM_ERROR": "A system error has occurred!",
+    "LOGIN_SUCCESS": "Login successful! Redirecting...",
+    "OTP_VIA_SMS": "Receive OTP code via SMS",
+    "OTP_VIA_EMAIL": "Receive OTP code via Email",
+    "OTP_VIA_ZALO": "Receive OTP code via Zalo",
+    "OTP_SMS_NOTE": "Please check your phone messages for the OTP code!",
+    "OTP_EMAIL_NOTE": "Please check your Email inbox or spam folder for the OTP code!",
+    "OTP_ZALO_NOTE": "Please check your Zalo messages for the OTP code!"
+  },
+  "NAVBAR": {
+    "MBA_APPLICATION": "MBA Application",
+    "MY_APPLICATION": "My Application",
+    "LOGIN": "Login",
+    "LOGOUT": "Logout"
   }
 }
