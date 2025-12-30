@@ -1,26 +1,27 @@
 
-import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { of } from 'rxjs';
-import { MbaService } from './app/core/services/mba/mba.service';
-import { AlertService } from './app/core/services/alert/alert.service';
 import { PageLayoutComponent } from './app/components/layouts/page-layout/page-layout.component';
-import { uniqueFieldValidator } from './validators/unique-field.validator';
-import { passportFormatValidator } from './validators/passport-format.validator';
-import { emailFormatValidator } from './validators/email-format.validator';
+import { AlertService } from './app/core/services/alert/alert.service';
+import { MbaService } from './app/core/services/mba/mba.service';
 import { minAgeValidator } from './validators/age.validator';
-import { minYearValidator, maxYearValidator } from './validators/year.validator';
-import { maxDateValidator, dateRangeValidator } from './validators/date.validator';
 import { scoreRangeValidator } from './validators/conditional.validator';
+import { dateRangeValidator, maxDateValidator } from './validators/date.validator';
+import { emailFormatValidator } from './validators/email-format.validator';
 import { atLeastOneEnglishQualificationValidator } from './validators/english-qualification.validator';
+import { passportFormatValidator } from './validators/passport-format.validator';
+import { uniqueFieldValidator } from './validators/unique-field.validator';
+import { maxYearValidator, minYearValidator } from './validators/year.validator';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, PageLayoutComponent],
+  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, PageLayoutComponent, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true
 })

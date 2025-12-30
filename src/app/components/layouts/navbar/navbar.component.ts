@@ -1,6 +1,7 @@
-import { Component, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { TokenService } from '../../../core/services/auth/token.service';
 
@@ -15,10 +16,12 @@ export class NavbarComponent {
   private readonly authService = inject(AuthService);
   readonly tokenService = inject(TokenService); // Make public to use in template
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
 
   // Signals
   showMobileMenu = signal(false);
   showUserMenu = signal(false);
+  currentLang = 'en';
 
   // Close dropdown when clicking outside
   @HostListener('document:click', ['$event'])
@@ -52,5 +55,13 @@ export class NavbarComponent {
     this.authService.logout();
     this.showUserMenu.set(false);
     this.router.navigate(['/login']);
+  }
+
+  // Language switching (example implementation)
+
+  switchLanguage(): void {
+    this.currentLang = this.currentLang === 'en' ? 'vi' : 'en';
+    this.translate.use(this.currentLang);
+    // Implement actual language switching logic here
   }
 }

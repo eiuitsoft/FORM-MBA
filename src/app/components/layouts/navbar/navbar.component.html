@@ -14,6 +14,13 @@
           <span class="material-icons">edit</span> MBA Application
         </a>
       </li>
+
+      <!-- Switch language -->
+      <li>
+        <button (click)="switchLanguage()" class="nav-link">
+          <span class="material-icons">language</span> {{ currentLang === 'en' ? 'VI' : 'EN' }}
+        </button>
+      </li>
       
       <ng-container *ngIf="isLoggedIn; else loggedOut">
         <li>
