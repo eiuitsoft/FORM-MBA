@@ -141,6 +141,17 @@
     "TITLE": "Confirm Submission",
     "MESSAGE": "Are you sure you want to submit this application?"
   },
+  "APPLICATION_PAGE": {
+    "TITLE": "MBA Application",
+    "TITLE_EDIT": "MBA Application - Edit Mode",
+    "TITLE_DETAILS": "MBA Application Details",
+    "EXPORT_PDF": "Export PDF",
+    "EXPORTING": "Exporting...",
+    "EDIT_APPLICATION": "Edit Application",
+    "SAVE_CHANGES": "Save Changes",
+    "SAVING": "Saving...",
+    "LOADING": "Loading application data..."
+  },
   "FILE_DIALOG": {
     "LOADING": "Loading files...",
     "CLICK_TO_UPLOAD": "Click to upload files",

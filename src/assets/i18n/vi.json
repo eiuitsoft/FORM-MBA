@@ -141,6 +141,17 @@
     "TITLE": "Xác Nhận Gửi",
     "MESSAGE": "Bạn có chắc chắn muốn gửi đơn đăng ký này không?"
   },
+  "APPLICATION_PAGE": {
+    "TITLE": "Đơn Đăng Ký MBA",
+    "TITLE_EDIT": "Đơn Đăng Ký MBA - Chế Độ Chỉnh Sửa",
+    "TITLE_DETAILS": "Chi Tiết Đơn Đăng Ký MBA",
+    "EXPORT_PDF": "Xuất PDF",
+    "EXPORTING": "Đang xuất...",
+    "EDIT_APPLICATION": "Chỉnh Sửa Đơn",
+    "SAVE_CHANGES": "Lưu Thay Đổi",
+    "SAVING": "Đang lưu...",
+    "LOADING": "Đang tải dữ liệu đơn đăng ký..."
+  },
   "FILE_DIALOG": {
     "LOADING": "Đang tải tệp...",
     "CLICK_TO_UPLOAD": "Nhấn để tải tệp lên",

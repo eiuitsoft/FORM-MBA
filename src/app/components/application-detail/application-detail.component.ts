@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@ang
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MbaService } from '../../core/services/mba/mba.service';
 import { AlertService } from '../../core/services/alert/alert.service';
 import { PageLayoutComponent } from '../layouts/page-layout/page-layout.component';
@@ -32,6 +33,7 @@ import { of } from 'rxjs';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    TranslatePipe,
     PageLayoutComponent,
     PersonalDetailsViewComponent,
     PersonalDetailsEditComponent,
