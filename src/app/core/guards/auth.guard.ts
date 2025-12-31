@@ -17,6 +17,7 @@ import { TokenService } from "../services/auth/token.service";
 export const authGuard: CanActivateFn = (route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+
   return auth.isLoggedIn()
     ? true
     : router.createUrlTree(["/login"], {
@@ -39,7 +40,6 @@ export const guestGuard: CanActivateFn = (route, state) => {
   }
 
   // Nếu đã đăng nhập, chuyển hướng dựa trên trạng thái hồ sơ
-
   return token.studentId()
     ? router.createUrlTree(["/application"])
     : router.createUrlTree(["/login"]);

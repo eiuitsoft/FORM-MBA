@@ -1,0 +1,58 @@
+.nf-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9ff, #eef1ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.nf-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 48px 40px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+.nf-code {
+  font-size: 96px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: #153a5e;
+  margin-bottom: 8px;
+}
+
+.nf-title {
+  font-size: 24px;
+  margin: 0 0 12px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.nf-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+.nf-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: #153a5e;
+  color: #ffffff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.nf-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.35);
+}
