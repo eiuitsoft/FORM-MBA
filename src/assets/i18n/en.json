@@ -142,7 +142,7 @@
     "ENTER_TITLE": "Enter your position or title",
     "FROM": "From",
     "TO": "To",
-    "DATE_ERROR": "End date must be after or equal to start date",
+    "DATE_RANGE_ERROR": "End date must be after or equal to start date",
     "ADDRESS": "Organization address",
     "ENTER_ADDRESS": "Enter organization address",
     "NO_HISTORY": "No employment history recorded"

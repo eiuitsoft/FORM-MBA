@@ -19,7 +19,7 @@ export const MBA_API = {
   
   // TODO: Implement these APIs on backend
   GET_ACTIVE_CITIES: `${BASE_API_URL}/MBACity/GetActive`, // Not implemented yet
-  SEND_EMAIL_WITH_PDF: `${BASE_API_URL}/MBAForm/SendEmailWithPDF`, // Not implemented yet
+  SEND_EMAIL_WITH_PDF: (language: string = 'en') => `${BASE_API_URL}/MBAForm/SendEmailWithPDF?language=${language}`,
 };
 
 // Authentication endpoints

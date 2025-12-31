@@ -268,7 +268,7 @@
             (personalDetails.get('mobile')?.hasError('validatePhoneNumber') &&
             personalDetails.get('mobile')?.touched) {
             <p class="text-red-600 text-sm mt-1">
-              {{ "PERSONAL_DETAILS.PHONE_INVALID" | translate }}
+              {{ "PERSONAL_DETAILS.MOBILE_INVALID" | translate }}
             </p>
             } @if (personalDetails.get('mobile')?.hasError('required') &&
             personalDetails.get('mobile')?.touched) {
@@ -714,7 +714,7 @@
                       <span [textContent]="
                             undergraduates.at(ugIndex).get('file')?.value.length
                           "></span>
-                      file(s):
+                      {{ "COMMON.FILE_SELECTED" | translate }}
                     </p>
                     @for (file of
                     undergraduates.at(ugIndex).get('file')?.value; track
@@ -871,7 +871,7 @@
                       <span [textContent]="
                             postgraduates.at(pgIndex).get('file')?.value.length
                           "></span>
-                      file(s):
+                      {{ "COMMON.FILE_SELECTED" | translate }}
                     </p>
                     @for (file of
                     postgraduates.at(pgIndex).get('file')?.value; track

@@ -93,13 +93,16 @@ export class MbaService {
 
   /**
    * Send email with PDF attachment
+   * @param data - Email data
+   * @param pdfBlob - PDF file blob
+   * @param language - Language code ('en' or 'vi')
    */
-  sendEmailWithPDF(data: any, pdfBlob: Blob): Observable<OperationResult> {
+  sendEmailWithPDF(data: any, pdfBlob: Blob, language: string = 'en'): Observable<OperationResult> {
     const formData = new FormData();
     formData.append('data', JSON.stringify(data));
     formData.append('pdf', pdfBlob, 'mba-application.pdf');
     
-    return this._httpClient.post<OperationResult>(MBA_API.SEND_EMAIL_WITH_PDF, formData);
+    return this._httpClient.post<OperationResult>(MBA_API.SEND_EMAIL_WITH_PDF(language), formData);
   }
 
   /**
