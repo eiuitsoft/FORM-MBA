@@ -15,7 +15,7 @@ export const MBA_API = {
   GET_ACTIVE_PROGRAMS: `${BASE_API_URL}/MBAProgram/GetActive`,
   GET_ACTIVE_LANGUAGES: `${BASE_API_URL}/MBALanguage/GetActive`,
   GET_ACTIVE_COUNTRIES: `${BASE_API_URL}/MBACountry/GetActive`,
-  EXPORT_TO_PDF: (id: string) => `${BASE_API_URL}/MBAForm/ExportToWord/${id}/export-word?type=pdf`,
+  EXPORT_TO_PDF: (id: string, language: string = 'en') => `${BASE_API_URL}/MBAForm/ExportToWord/${id}/export-word?type=pdf&language=${language}`,
   
   // TODO: Implement these APIs on backend
   GET_ACTIVE_CITIES: `${BASE_API_URL}/MBACity/GetActive`, // Not implemented yet

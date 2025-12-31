@@ -784,8 +784,9 @@ export class ApplicationDetailComponent implements OnInit {
    */
   exportToPDF(): void {
     this.exporting.set(true);
+    const language = localStorage.getItem('lang') || 'en';
 
-    this._mbaService.exportToPDF(this.applicationId()).subscribe({
+    this._mbaService.exportToPDF(this.applicationId(), language).subscribe({
       next: (blob) => {
         // Create download link
         const url = window.URL.createObjectURL(blob);

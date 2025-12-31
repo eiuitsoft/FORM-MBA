@@ -196,9 +196,11 @@ export class MbaService {
 
   /**
    * Export application to PDF
+   * @param id - Application ID
+   * @param language - Language code ('en' or 'vi')
    */
-  exportToPDF(id: string): Observable<Blob> {
-    return this._httpClient.get(MBA_API.EXPORT_TO_PDF(id), {
+  exportToPDF(id: string, language: string = 'en'): Observable<Blob> {
+    return this._httpClient.get(MBA_API.EXPORT_TO_PDF(id, language), {
       responseType: 'blob'
     });
   }
