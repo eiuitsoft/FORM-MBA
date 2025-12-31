@@ -81,7 +81,9 @@
     "ADMISSION_YEAR": "Năm tuyển sinh",
     "ADMISSION_YEAR_MIN": "Năm tuyển sinh phải từ năm hiện tại trở đi",
     "ADMISSION_YEAR_ERROR": "Năm tuyển sinh phải từ {{year}} trở đi",
-    "ADMISSION_INTAKE": "Đợt tuyển sinh"
+    "ADMISSION_INTAKE": "Đợt tuyển sinh",
+    "ADMISSION_INTAKE_1": "1 (tháng 4)",
+    "ADMISSION_INTAKE_2": "2 (tháng 9)"
   },
   "EDUCATION_DETAILS": {
     "UNDERGRAD_TITLE": "Văn bằng đại học (Bằng thứ nhất)",

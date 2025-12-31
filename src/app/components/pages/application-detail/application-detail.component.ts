@@ -10,7 +10,7 @@ import { passportFormatValidator } from '@/src/validators/passport-format.valida
 import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
 import { minYearValidator } from '@/src/validators/year.validator';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -77,6 +77,20 @@ export class ApplicationDetailComponent implements OnInit {
 
   // Edit form
   editForm!: FormGroup;
+
+  /**
+   * Warn user before leaving page with unsaved changes (Edit mode)
+   */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
+    // Only warn if in edit mode AND form has been changed
+    if (this.isEditMode() && this.editForm?.dirty) {
+      event.preventDefault();
+      event.returnValue = '';
+      return '';
+    }
+    return undefined;
+  }
 
   ngOnInit(): void {
     // const id = this._route.snapshot.paramMap.get('id');
@@ -367,6 +381,8 @@ export class ApplicationDetailComponent implements OnInit {
               correspondenceDistrictId: ward.wardCode,
               correspondenceDistrictName: ward.wardName
             });
+            // Reset dirty after loading initial data
+            this.editForm.markAsPristine();
           }
           // Load wards for this province
           this._mbaService.getWardsByProvinceCode(ward.provinceCode).subscribe({
@@ -391,6 +407,8 @@ export class ApplicationDetailComponent implements OnInit {
               permanentDistrictId: ward.wardCode,
               permanentDistrictName: ward.wardName
             });
+            // Reset dirty after loading initial data
+            this.editForm.markAsPristine();
           }
           // Load wards for this province
           this._mbaService.getWardsByProvinceCode(ward.provinceCode).subscribe({
@@ -542,6 +560,10 @@ export class ApplicationDetailComponent implements OnInit {
         }, { validators: dateRangeValidator('fromDate', 'toDate') })
       })
     });
+
+    // Reset dirty state after initializing with existing data
+    // Form should only be dirty when user actually changes something
+    this.editForm.markAsPristine();
   }
 
   cancelEdit(): void {

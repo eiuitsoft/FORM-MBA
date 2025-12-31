@@ -7,7 +7,7 @@ import { passportFormatValidator } from '@/src/validators/passport-format.valida
 import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
 import { maxYearValidator, minYearValidator } from '@/src/validators/year.validator';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -43,6 +43,57 @@ export class FormRegisterComponent implements OnInit {
   permanentWards = signal<any[]>([]); // Changed from districts to wards
 
   currentYear = new Date().getFullYear();
+
+  /**
+   * Check if user has entered any meaningful data in the form
+   * Ignores default values like gender
+   */
+  private hasUserEnteredData(): boolean {
+    const personal = this.applicationForm.get('personalDetails')?.value;
+    const education = this.applicationForm.get('educationDetails')?.value;
+    const english = this.applicationForm.get('englishQualifications')?.value;
+    const employment = this.applicationForm.get('employmentHistory')?.value;
+
+    // Check personal details (excluding gender which has default)
+    if (personal?.fullName || personal?.dateOfBirth || personal?.placeOfBirth ||
+        personal?.passportNo || personal?.email || personal?.mobile ||
+        personal?.jobTitle || personal?.organization || personal?.correspondenceAddress ||
+        personal?.permanentAddress || personal?.nationalityId) {
+      return true;
+    }
+
+    // Check education - first undergraduate
+    const firstUg = education?.undergraduates?.[0];
+    if (firstUg?.university || firstUg?.major || firstUg?.graduationYear) {
+      return true;
+    }
+
+    // Check english qualifications
+    if (english?.ielts?.score || english?.toefl?.score || english?.other?.name) {
+      return true;
+    }
+
+    // Check employment
+    if (employment?.position1?.organization || employment?.position2?.organization) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Warn user before leaving page with unsaved changes (Create mode)
+   */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
+    // Only warn if user has entered data AND not yet submitted
+    if (this.hasUserEnteredData() && !this.submitted()) {
+      event.preventDefault();
+      event.returnValue = '';
+      return '';
+    }
+    return undefined;
+  }
 
   applicationForm: FormGroup = this.fb.group({
     personalDetails: this.fb.group({
@@ -469,26 +520,6 @@ export class FormRegisterComponent implements OnInit {
 
     // Setup conditional validation for Other English test
     this.setupConditionalValidation('other');
-
-    // Setup beforeunload warning
-    this.setupBeforeUnloadWarning();
-  }
-
-  /**
-   * Setup warning when user tries to reload or close tab with unsaved changes
-   */
-  private setupBeforeUnloadWarning(): void {
-    window.addEventListener('beforeunload', (event) => {
-      // Check if form has been touched (has any data)
-      if (this.applicationForm.dirty && !this.submitted()) {
-        // Standard way to show confirmation dialog
-        event.preventDefault();
-        // Chrome requires returnValue to be set
-        event.returnValue = '';
-        return '';
-      }
-      return undefined;
-    });
   }
 
   /**
@@ -509,6 +540,8 @@ export class FormRegisterComponent implements OnInit {
             programName: mbaProgram.name,
             admissionIntake: '1' // Default intake
           });
+          // Reset dirty state after auto-select (user hasn't actually changed anything)
+          this.applicationForm.markAsPristine();
         }
       },
       error: (err) => {

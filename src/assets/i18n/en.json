@@ -81,7 +81,10 @@
     "ADMISSION_YEAR": "Admission Year",
     "ADMISSION_YEAR_MIN": "Admission year must be current year or later",
     "ADMISSION_YEAR_ERROR": "Admission year must be {{year}} or later",
-    "ADMISSION_INTAKE": "Admission Intake"
+    "ADMISSION_INTAKE": "Admission Intake",
+    "ADMISSION_INTAKE_1": "1 (April)",
+    "ADMISSION_INTAKE_2": "2 (September)"
+
   },
   "EDUCATION_DETAILS": {
     "UNDERGRAD_TITLE": "Undergraduate qualifications (First degree)",
