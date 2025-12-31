@@ -2,6 +2,7 @@
   background: #153a5e;
   padding: 1rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .navbar-container {
@@ -131,13 +132,26 @@
     padding: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-left: 0;
+    z-index: 9999;
+    align-items: stretch;
   }
 
   .nav-menu.show {
     display: flex;
   }
 
+  .nav-menu li {
+    width: 100%;
+  }
+
+  .nav-menu .nav-link {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+  }
+
   .mobile-toggle {
     display: block;
+    z-index: 10000;
   }
 }

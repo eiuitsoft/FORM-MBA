@@ -11,7 +11,7 @@
     <ul class="nav-menu" [class.show]="showMobileMenu()">
       @if (!isLoggedIn) {
         <li>
-          <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+          <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link" (click)="closeMenu()">
             <span class="material-icons">edit</span> {{ 'NAVBAR.MBA_APPLICATION' | translate }}
           </a>
         </li>
@@ -26,7 +26,7 @@
 
       @if (isLoggedIn) {
         <li>
-          <a [routerLink]="['/application']" routerLinkActive="active" class="nav-link">
+          <a [routerLink]="['/application']" routerLinkActive="active" class="nav-link" (click)="closeMenu()">
             <span class="material-icons">assignment</span> {{ 'NAVBAR.MY_APPLICATION' | translate }}
           </a>
         </li>
@@ -36,7 +36,7 @@
           </button>
           @if (showUserMenu()) {
             <div class="dropdown-menu" (click)="$event.stopPropagation()">
-              <button (click)="logout()" class="dropdown-item">
+              <button (click)="logout(); closeMenu()" class="dropdown-item">
                 <span class="material-icons">exit_to_app</span> {{ 'NAVBAR.LOGOUT' | translate }}
               </button>
             </div>
@@ -44,7 +44,7 @@
         </li>
       } @else {
         <li>
-          <a routerLink="/login" routerLinkActive="active" class="nav-link">
+          <a routerLink="/login" routerLinkActive="active" class="nav-link" (click)="closeMenu()">
             <span class="material-icons">power_settings_new</span> {{ 'NAVBAR.LOGIN' | translate }}
           </a>
         </li>

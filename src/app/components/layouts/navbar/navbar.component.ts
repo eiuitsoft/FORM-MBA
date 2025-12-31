@@ -51,6 +51,10 @@ export class NavbarComponent {
     this.showMobileMenu.update(show => !show);
   }
 
+  closeMenu(): void {
+    this.showMobileMenu.set(false);
+  }
+
   toggleUserMenu(): void {
     this.showUserMenu.update(show => !show);
   }
