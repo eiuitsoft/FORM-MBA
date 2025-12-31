@@ -1,9 +1,9 @@
-import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { AlertService } from '@/src/app/core/services/alert/alert.service';
+import { TokenService } from '@/src/app/core/services/auth/token.service';
+import { MbaService } from '@/src/app/core/services/mba/mba.service';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { AlertService } from '../../../core/services/alert/alert.service';
-import { MbaService } from '../../../core/services/mba/mba.service';
-import { TokenService } from '../../../core/services/auth/token.service';
 
 @Component({
   selector: 'app-file-manager-dialog',
@@ -19,7 +19,6 @@ import { TokenService } from '../../../core/services/auth/token.service';
 
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
              (click)="$event.stopPropagation()">
-          
           <!-- Header -->
           <div class="bg-white px-6 py-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
@@ -43,7 +42,7 @@ import { TokenService } from '../../../core/services/auth/token.service';
                 <span class="ml-3 text-gray-600">{{ 'FILE_DIALOG.LOADING' | translate }}</span>
               </div>
             }
-            
+
             @if (!loading) {
             <!-- Upload area -->
             <div class="mb-4">
@@ -171,11 +170,12 @@ import { TokenService } from '../../../core/services/auth/token.service';
   `,
   styles: [`:host { display: contents; }`]
 })
+
 export class FileManagerDialogComponent implements OnChanges {
   private readonly _alertService = inject(AlertService);
   private readonly _mbaService = inject(MbaService);
   private readonly _tokenService = inject(TokenService);
-  
+
   @Input() isOpen = false;
   @Input() title = 'File Attachments';
   @Input() files: any[] = [];
@@ -188,7 +188,7 @@ export class FileManagerDialogComponent implements OnChanges {
   uploading = false;
   loading = false;
   pendingFiles: File[] = [];
-  
+
   get studentId(): string { return this._tokenService.studentId(); }
   get uploadedFiles(): any[] { return this.files.filter(f => !f.isPending); }
 
@@ -227,8 +227,7 @@ export class FileManagerDialogComponent implements OnChanges {
   onFileSelect(event: any): void {
     const selectedFiles = event.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
+    for (const file of selectedFiles) {
       if (file.size > 5 * 1024 * 1024) { this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`); continue; }
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
       if (!allowedTypes.includes(file.type)) { this._alertService.error('Error', `File ${file.name} has invalid type`); continue; }
@@ -254,7 +253,7 @@ export class FileManagerDialogComponent implements OnChanges {
     formData.append('FileCategoryId', this.fileCategoryId.toString());
     formData.append('StudentFileType', '1');
     this.pendingFiles.forEach(file => formData.append('Files', file));
-    
+
     this._mbaService.uploadAdmissionFiles(formData).subscribe({
       next: (result: any) => {
         this.uploading = false;

@@ -4,7 +4,7 @@ import { importProvidersFrom, inject, provideAppInitializer, provideZonelessChan
 import { ReactiveFormsModule } from '@angular/forms';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withHashLocation } from '@angular/router';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppRootComponent } from './src/app/app-root.component';
@@ -16,7 +16,7 @@ bootstrapApplication(AppRootComponent, {
     provideZonelessChangeDetection(),
     provideAnimations(),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideRouter(routes),
+    provideRouter(routes, withHashLocation()),
     importProvidersFrom(ReactiveFormsModule),
     provideTranslateService({
       lang: 'en',

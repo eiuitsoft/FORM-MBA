@@ -1,32 +1,30 @@
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { AlertService } from '@/src/app/core/services/alert/alert.service';
+import { TokenService } from '@/src/app/core/services/auth/token.service';
+import { MbaService } from '@/src/app/core/services/mba/mba.service';
+import { minAgeValidator } from '@/src/validators/age.validator';
+import { scoreRangeValidator } from '@/src/validators/conditional.validator';
+import { dateRangeValidator, maxDateValidator } from '@/src/validators/date.validator';
+import { emailFormatValidator } from '@/src/validators/email-format.validator';
+import { atLeastOneEnglishQualificationValidator } from '@/src/validators/english-qualification.validator';
+import { passportFormatValidator } from '@/src/validators/passport-format.validator';
+import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
+import { minYearValidator } from '@/src/validators/year.validator';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { MbaService } from '../../core/services/mba/mba.service';
-import { AlertService } from '../../core/services/alert/alert.service';
-import { PageLayoutComponent } from '../layouts/page-layout/page-layout.component';
-import { PersonalDetailsViewComponent } from './sections/personal-details-view.component';
-import { PersonalDetailsEditComponent } from './sections/personal-details-edit.component';
-import { ApplicationDetailsViewComponent } from './sections/application-details-view.component';
-import { ApplicationDetailsEditComponent } from './sections/application-details-edit.component';
-import { EducationDetailsViewComponent } from './sections/education-details-view.component';
-import { EducationDetailsEditComponent } from './sections/education-details-edit.component';
-import { EnglishQualificationsViewComponent } from './sections/english-qualifications-view.component';
-import { EnglishQualificationsEditComponent } from './sections/english-qualifications-edit.component';
-import { EmploymentHistoryViewComponent } from './sections/employment-history-view.component';
-import { EmploymentHistoryEditComponent } from './sections/employment-history-edit.component';
-// Validators
-import { uniqueFieldValidator } from '../../../validators/unique-field.validator';
-import { passportFormatValidator } from '../../../validators/passport-format.validator';
-import { emailFormatValidator } from '../../../validators/email-format.validator';
-import { minAgeValidator } from '../../../validators/age.validator';
-import { minYearValidator } from '../../../validators/year.validator';
-import { maxDateValidator, dateRangeValidator } from '../../../validators/date.validator';
-import { scoreRangeValidator } from '../../../validators/conditional.validator';
-import { atLeastOneEnglishQualificationValidator } from '../../../validators/english-qualification.validator';
 import { of } from 'rxjs';
-import { TokenService } from '../../core/services/auth/token.service';
+import { ApplicationDetailsEditComponent } from './sections/application-details-edit.component';
+import { ApplicationDetailsViewComponent } from './sections/application-details-view.component';
+import { EducationDetailsEditComponent } from './sections/education-details-edit.component';
+import { EducationDetailsViewComponent } from './sections/education-details-view.component';
+import { EmploymentHistoryEditComponent } from './sections/employment-history-edit.component';
+import { EmploymentHistoryViewComponent } from './sections/employment-history-view.component';
+import { EnglishQualificationsEditComponent } from './sections/english-qualifications-edit.component';
+import { EnglishQualificationsViewComponent } from './sections/english-qualifications-view.component';
+import { PersonalDetailsEditComponent } from './sections/personal-details-edit.component';
+import { PersonalDetailsViewComponent } from './sections/personal-details-view.component';
 
 @Component({
   selector: 'app-application-detail',
@@ -35,7 +33,6 @@ import { TokenService } from '../../core/services/auth/token.service';
     CommonModule,
     ReactiveFormsModule,
     TranslatePipe,
-    PageLayoutComponent,
     PersonalDetailsViewComponent,
     PersonalDetailsEditComponent,
     ApplicationDetailsViewComponent,

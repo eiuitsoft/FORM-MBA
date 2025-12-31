@@ -828,7 +828,7 @@
                 </div>
               }
               <p class="text-xs text-gray-500 mt-1">
-                Upload a single or multiple files containing all your English qualification certificates (PDF, JPG, or PNG, max 5MB per file)
+                {{ 'ENGLISH.FILE_HINT' | translate }}
               </p>
             </div>
 
@@ -938,17 +938,17 @@
             {{ 'CONFIRM_DIALOG.MESSAGE' | translate }}
           </p>
         </div>
-        
+
         <div class="flex gap-3">
-          <button 
-            (click)="cancelSubmit()" 
+          <button
+            (click)="cancelSubmit()"
             class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors duration-200 font-medium">
-            Cancel
+            {{ 'COMMON.CANCEL' | translate }}
           </button>
-          <button 
-            (click)="confirmSubmit()" 
+          <button
+            (click)="confirmSubmit()"
             class="flex-1 px-6 py-3 bg-[#153a5e] text-white rounded-md hover:bg-[#a68557] transition-colors duration-200 font-medium">
-            Submit
+            {{ 'COMMON.CONFIRM' | translate }}
           </button>
         </div>
       </div>

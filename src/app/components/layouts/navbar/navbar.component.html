@@ -9,6 +9,13 @@
     </button>
 
     <ul class="nav-menu" [class.show]="showMobileMenu()">
+      <!-- Switch language -->
+      <li>
+        <button (click)="switchLanguage()" class="nav-link">
+          <span class="material-icons">language</span> {{ currentLang === 'en' ? 'VI' : 'EN' }}
+        </button>
+      </li>
+
       @if (!isLoggedIn) {
         <li>
           <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link" (click)="closeMenu()">
@@ -16,13 +23,6 @@
           </a>
         </li>
       }
-
-      <!-- Switch language -->
-      <li>
-        <button (click)="switchLanguage()" class="nav-link">
-          <span class="material-icons">language</span> {{ currentLang === 'en' ? 'VI' : 'EN' }}
-        </button>
-      </li>
 
       @if (isLoggedIn) {
         <li>
@@ -35,7 +35,7 @@
             <span class="material-icons">account_circle</span> {{ fullName }}
           </button>
           @if (showUserMenu()) {
-            <div class="dropdown-menu" (click)="$event.stopPropagation()">
+            <div class="dropdown-menu" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <button (click)="logout(); closeMenu()" class="dropdown-item">
                 <span class="material-icons">exit_to_app</span> {{ 'NAVBAR.LOGOUT' | translate }}
               </button>

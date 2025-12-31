@@ -1,0 +1,1281 @@
+<div class="min-h-screen p-4 sm:p-8 bg-slate-100 flex items-center justify-center">
+  <div class="w-full max-w-5xl">
+    <!-- Header -->
+    <header class="text-center mb-10 animate-header">
+      <div class="inline-flex items-start gap-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[#153a5e] flex-shrink-0 -mt-1" viewBox="0 0 24 24"
+          fill="currentColor">
+          <path
+            d="M12 2L1 9l4 1.5V17h14v-6.5L23 9l-11-7zm-2 9h4v5h-4v-5zm-4 0h2v5H6v-5zm12 0h2v5h-2v-5zM3.5 18v2h17v-2H3.5z" />
+        </svg>
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-bold text-[#153a5e] leading-none">
+            {{ "UNIVERSITY_NAME" | translate }}
+          </h1>
+          <h2 class="text-xl sm:text-2xl font-semibold text-[#a68557] mt-1">
+            {{ "FORM_TITLE" | translate }}
+          </h2>
+        </div>
+      </div>
+    </header>
+
+    <form [formGroup]="applicationForm" (ngSubmit)="submitForm()" class="space-y-8">
+      <!-- Section A: Personal Details -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="personalDetails">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">
+          {{ "SECTIONS.PERSONAL" | translate }}
+        </h3>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div class="md:col-span-2">
+            <label for="fullName" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.FULL_NAME" |
+              translate }}
+              <span class="text-red-600">*</span></label>
+            <input type="text" id="fullName" formControlName="fullName" [placeholder]="
+                  'PERSONAL_DETAILS.FULL_NAME_PLACEHOLDER' | translate
+                "
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            @if (personalDetails.get('fullName')?.hasError('required') &&
+            personalDetails.get('fullName')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.FULL_NAME" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            } @if (personalDetails.get('fullName')?.hasError('minlength') &&
+            personalDetails.get('fullName')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.FULL_NAME_MIN" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label for="nationalityId" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.NATIONALITY"
+              | translate }}
+              <span class="text-red-600">*</span></label>
+            <select id="nationalityId" formControlName="nationalityId" (change)="onNationalityChange($event)"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+              <option value="">
+                {{ "COMMON.SELECT_NATIONALITY" | translate }}
+              </option>
+              @for (country of countries(); track country.id) {
+              <option [value]="country.id" [textContent]="country.name"></option>
+              }
+            </select>
+            @if (personalDetails.get('nationalityId')?.hasError('required') &&
+            personalDetails.get('nationalityId')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.NATIONALITY" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">{{
+              "PERSONAL_DETAILS.GENDER" | translate
+              }}</label>
+            <div class="mt-2 flex items-center space-x-6">
+              <label class="inline-flex items-center"><input type="radio" formControlName="gender" value="Male"
+                  class="text-[#153a5e] focus:ring-[#a68557]" />
+                <span class="ml-2">{{
+                  "PERSONAL_DETAILS.MALE" | translate
+                  }}</span></label>
+              <label class="inline-flex items-center"><input type="radio" formControlName="gender" value="Female"
+                  class="text-[#153a5e] focus:ring-[#a68557]" />
+                <span class="ml-2">{{
+                  "PERSONAL_DETAILS.FEMALE" | translate
+                  }}</span></label>
+            </div>
+          </div>
+          <div>
+            <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.DOB" |
+              translate
+              }}<span class="text-red-600">*</span></label>
+            <input type="date" id="dateOfBirth" formControlName="dateOfBirth"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            @if (personalDetails.get('dateOfBirth')?.hasError('required') &&
+            personalDetails.get('dateOfBirth')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.DOB" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            } @if (personalDetails.get('dateOfBirth')?.hasError('minAge') &&
+            personalDetails.get('dateOfBirth')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.MIN_AGE" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label for="placeOfBirth" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.POB" |
+              translate }}
+              <span class="text-red-600">*</span></label>
+            <input type="text" id="placeOfBirth" formControlName="placeOfBirth"
+              [placeholder]="'PERSONAL_DETAILS.POB_PLACEHOLDER' | translate"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            @if (personalDetails.get('placeOfBirth')?.hasError('required') &&
+            personalDetails.get('placeOfBirth')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.POB" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label for="passportNo" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.PASSPORT" |
+              translate }}
+              <span class="text-red-600">*</span></label>
+            <div class="relative">
+              <input type="text" id="passportNo" formControlName="passportNo" (input)="formatPassportInput($event)"
+                [placeholder]="
+                    'PERSONAL_DETAILS.PASSPORT_PLACEHOLDER' | translate
+                  "
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10" />
+              @if (personalDetails.get('passportNo')?.pending) {
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                  viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
+                </svg>
+              </div>
+              } @if (personalDetails.get('passportNo')?.valid &&
+              personalDetails.get('passportNo')?.touched &&
+              !personalDetails.get('passportNo')?.pending) {
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              }
+            </div>
+            @if (personalDetails.get('passportNo')?.hasError('required') &&
+            personalDetails.get('passportNo')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.PASSPORT" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            } @if
+            (personalDetails.get('passportNo')?.hasError('invalidLength')) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.PASSPORT_LENGTH" | translate }}
+            </p>
+            } @if
+            (personalDetails.get('passportNo')?.hasError('invalidFormat')) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.PASSPORT_FORMAT" | translate }}
+            </p>
+            } @if
+            (personalDetails.get('passportNo')?.hasError('passportExists') &&
+            personalDetails.get('passportNo')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.PASSPORT_EXISTS" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label for="dateIssued" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.DATE_ISSUED" |
+              translate
+              }}<span class="text-red-600">*</span></label>
+            <input type="date" id="dateIssued" formControlName="dateIssued"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            @if (personalDetails.get('dateIssued')?.hasError('required') &&
+            personalDetails.get('dateIssued')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.DATE_ISSUED" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.EMAIL" | translate
+              }}
+              <span class="text-red-600">*</span></label>
+            <div class="relative">
+              <input type="email" id="email" formControlName="email" (input)="formatEmailInput($event)"
+                placeholder="example@domain.com"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10" />
+              @if (personalDetails.get('email')?.valid &&
+              personalDetails.get('email')?.touched) {
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              }
+            </div>
+            @if (personalDetails.get('email')?.hasError('required') &&
+            personalDetails.get('email')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.EMAIL" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            } @if ((personalDetails.get('email')?.hasError('email') ||
+            personalDetails.get('email')?.hasError('invalidEmailFormat')) &&
+            personalDetails.get('email')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.EMAIL_INVALID" | translate }}
+            </p>
+            } @if (personalDetails.get('email')?.hasError('invalidDomain') &&
+            personalDetails.get('email')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.EMAIL_DOMAIN_INVALID" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label for="mobile" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.MOBILE" | translate
+              }}
+              <span class="text-red-600">*</span></label>
+            <ngx-intl-tel-input [cssClass]="
+                  'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2'
+                " [preferredCountries]="['vn', 'us', 'gb']" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
+              [searchCountryFlag]="true" [searchCountryField]="['name', 'dialCode']" [selectFirstCountry]="false"
+              [selectedCountryISO]="'vn'" [maxLength]="15" [phoneValidation]="true" [separateDialCode]="true"
+              formControlName="mobile" id="mobile">
+            </ngx-intl-tel-input>
+            @if (personalDetails.get('mobile')?.pending) {
+            <div class="flex items-center mt-1">
+              <svg class="animate-spin h-4 w-4 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              <span class="text-sm text-gray-500">{{
+                "COMMON.CHECKING" | translate
+                }}</span>
+            </div>
+            } @if (personalDetails.get('mobile')?.valid &&
+            personalDetails.get('mobile')?.touched &&
+            !personalDetails.get('mobile')?.pending) {
+            <div class="flex items-center mt-1">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span class="text-sm text-green-600">{{
+                "COMMON.VALID_NUMBER" | translate
+                }}</span>
+            </div>
+            } @if
+            (personalDetails.get('mobile')?.hasError('validatePhoneNumber') &&
+            personalDetails.get('mobile')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.PHONE_INVALID" | translate }}
+            </p>
+            } @if (personalDetails.get('mobile')?.hasError('required') &&
+            personalDetails.get('mobile')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.MOBILE" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            } @if (personalDetails.get('mobile')?.hasError('mobileExists') &&
+            personalDetails.get('mobile')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.MOBILE_EXISTS" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label for="jobTitle" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.JOB_TITLE" |
+              translate }}
+              <span class="text-red-600">*</span></label>
+            <input type="text" id="jobTitle" formControlName="jobTitle"
+              [placeholder]="'PERSONAL_DETAILS.ENTER_JOB_TITLE' | translate"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            @if (personalDetails.get('jobTitle')?.hasError('required') &&
+            personalDetails.get('jobTitle')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.JOB_TITLE" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            }
+          </div>
+          <div>
+            <label for="organization" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.ORGANIZATION"
+              | translate }}
+              <span class="text-red-600">*</span></label>
+            <input type="text" id="organization" formControlName="organization" [placeholder]="
+                  'PERSONAL_DETAILS.ENTER_ORGANIZATION' | translate
+                "
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            @if (personalDetails.get('organization')?.hasError('required') &&
+            personalDetails.get('organization')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.ORGANIZATION" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            }
+          </div>
+
+          <div class="md:col-span-1">
+            <div class="grid grid-cols-2 gap-x-3">
+              <div>
+                <label for="correspondenceCityId" class="block text-sm font-medium text-gray-700">{{
+                  "PERSONAL_DETAILS.CORR_CITY" | translate }}</label>
+                <select id="correspondenceCityId" formControlName="correspondenceCityId"
+                  (change)="onCorrespondenceCityChange($event)"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  <option value="">
+                    {{ "COMMON.SELECT_CITY" | translate }}
+                  </option>
+                  @for (province of provinces(); track province.provinceCode)
+                  {
+                  <option [value]="province.provinceCode">
+                    {{ province.provinceName }}
+                  </option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label for="correspondenceDistrictId" class="block text-sm font-medium text-gray-700">{{
+                  "PERSONAL_DETAILS.CORR_DISTRICT" | translate }}</label>
+                <select id="correspondenceDistrictId" formControlName="correspondenceDistrictId"
+                  (change)="onCorrespondenceDistrictChange($event)"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                  <option value="">
+                    {{ "COMMON.SELECT_DISTRICT" | translate }}
+                  </option>
+                  @for (ward of correspondenceWards(); track ward.wardCode) {
+                  <option [value]="ward.wardCode">{{ ward.wardName }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="md:col-span-1">
+            <label for="correspondenceAddress" class="block text-sm font-medium text-gray-700">{{
+              "PERSONAL_DETAILS.CORR_ADDRESS" | translate }}
+              <span class="text-red-600">*</span></label>
+            <textarea id="correspondenceAddress" formControlName="correspondenceAddress" rows="2" [placeholder]="
+                  'PERSONAL_DETAILS.ENTER_CORR_ADDRESS' | translate
+                "
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+            @if
+            (personalDetails.get('correspondenceAddress')?.hasError('required')
+            && personalDetails.get('correspondenceAddress')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.CORR_ADDRESS" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            }
+          </div>
+
+          <div class="md:col-span-1">
+            <div class="grid grid-cols-2 gap-x-3">
+              <div>
+                <label for="permanentCityId" class="block text-sm font-medium text-gray-700">{{
+                  "PERSONAL_DETAILS.PERM_CITY" | translate }}</label>
+                <select id="permanentCityId" formControlName="permanentCityId" (change)="onPermanentCityChange($event)"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  <option value="">
+                    {{ "COMMON.SELECT_CITY" | translate }}
+                  </option>
+                  @for (province of provinces(); track province.provinceCode)
+                  {
+                  <option [value]="province.provinceCode">
+                    {{ province.provinceName }}
+                  </option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label for="permanentDistrictId" class="block text-sm font-medium text-gray-700">{{
+                  "PERSONAL_DETAILS.PERM_DISTRICT" | translate }}</label>
+                <select id="permanentDistrictId" formControlName="permanentDistrictId"
+                  (change)="onPermanentDistrictChange($event)"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                  <option value="">
+                    {{ "COMMON.SELECT_DISTRICT" | translate }}
+                  </option>
+                  @for (ward of permanentWards(); track ward.wardCode) {
+                  <option [value]="ward.wardCode">{{ ward.wardName }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="md:col-span-1">
+            <label for="permanentAddress" class="block text-sm font-medium text-gray-700">{{
+              "PERSONAL_DETAILS.PERM_ADDRESS" | translate }}
+              <span class="text-red-600">*</span></label>
+            <textarea id="permanentAddress" formControlName="permanentAddress" rows="2" [placeholder]="
+                  'PERSONAL_DETAILS.ENTER_PERM_ADDRESS' | translate
+                "
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+            @if (personalDetails.get('permanentAddress')?.hasError('required')
+            && personalDetails.get('permanentAddress')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.PERM_ADDRESS" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            }
+          </div>
+
+          <div class="md:col-span-2">
+            <label for="passportFile" class="block text-sm font-medium text-gray-700">{{
+              "PERSONAL_DETAILS.UPLOAD_PASSPORT" | translate }}</label>
+            <input type="file" id="passportFile" accept=".pdf,.jpg,.jpeg,.png" multiple
+              (change)="onPassportFileChange($event)"
+              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#153a5e] file:text-white hover:file:bg-[#a68557] cursor-pointer" />
+            @if (personalDetails.get('passportFile')?.value &&
+            personalDetails.get('passportFile')?.value.length > 0) {
+            <div class="text-sm mt-2 space-y-1">
+              <p class="font-semibold text-green-600">
+                ✓
+                <span [textContent]="
+                      personalDetails.get('passportFile')?.value.length
+                    "></span>
+                {{ "COMMON.FILE_SELECTED" | translate }}
+              </p>
+              @for (file of personalDetails.get('passportFile')?.value; track
+              $index) {
+              <div class="flex items-center justify-between bg-green-50 px-3 py-2 rounded border border-green-200">
+                <span class="text-gray-700" [textContent]="
+                      file.name + ' (' + formatFileSize(file.size) + ')'
+                    "></span>
+                <button type="button" (click)="removePassportFile($index)"
+                  class="text-red-600 hover:text-red-800 font-bold ml-2">
+                  ✕
+                </button>
+              </div>
+              }
+            </div>
+            }
+            <p class="text-xs text-gray-500 mt-1">
+              {{ "COMMON.FILE_HINT" | translate }}
+            </p>
+          </div>
+        </div>
+      </section>
+      <!-- Section B: Application Details -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="applicationDetails">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">
+          {{ "SECTIONS.APPLICATION" | translate }}
+        </h3>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div class="md:col-span-2">
+            <label for="programId" class="block text-sm font-medium text-gray-700">{{ "APPLICATION_DETAILS.PROGRAM_NAME"
+              | translate }}</label>
+            <select id="programId" formControlName="programId"
+              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed">
+              <option value="">
+                {{ "COMMON.SELECT_PROGRAM" | translate }}
+              </option>
+              @for (program of programs(); track program.id) {
+              <option [value]="program.id" [textContent]="program.name"></option>
+              }
+            </select>
+          </div>
+          <div>
+            <label for="programCode" class="block text-sm font-medium text-gray-700">{{
+              "APPLICATION_DETAILS.PROGRAM_CODE" | translate }}</label>
+            <input type="text" id="programCode" formControlName="programCode"
+              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">{{
+              "APPLICATION_DETAILS.TRACK" | translate
+              }}</label>
+            <div class="mt-2 flex items-center space-x-6">
+              <label class="inline-flex items-center"><input type="radio" formControlName="track" value="Application"
+                  class="text-[#153a5e] focus:ring-[#a68557]" />
+                <span class="ml-2">{{
+                  "APPLICATION_DETAILS.APPLICATION" | translate
+                  }}</span></label>
+              <!-- <label class="inline-flex items-center opacity-50 cursor-not-allowed"><input type="radio" value="Research" class="text-[#153a5e] focus:ring-[#a68557]" disabled> <span class="ml-2">{{ 'APPLICATION_DETAILS.RESEARCH' | translate }}</span></label> -->
+            </div>
+          </div>
+          <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <div>
+              <label for="admissionYear" class="block text-sm font-medium text-gray-700">{{
+                "APPLICATION_DETAILS.ADMISSION_YEAR" | translate }}
+                <span class="text-red-600">*</span></label>
+              <input type="number" id="admissionYear" formControlName="admissionYear" placeholder="YYYY"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"
+                [min]="currentYear" />
+              @if
+              (applicationDetails.get('admissionYear')?.hasError('required')
+              && applicationDetails.get('admissionYear')?.touched) {
+              <p class="text-red-600 text-sm mt-1">
+                {{ "APPLICATION_DETAILS.ADMISSION_YEAR_ERROR" | translate }}
+              </p>
+              } @if
+              (applicationDetails.get('admissionYear')?.hasError('minYear') &&
+              applicationDetails.get('admissionYear')?.touched) {
+              <p class="text-red-600 text-sm mt-1">
+                {{
+                "APPLICATION_DETAILS.ADMISSION_YEAR_ERROR"
+                | translate : { year: currentYear }
+                }}
+              </p>
+              }
+            </div>
+            <div>
+              <label for="admissionIntake" class="block text-sm font-medium text-gray-700">{{
+                "APPLICATION_DETAILS.ADMISSION_INTAKE" | translate
+                }}</label>
+              <input type="text" id="admissionIntake" formControlName="admissionIntake"
+                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section C: Previous Education -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="educationDetails">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">
+          {{ "SECTIONS.EDUCATION" | translate }}
+        </h3>
+        <div class="p-6 space-y-6">
+          <!-- Undergraduate - FormArray -->
+          <div formArrayName="undergraduates">
+            @for (undergrad of undergraduates.controls; track $index; let
+            ugIndex = $index) {
+            <div class="border border-gray-200 rounded-md p-4 mb-4" [formGroupName]="ugIndex">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="font-semibold text-lg text-[#153a5e]">
+                  @if (ugIndex === 0) { 1.
+                  {{ "EDUCATION_DETAILS.UNDERGRAD_TITLE" | translate }}
+                  } @else if (ugIndex === 1) {
+                  {{ "EDUCATION_DETAILS.SECOND_DEGREE" | translate }}
+                  } @else if (ugIndex === 2) {
+                  {{ "EDUCATION_DETAILS.THIRD_DEGREE" | translate }}
+                  } @else if (ugIndex === 3) {
+                  {{ "EDUCATION_DETAILS.FOURTH_DEGREE" | translate }}
+                  } @else if (ugIndex === 4) {
+                  {{ "EDUCATION_DETAILS.FIFTH_DEGREE" | translate }}
+                  } @else {
+                  <span [textContent]="ugIndex + 1"></span>{{ "EDUCATION_DETAILS.OTHER_DEGREE" | translate }}
+                  }
+                </h4>
+                @if (ugIndex >= 2) {
+                <button type="button" (click)="removeUndergraduate(ugIndex)"
+                  class="text-red-600 hover:text-red-800 text-sm font-medium px-3 py-1 rounded hover:bg-red-50">
+                  ✕ {{ "COMMON.REMOVE" | translate }}
+                </button>
+                }
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ "EDUCATION_DETAILS.UNIVERSITY" | translate }}
+                    @if (ugIndex === 0) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <input type="text" formControlName="university" placeholder="{{
+                        'EDUCATION_DETAILS.ENTER_UNIVERSITY' | translate
+                      }}"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if
+                  (undergraduates.at(ugIndex).get('university')?.hasError('required')
+                  && undergraduates.at(ugIndex).get('university')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.UNIVERSITY" | translate }}
+                    {{ "COMMON.REQUIRED_FIELD" | translate }}
+                  </p>
+                  }
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ "EDUCATION_DETAILS.COUNTRY" | translate }}
+                    @if (ugIndex === 0) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <select formControlName="countryId" (change)="
+                        onCountryChange($event, 'undergraduates', ugIndex)
+                      "
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <option value="">
+                      {{ "COMMON.SELECT_COUNTRY" | translate }}
+                    </option>
+                    @for (country of countries(); track country.id) {
+                    <option [value]="country.id" [textContent]="country.name"></option>
+                    }
+                  </select>
+                  @if
+                  (undergraduates.at(ugIndex).get('countryId')?.hasError('required')
+                  && undergraduates.at(ugIndex).get('countryId')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.COUNTRY" | translate }}
+                    {{ "COMMON.REQUIRED_FIELD" | translate }}
+                  </p>
+                  }
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ "EDUCATION_DETAILS.MAJOR" | translate }}
+                    @if (ugIndex === 0) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <input type="text" formControlName="major" placeholder="{{
+                        'EDUCATION_DETAILS.ENTER_MAJOR' | translate
+                      }}"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if
+                  (undergraduates.at(ugIndex).get('major')?.hasError('required')
+                  && undergraduates.at(ugIndex).get('major')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.MAJOR" | translate }}
+                    {{ "COMMON.REQUIRED_FIELD" | translate }}
+                  </p>
+                  }
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ "EDUCATION_DETAILS.GRAD_YEAR" | translate }}
+                    @if (ugIndex === 0) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <input type="number" formControlName="graduationYear" placeholder="YYYY"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if
+                  (undergraduates.at(ugIndex).get('graduationYear')?.hasError('required')
+                  &&
+                  undergraduates.at(ugIndex).get('graduationYear')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.GRAD_YEAR" | translate }}
+                    {{ "COMMON.REQUIRED_FIELD" | translate }}
+                  </p>
+                  } @if
+                  (undergraduates.at(ugIndex).get('graduationYear')?.hasError('minYear')
+                  &&
+                  undergraduates.at(ugIndex).get('graduationYear')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.GRAD_YEAR_MIN" | translate }}
+                  </p>
+                  } @if
+                  (undergraduates.at(ugIndex).get('graduationYear')?.hasError('maxYear')
+                  &&
+                  undergraduates.at(ugIndex).get('graduationYear')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.GRAD_YEAR_FUTURE" | translate }}
+                  </p>
+                  }
+                </div>
+                <!-- Language & File Upload - Same Row -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ "EDUCATION_DETAILS.LANGUAGE" | translate }}
+                    @if (ugIndex === 0) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <select formControlName="languageId" (change)="
+                        onLanguageChange($event, 'undergraduates', ugIndex)
+                      "
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <option value="">
+                      {{ "COMMON.SELECT_LANGUAGE" | translate }}
+                    </option>
+                    @for (lang of languages(); track lang.id) {
+                    <option [value]="lang.id">{{ lang.name }}</option>
+                    }
+                  </select>
+                  @if
+                  (undergraduates.at(ugIndex).get('languageId')?.hasError('required')
+                  && undergraduates.at(ugIndex).get('languageId')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.LANGUAGE" | translate }}
+                    {{ "COMMON.REQUIRED_FIELD" | translate }}
+                  </p>
+                  }
+                </div>
+
+                <div>
+                  <label [attr.for]="'undergraduateFile_' + ugIndex" class="block text-sm font-medium text-gray-700">{{
+                    "EDUCATION_DETAILS.UPLOAD_CERT" | translate }}</label>
+                  <input type="file" [id]="'undergraduateFile_' + ugIndex" accept=".pdf,.jpg,.jpeg,.png" multiple
+                    (change)="
+                        onEducationFileChange($event, 'undergraduates', ugIndex)
+                      "
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#153a5e] file:text-white hover:file:bg-[#a68557] cursor-pointer" />
+                  @if (undergraduates.at(ugIndex).get('file')?.value &&
+                  undergraduates.at(ugIndex).get('file')?.value.length > 0) {
+                  <div class="text-sm mt-2 space-y-1">
+                    <p class="font-semibold text-green-600">
+                      ✓
+                      <span [textContent]="
+                            undergraduates.at(ugIndex).get('file')?.value.length
+                          "></span>
+                      file(s):
+                    </p>
+                    @for (file of
+                    undergraduates.at(ugIndex).get('file')?.value; track
+                    $index) {
+                    <div
+                      class="flex items-center justify-between bg-green-50 px-2 py-1 rounded border border-green-200">
+                      <span class="text-xs text-gray-700" [textContent]="file.name"></span>
+                      <button type="button" (click)="
+                            removeEducationFile(
+                              'undergraduates',
+                              $index,
+                              ugIndex
+                            )
+                          " class="text-red-600 hover:text-red-800 font-bold ml-2 text-sm">
+                        ✕
+                      </button>
+                    </div>
+                    }
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+
+          <!-- Add More Undergraduate Button -->
+          <button type="button" (click)="addUndergraduate()"
+            class="w-full py-2 px-4 border-2 border-dashed border-[#153a5e] text-[#153a5e] rounded-md hover:bg-[#153a5e] hover:text-white transition-colors font-medium mb-4">
+            + {{ "EDUCATION_DETAILS.ADD_UNDERGRAD" | translate }}
+          </button>
+
+          <!-- Postgraduate - FormArray -->
+          <div formArrayName="postgraduates">
+            @for (postgrad of postgraduates.controls; track $index; let
+            pgIndex = $index) {
+            <div class="border border-gray-200 rounded-md p-4 mb-4" [formGroupName]="pgIndex">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="font-semibold text-lg text-[#153a5e]">
+                  @if (pgIndex === 0) { 2.
+                  {{ "EDUCATION_DETAILS.POSTGRADUATE_TITLE" | translate }}
+                  } @else if (pgIndex === 1) {
+                  {{ "EDUCATION_DETAILS.SECOND_POSTGRAD" | translate }}
+                  } @else if (pgIndex === 2) {
+                  {{ "EDUCATION_DETAILS.THIRD_POSTGRAD" | translate }}
+                  } @else if (pgIndex === 3) {
+                  {{ "EDUCATION_DETAILS.FOURTH_POSTGRAD" | translate }}
+                  } @else if (pgIndex === 4) {
+                  {{ "EDUCATION_DETAILS.FIFTH_POSTGRAD" | translate }}
+                  } @else {
+                  <span [textContent]="pgIndex + 1"></span>{{ "EDUCATION_DETAILS.OTHER_POSTGRAD" | translate }}
+                  }
+                </h4>
+                @if (pgIndex > 0) {
+                <button type="button" (click)="removePostgraduate(pgIndex)"
+                  class="text-red-600 hover:text-red-800 text-sm font-medium px-3 py-1 rounded hover:bg-red-50">
+                  ✕ {{ "COMMON.REMOVE" | translate }}
+                </button>
+                }
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">{{
+                    "EDUCATION_DETAILS.UNIVERSITY" | translate
+                    }}</label><input type="text" formControlName="university" placeholder="{{
+                        'EDUCATION_DETAILS.ENTER_UNIVERSITY' | translate
+                      }}"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">{{
+                    "EDUCATION_DETAILS.COUNTRY" | translate
+                    }}</label>
+                  <select formControlName="countryId" (change)="
+                        onCountryChange($event, 'postgraduates', pgIndex)
+                      "
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <option value="">
+                      {{ "COMMON.SELECT_COUNTRY" | translate }}
+                    </option>
+                    @for (country of countries(); track country.id) {
+                    <option [value]="country.id" [textContent]="country.name"></option>
+                    }
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">{{
+                    "EDUCATION_DETAILS.MAJOR" | translate
+                    }}</label><input type="text" formControlName="major" placeholder="{{
+                        'EDUCATION_DETAILS.ENTER_MAJOR' | translate
+                      }}"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">{{
+                    "EDUCATION_DETAILS.GRAD_YEAR" | translate
+                    }}</label>
+                  <input type="number" placeholder="YYYY" formControlName="graduationYear"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if
+                  (postgraduates.at(pgIndex).get('graduationYear')?.hasError('minYear')
+                  && postgraduates.at(pgIndex).get('graduationYear')?.touched)
+                  {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.GRAD_YEAR_MIN" | translate }}
+                  </p>
+                  } @if
+                  (postgraduates.at(pgIndex).get('graduationYear')?.hasError('maxYear')
+                  && postgraduates.at(pgIndex).get('graduationYear')?.touched)
+                  {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.GRAD_YEAR_FUTURE" | translate }}
+                  </p>
+                  }
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700">{{
+                    "EDUCATION_DETAILS.THESIS" | translate
+                    }}</label><input type="text" formControlName="thesisTitle" placeholder="{{
+                        'EDUCATION_DETAILS.ENTER_THESIS' | translate
+                      }}"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                </div>
+                <!-- Language & File Upload - Same Row -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">{{
+                    "EDUCATION_DETAILS.LANGUAGE" | translate
+                    }}</label>
+                  <select formControlName="languageId" (change)="
+                        onLanguageChange($event, 'postgraduates', pgIndex)
+                      "
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                    <option value="">
+                      {{ "COMMON.SELECT_LANGUAGE" | translate }}
+                    </option>
+                    @for (language of languages(); track language.id) {
+                    <option [value]="language.id" [textContent]="language.name"></option>
+                    }
+                  </select>
+                </div>
+                <div>
+                  <label [attr.for]="'postgraduateFile_' + pgIndex" class="block text-sm font-medium text-gray-700">{{
+                    "EDUCATION_DETAILS.UPLOAD_CERT" | translate }}</label>
+                  <input type="file" [id]="'postgraduateFile_' + pgIndex" accept=".pdf,.jpg,.jpeg,.png" multiple
+                    (change)="
+                        onEducationFileChange($event, 'postgraduates', pgIndex)
+                      "
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#153a5e] file:text-white hover:file:bg-[#a68557] cursor-pointer" />
+                  @if (postgraduates.at(pgIndex).get('file')?.value &&
+                  postgraduates.at(pgIndex).get('file')?.value.length > 0) {
+                  <div class="text-sm mt-2 space-y-1">
+                    <p class="font-semibold text-green-600">
+                      ✓
+                      <span [textContent]="
+                            postgraduates.at(pgIndex).get('file')?.value.length
+                          "></span>
+                      file(s):
+                    </p>
+                    @for (file of
+                    postgraduates.at(pgIndex).get('file')?.value; track
+                    $index) {
+                    <div
+                      class="flex items-center justify-between bg-green-50 px-2 py-1 rounded border border-green-200">
+                      <span class="text-xs text-gray-700" [textContent]="file.name"></span>
+                      <button type="button" (click)="
+                            removeEducationFile(
+                              'postgraduates',
+                              $index,
+                              pgIndex
+                            )
+                          " class="text-red-600 hover:text-red-800 font-bold ml-2 text-sm">
+                        ✕
+                      </button>
+                    </div>
+                    }
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+            }
+            <!-- Add More Button -->
+            <button type="button" (click)="addPostgraduate()"
+              class="w-full py-2 px-4 border-2 border-dashed border-[#153a5e] text-[#153a5e] rounded-md hover:bg-[#153a5e] hover:text-white transition-colors font-medium">
+              + {{ "EDUCATION_DETAILS.ADD_POSTGRAD" | translate }}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: English Qualifications -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="englishQualifications">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">
+          {{ "ENGLISH.TITLE" | translate }}
+        </h3>
+        <div class="p-6 space-y-6">
+          <!-- IELTS -->
+          <div formGroupName="ielts">
+            <div class="grid grid-cols-5 gap-x-6 items-start">
+              <label class="col-span-1 ml-3 font-semibold text-gray-700 pt-2">IELTS</label>
+              <div class="col-span-2">
+                <input type="text" formControlName="score" [placeholder]="'ENGLISH.SCORE_HINT' | translate"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if
+                (englishQualifications.get('ielts.score')?.hasError('required')
+                && englishQualifications.get('ielts.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.SCORE_REQUIRED" | translate }}
+                </p>
+                } @if
+                (englishQualifications.get('ielts.score')?.hasError('scoreRange')
+                && englishQualifications.get('ielts.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.IELTS_RANGE" | translate }}
+                </p>
+                } @if
+                (englishQualifications.get('ielts.score')?.hasError('invalidScore')
+                && englishQualifications.get('ielts.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.INVALID_NUMBER" | translate }}
+                </p>
+                }
+              </div>
+              <div class="col-span-2">
+                <input type="date" formControlName="date" [placeholder]="'ENGLISH.DATE_HINT' | translate"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if
+                (englishQualifications.get('ielts.date')?.hasError('required')
+                && englishQualifications.get('ielts.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.DATE_REQUIRED" | translate }}
+                </p>
+                } @if
+                (englishQualifications.get('ielts.date')?.hasError('maxDate')
+                && englishQualifications.get('ielts.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.DATE_FUTURE" | translate }}
+                </p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- TOEFL -->
+          <div formGroupName="toefl">
+            <div class="grid grid-cols-5 gap-x-6 items-start">
+              <label class="col-span-1 ml-3 font-semibold text-gray-700 pt-2">TOEFL</label>
+              <div class="col-span-2">
+                <input type="text" formControlName="score" [placeholder]="'ENGLISH.SCORE_HINT' | translate"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if
+                (englishQualifications.get('toefl.score')?.hasError('required')
+                && englishQualifications.get('toefl.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.SCORE_REQUIRED" | translate }}
+                </p>
+                } @if
+                (englishQualifications.get('toefl.score')?.hasError('scoreRange')
+                && englishQualifications.get('toefl.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.TOEFL_RANGE" | translate }}
+                </p>
+                } @if
+                (englishQualifications.get('toefl.score')?.hasError('invalidScore')
+                && englishQualifications.get('toefl.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.INVALID_NUMBER" | translate }}
+                </p>
+                }
+              </div>
+              <div class="col-span-2">
+                <input type="date" formControlName="date" [placeholder]="'ENGLISH.DATE_HINT' | translate"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if
+                (englishQualifications.get('toefl.date')?.hasError('required')
+                && englishQualifications.get('toefl.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.DATE_REQUIRED" | translate }}
+                </p>
+                } @if
+                (englishQualifications.get('toefl.date')?.hasError('maxDate')
+                && englishQualifications.get('toefl.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.DATE_FUTURE" | translate }}
+                </p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Other Test -->
+          <div formGroupName="other">
+            <div class="grid grid-cols-5 gap-x-6 items-start">
+              <div class="col-span-1">
+                <input type="text" formControlName="name" [placeholder]="'ENGLISH.OTHER_TEST' | translate"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+              </div>
+              <div class="col-span-2">
+                <input type="text" formControlName="score" [placeholder]="'ENGLISH.SCORE_HINT' | translate"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if
+                (englishQualifications.get('other.score')?.hasError('required')
+                && englishQualifications.get('other.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.SCORE_REQUIRED" | translate }}
+                </p>
+                }
+              </div>
+              <div class="col-span-2">
+                <input type="date" formControlName="date" [placeholder]="'ENGLISH.DATE_HINT' | translate"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if
+                (englishQualifications.get('other.date')?.hasError('required')
+                && englishQualifications.get('other.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.DATE_REQUIRED" | translate }}
+                </p>
+                } @if
+                (englishQualifications.get('other.date')?.hasError('maxDate')
+                && englishQualifications.get('other.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ "ENGLISH.DATE_FUTURE" | translate }}
+                </p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- English Certificate Upload -->
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <label for="englishCertificateFile" class="block text-sm font-medium text-gray-700 mb-2">
+              {{ "ENGLISH.UPLOAD_CERT" | translate }}
+            </label>
+            <input type="file" id="englishCertificateFile" accept=".pdf,.jpg,.jpeg,.png" multiple
+              (change)="onEnglishCertificateFileChange($event)"
+              class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#153a5e] file:text-white hover:file:bg-[#a68557] cursor-pointer" />
+            @if (englishQualifications.get('certificateFile')?.value &&
+            englishQualifications.get('certificateFile')?.value.length > 0) {
+            <div class="text-sm mt-2 space-y-1">
+              <p class="font-semibold text-green-600">
+                ✓
+                <span [textContent]="
+                      englishQualifications.get('certificateFile')?.value.length
+                    "></span>
+                {{ "ENGLISH.FILE_SELECTED" | translate }}:
+              </p>
+              @for (file of
+              englishQualifications.get('certificateFile')?.value; track
+              $index) {
+              <div class="flex items-center justify-between bg-green-50 px-3 py-2 rounded border border-green-200">
+                <span class="text-gray-700" [textContent]="
+                      file.name + ' (' + formatFileSize(file.size) + ')'
+                    "></span>
+                <button type="button" (click)="removeEnglishCertificateFile($index)"
+                  class="text-red-600 hover:text-red-800 font-bold ml-2">
+                  ✕
+                </button>
+              </div>
+              }
+            </div>
+            }
+            <p class="text-xs text-gray-500 mt-1">
+              {{ "ENGLISH.FILE_HINT" | translate }}
+            </p>
+          </div>
+
+          <!-- Validation message for at least one English qualification -->
+          @if (englishQualifications.hasError('atLeastOneRequired') &&
+          (submitted() || englishQualifications.touched)) {
+          <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p class="text-red-600 text-sm">
+              {{ "ENGLISH.AT_LEAST_ONE" | translate }}
+            </p>
+          </div>
+          }
+        </div>
+      </section>
+
+      <!-- Section D: Employment History -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="employmentHistory">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">
+          {{ "SECTIONS.EMPLOYMENT" | translate }}
+        </h3>
+        <div class="p-6 space-y-6">
+          <div class="border border-gray-200 rounded-md p-4" formGroupName="position1">
+            <h4 class="font-semibold text-lg text-[#153a5e] mb-2">
+              {{ "EMPLOYMENT.POSITION_1" | translate }}
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.ORG" | translate
+                  }}</label><input type="text" formControlName="organization" placeholder="{{
+                      'EMPLOYMENT.ENTER_ORGANIZATION' | translate
+                    }}"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.TITLE" | translate
+                  }}</label><input type="text" formControlName="title"
+                  placeholder="{{ 'EMPLOYMENT.ENTER_TITLE' | translate }}"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.FROM" | translate
+                  }}</label><input type="month" formControlName="from"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.TO" | translate
+                  }}</label>
+                <input type="month" formControlName="to"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (employmentHistory.get('position1')?.hasError('dateRange')
+                && employmentHistory.get('position1.to')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "EMPLOYMENT.DATE_RANGE_ERROR" | translate }}
+                </p>
+                }
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.ADDRESS" | translate
+                  }}</label><textarea formControlName="address" rows="2"
+                  placeholder="{{ 'EMPLOYMENT.ENTER_ADDRESS' | translate }}"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="border border-gray-200 rounded-md p-4" formGroupName="position2">
+            <h4 class="font-semibold text-lg text-[#153a5e] mb-2">
+              {{ "EMPLOYMENT.POSITION_2" | translate }}
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.ORG" | translate
+                  }}</label><input type="text" formControlName="organization" placeholder="{{
+                      'EMPLOYMENT.ENTER_ORGANIZATION' | translate
+                    }}"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.TITLE" | translate
+                  }}</label><input type="text" formControlName="title"
+                  placeholder="{{ 'EMPLOYMENT.ENTER_TITLE' | translate }}"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.FROM" | translate
+                  }}</label><input type="month" formControlName="from"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.TO" | translate
+                  }}</label>
+                <input type="month" formControlName="to"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (employmentHistory.get('position2')?.hasError('dateRange')
+                && employmentHistory.get('position2.to')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "EMPLOYMENT.DATE_RANGE_ERROR" | translate }}
+                </p>
+                }
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.ADDRESS" | translate
+                  }}</label><textarea formControlName="address" rows="2"
+                  placeholder="{{ 'EMPLOYMENT.ENTER_ADDRESS' | translate }}"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section E: Declaration -->
+      <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="declaration">
+        <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">
+          {{ "SECTIONS.DECLARATION" | translate }}
+        </h3>
+        <div class="p-6 space-y-4 text-gray-700">
+          <p>{{ "DECLARATION.P1" | translate }}</p>
+          <ol class="list-decimal list-inside space-y-2 pl-4">
+            <li>{{ "DECLARATION.L1" | translate }}</li>
+            <li>{{ "DECLARATION.L2" | translate }}</li>
+            <li>{{ "DECLARATION.L3" | translate }}</li>
+            <li>{{ "DECLARATION.L4" | translate }}</li>
+          </ol>
+          <p class="font-semibold">{{ "DECLARATION.P2" | translate }}</p>
+          <div class="pt-4">
+            <label class="inline-flex items-center text-lg">
+              <input type="checkbox" formControlName="agreed"
+                class="h-5 w-5 rounded border-gray-300 text-[#153a5e] focus:ring-[#a68557]" />
+              <span class="ml-3">{{ "DECLARATION.AGREE" | translate }}</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Submission -->
+      <div class="text-center pt-4 form-section">
+        <button type="submit" [disabled]="
+              submitting() || !applicationForm.get('declaration.agreed')?.value
+            "
+          class="w-full max-w-xs inline-flex justify-center py-3 px-6 border border-transparent shadow-lg text-lg font-bold rounded-md text-white bg-[#153a5e] hover:bg-[#a68557] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#a68557] transition-all duration-300 transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-gray-400">
+          @if (submitting()) {
+          <svg class="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          <span>{{ "COMMON.SUBMITTING" | translate }}</span>
+          } @else {
+          <span>{{ "COMMON.SUBMIT" | translate }}</span>
+          }
+        </button>
+        @if (submitted() && applicationForm.invalid) {
+        <p class="mt-4 text-red-600">
+          {{ "COMMON.ERROR_REVIEW" | translate }}
+        </p>
+        }
+      </div>
+    </form>
+  </div>
+
+  <!-- Confirm Dialog -->
+  @if (showConfirmDialog()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+    <div class="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 transform transition-all animate-slideUp">
+      <div class="text-center mb-6">
+        <div class="mx-auto w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+            </path>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">
+          {{ "CONFIRM_DIALOG.TITLE" | translate }}
+        </h3>
+        <p class="text-gray-600">
+          {{ "CONFIRM_DIALOG.MESSAGE" | translate }}
+        </p>
+      </div>
+
+      <div class="flex gap-3">
+        <button (click)="cancelSubmit()"
+          class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors duration-200 font-medium">
+          {{ "COMMON.CANCEL" | translate }}
+        </button>
+        <button (click)="confirmSubmit()"
+          class="flex-1 px-6 py-3 bg-[#153a5e] text-white rounded-md hover:bg-[#a68557] transition-colors duration-200 font-medium">
+          {{ "COMMON.CONFIRM" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

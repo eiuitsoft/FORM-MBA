@@ -126,7 +126,8 @@
     "TEST_NAME": "Test Name",
     "UPLOAD_CERT": "Upload English Certificate (for all qualifications)",
     "AT_LEAST_ONE": "Please provide at least one English qualification (IELTS, TOEFL or Other)",
-    "NO_QUALIFICATIONS": "No English qualifications recorded"
+    "NO_QUALIFICATIONS": "No English qualifications recorded",
+    "FILE_HINT": "Upload a single or multiple files containing all your English qualification certificates (PDF, JPG, or PNG, max 5MB per file)"
   },
   "EMPLOYMENT": {
     "POSITION_1": "Position 1 (Most recent)",

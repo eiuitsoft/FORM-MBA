@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   web:
     build: .
@@ -8,4 +8,3 @@ services:
     container_name: form-mba-web
     image: itsofteiu/form-mba-web:1.0.8
     platform: linux/amd64
-

@@ -1,16 +1,16 @@
-import { Component, inject, signal, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../core/services/auth/auth.service';
-import { AlertService } from '../../core/services/alert/alert.service';
-import { TokenService } from '../../core/services/auth/token.service';
-import { SendOTP } from '../../core/models/auth/send-otp.model';
-import { LoginOTP } from '../../core/models/auth/login-otp.model';
-import { LoginMethodEnum } from '../../core/enums/login-method.enum';
-import { LOGIN_METHODS } from '../../core/constants/login-method.const';
-import { SEND_OTP_TYPE, SEND_OTP_TYPE_LIST, SEND_OTP_TYPE_MAP } from '../../core/constants/send-otp-type.const';
+import { LOGIN_METHODS } from '../../../core/constants/login-method.const';
+import { SEND_OTP_TYPE, SEND_OTP_TYPE_LIST, SEND_OTP_TYPE_MAP } from '../../../core/constants/send-otp-type.const';
+import { LoginMethodEnum } from '../../../core/enums/login-method.enum';
+import { LoginOTP } from '../../../core/models/auth/login-otp.model';
+import { SendOTP } from '../../../core/models/auth/send-otp.model';
+import { AlertService } from '../../../core/services/alert/alert.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { TokenService } from '../../../core/services/auth/token.service';
 
 @Component({
   selector: 'app-login',

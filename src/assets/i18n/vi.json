@@ -126,7 +126,8 @@
     "TEST_NAME": "Tên chứng chỉ",
     "UPLOAD_CERT": "Tải lên chứng chỉ tiếng Anh (tất cả các loại)",
     "AT_LEAST_ONE": "Vui lòng cung cấp ít nhất một chứng chỉ tiếng Anh (IELTS, TOEFL hoặc khác)",
-    "NO_QUALIFICATIONS": "Chưa có chứng chỉ tiếng Anh nào được ghi nhận"
+    "NO_QUALIFICATIONS": "Chưa có chứng chỉ tiếng Anh nào được ghi nhận",
+    "FILE_HINT": "Tải lên một hoặc nhiều tệp chứa tất cả các chứng chỉ tiếng Anh của bạn (PDF, JPG hoặc PNG, tối đa 5MB mỗi tệp)"
   },
   "EMPLOYMENT": {
     "POSITION_1": "Vị trí 1 (Gần nhất)",

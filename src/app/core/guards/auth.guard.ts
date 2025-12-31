@@ -1,5 +1,5 @@
 import { inject } from "@angular/core";
-import { Router, CanActivateFn } from "@angular/router";
+import { CanActivateFn, Router } from "@angular/router";
 import { AuthService } from "../services/auth/auth.service";
 import { TokenService } from "../services/auth/token.service";
 
@@ -33,10 +33,12 @@ export const guestGuard: CanActivateFn = (route, state) => {
   const token = inject(TokenService);
   const router = inject(Router);
 
+  // Chỉ cho phép vào login / register khi chưa đăng nhập
   if (!auth.isLoggedIn()) {
-    // return true; // cho phép vào login / register
-    return router.createUrlTree(["/register"]);
+    return true;
   }
+
+  // Nếu đã đăng nhập, chuyển hướng dựa trên trạng thái hồ sơ
 
   return token.studentId()
     ? router.createUrlTree(["/application"])

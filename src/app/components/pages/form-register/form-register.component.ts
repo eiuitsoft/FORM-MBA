@@ -1,40 +1,38 @@
-
+import { minAgeValidator } from '@/src/validators/age.validator';
+import { scoreRangeValidator } from '@/src/validators/conditional.validator';
+import { dateRangeValidator, maxDateValidator } from '@/src/validators/date.validator';
+import { emailFormatValidator } from '@/src/validators/email-format.validator';
+import { atLeastOneEnglishQualificationValidator } from '@/src/validators/english-qualification.validator';
+import { passportFormatValidator } from '@/src/validators/passport-format.validator';
+import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
+import { maxYearValidator, minYearValidator } from '@/src/validators/year.validator';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { of } from 'rxjs';
-import { PageLayoutComponent } from './app/components/layouts/page-layout/page-layout.component';
-import { AlertService } from './app/core/services/alert/alert.service';
-import { MbaService } from './app/core/services/mba/mba.service';
-import { minAgeValidator } from './validators/age.validator';
-import { scoreRangeValidator } from './validators/conditional.validator';
-import { dateRangeValidator, maxDateValidator } from './validators/date.validator';
-import { emailFormatValidator } from './validators/email-format.validator';
-import { atLeastOneEnglishQualificationValidator } from './validators/english-qualification.validator';
-import { passportFormatValidator } from './validators/passport-format.validator';
-import { uniqueFieldValidator } from './validators/unique-field.validator';
-import { maxYearValidator, minYearValidator } from './validators/year.validator';
+import { AlertService } from '../../../core/services/alert/alert.service';
+import { MbaService } from '../../../core/services/mba/mba.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, PageLayoutComponent, TranslatePipe],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true
+  selector: 'app-form-register',
+  templateUrl: './form-register.component.html',
+  styleUrls: ['./form-register.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, TranslatePipe]
 })
-export class AppComponent implements OnInit {
-  private fb = inject(FormBuilder);
+export class FormRegisterComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
   private readonly _mbaService = inject(MbaService);
   private readonly _alertService = inject(AlertService);
   private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
-  
+
   loading = signal(false);
   submitting = signal(false);
-  
+
   submitted = signal(false);
   showConfirmDialog = signal(false);
   programs = signal<any[]>([]);
@@ -43,9 +41,9 @@ export class AppComponent implements OnInit {
   provinces = signal<any[]>([]); // Changed from cities to provinces
   correspondenceWards = signal<any[]>([]); // Changed from districts to wards
   permanentWards = signal<any[]>([]); // Changed from districts to wards
-  
+
   currentYear = new Date().getFullYear();
-  
+
   applicationForm: FormGroup = this.fb.group({
     personalDetails: this.fb.group({
       fullName: ['', [Validators.required, Validators.minLength(2)]],
@@ -55,7 +53,7 @@ export class AppComponent implements OnInit {
       dateOfBirth: ['', [Validators.required, minAgeValidator(18)]],
       placeOfBirth: ['', Validators.required],
       passportNo: [
-        '', 
+        '',
         [
           Validators.required,
           Validators.minLength(6),
@@ -70,7 +68,7 @@ export class AppComponent implements OnInit {
       dateIssued: ['', Validators.required],
       email: ['', [Validators.required, Validators.email, emailFormatValidator()]],
       mobile: [
-        undefined, 
+        undefined,
         [Validators.required],
         [uniqueFieldValidator(
           (val: any) => {
@@ -112,18 +110,18 @@ export class AppComponent implements OnInit {
       postgraduates: this.fb.array([this.createPostgraduateGroup()]),
     }),
     englishQualifications: this.fb.group({
-      ielts: this.fb.group({ 
-        score: ['', [scoreRangeValidator(0, 9)]], 
-        date: ['', [maxDateValidator()]] 
+      ielts: this.fb.group({
+        score: ['', [scoreRangeValidator(0, 9)]],
+        date: ['', [maxDateValidator()]]
       }),
-      toefl: this.fb.group({ 
-        score: ['', [scoreRangeValidator(0, 120)]], 
-        date: ['', [maxDateValidator()]] 
+      toefl: this.fb.group({
+        score: ['', [scoreRangeValidator(0, 120)]],
+        date: ['', [maxDateValidator()]]
       }),
-      other: this.fb.group({ 
-        name: [''], 
-        score: [''], 
-        date: ['', [maxDateValidator()]] 
+      other: this.fb.group({
+        name: [''],
+        score: [''],
+        date: ['', [maxDateValidator()]]
       }),
       certificateFile: [null], // File upload for all English qualifications
     }, { validators: atLeastOneEnglishQualificationValidator() }),
@@ -150,7 +148,7 @@ export class AppComponent implements OnInit {
 
   submitForm(): void {
     this.submitted.set(true);
-    
+
     if (this.applicationForm.valid) {
       // Show confirm dialog
       this.showConfirmDialog.set(true);
@@ -166,10 +164,10 @@ export class AppComponent implements OnInit {
   confirmSubmit(): void {
     this.showConfirmDialog.set(false);
     this.submitting.set(true);
-    
+
     // Transform form data to match API structure
     const formData = this.transformFormData();
-    
+
     this._mbaService.add(formData).subscribe({
       next: (res) => {
         this.submitting.set(false);
@@ -178,7 +176,7 @@ export class AppComponent implements OnInit {
           // Reset form after successful submission
           this.applicationForm.reset();
           this.submitted.set(false);
-          
+
           // Navigate to login page after 3 seconds
           setTimeout(() => {
             this._router.navigate(['/login']);
@@ -238,7 +236,7 @@ export class AppComponent implements OnInit {
   getFieldClasses(controlPath: string, baseClasses: string = 'mt-1 block w-full rounded-md shadow-sm px-3 py-2'): string {
     const control = this.applicationForm.get(controlPath);
     const isInvalid = control && control.invalid && (control.touched || this.submitted());
-    
+
     if (isInvalid) {
       return `${baseClasses} border-2 border-red-500 focus:border-red-500 focus:ring-red-500`;
     }
@@ -248,7 +246,7 @@ export class AppComponent implements OnInit {
   private transformFormData(): FormData {
     const rawValue = this.applicationForm.getRawValue();
     const formData = new FormData();
-    
+
     // ========== PERSONAL DETAILS ==========
     formData.append('PersonalDetails.FullName', rawValue.personalDetails.fullName || '');
     formData.append('PersonalDetails.NationalityId', rawValue.personalDetails.nationalityId || '');
@@ -262,7 +260,7 @@ export class AppComponent implements OnInit {
     // Extract phone number in E.164 format
     const mobile = rawValue.personalDetails.mobile?.e164Number || rawValue.personalDetails.mobile || '';
     formData.append('PersonalDetails.Mobile', mobile);
-    
+
     // Optional fields - only append if has value
     if (rawValue.personalDetails.jobTitle) {
       formData.append('PersonalDetails.JobTitle', rawValue.personalDetails.jobTitle);
@@ -270,7 +268,7 @@ export class AppComponent implements OnInit {
     if (rawValue.personalDetails.organization) {
       formData.append('PersonalDetails.Organization', rawValue.personalDetails.organization);
     }
-    
+
     // City IDs - get from ward selection (ward.id is integer)
     if (rawValue.personalDetails.correspondenceDistrictId) {
       const correspondenceWard = this.correspondenceWards().find(w => w.wardCode === rawValue.personalDetails.correspondenceDistrictId);
@@ -281,7 +279,7 @@ export class AppComponent implements OnInit {
     if (rawValue.personalDetails.correspondenceAddress) {
       formData.append('PersonalDetails.CorrespondenceAddress', rawValue.personalDetails.correspondenceAddress);
     }
-    
+
     if (rawValue.personalDetails.permanentDistrictId) {
       const permanentWard = this.permanentWards().find(w => w.wardCode === rawValue.personalDetails.permanentDistrictId);
       if (permanentWard?.id) {
@@ -291,7 +289,7 @@ export class AppComponent implements OnInit {
     if (rawValue.personalDetails.permanentAddress) {
       formData.append('PersonalDetails.PermanentAddress', rawValue.personalDetails.permanentAddress);
     }
-    
+
     // Passport files
     const passportFiles = rawValue.personalDetails.passportFile || [];
     if (Array.isArray(passportFiles)) {
@@ -299,13 +297,13 @@ export class AppComponent implements OnInit {
         formData.append('PersonalDetails.Files', file);
       });
     }
-    
+
     // ========== APPLICATION DETAILS ==========
     formData.append('ApplicationDetails.ProgramId', this.applicationDetails.get('programId')?.value || '');
     formData.append('ApplicationDetails.Track', '0'); // 0=Application
     formData.append('ApplicationDetails.AdmissionYear', rawValue.applicationDetails.admissionYear?.toString() || '');
     formData.append('ApplicationDetails.AdmissionIntake', rawValue.applicationDetails.admissionIntake || '');
-    
+
     // ========== EDUCATION DETAILS ==========
     // Undergraduates
     const undergraduates = rawValue.educationDetails.undergraduates.filter((ug: any) => ug.university);
@@ -316,7 +314,7 @@ export class AppComponent implements OnInit {
       formData.append(`EducationDetails.Undergraduates[${index}].GraduationYear`, ug.graduationYear?.toString() || '');
       formData.append(`EducationDetails.Undergraduates[${index}].LanguageId`, ug.languageId || '');
       formData.append(`EducationDetails.Undergraduates[${index}].SortOrder`, index.toString());
-      
+
       // Files for this degree
       const files = ug.file || [];
       if (Array.isArray(files)) {
@@ -325,7 +323,7 @@ export class AppComponent implements OnInit {
         });
       }
     });
-    
+
     // Postgraduates
     const postgraduates = rawValue.educationDetails.postgraduates.filter((pg: any) => pg.university);
     postgraduates.forEach((pg: any, index: number) => {
@@ -338,7 +336,7 @@ export class AppComponent implements OnInit {
         formData.append(`EducationDetails.Postgraduates[${index}].ThesisTitle`, pg.thesisTitle);
       }
       formData.append(`EducationDetails.Postgraduates[${index}].SortOrder`, index.toString());
-      
+
       // Files for this degree
       const files = pg.file || [];
       if (Array.isArray(files)) {
@@ -347,7 +345,7 @@ export class AppComponent implements OnInit {
         });
       }
     });
-    
+
     // ========== ENGLISH QUALIFICATIONS ==========
     // IELTS
     if (rawValue.englishQualifications.ielts.score) {
@@ -356,7 +354,7 @@ export class AppComponent implements OnInit {
         formData.append('EnglishQualifications.Ielts.Date', rawValue.englishQualifications.ielts.date);
       }
     }
-    
+
     // TOEFL
     if (rawValue.englishQualifications.toefl.score) {
       formData.append('EnglishQualifications.Toefl.Score', rawValue.englishQualifications.toefl.score);
@@ -364,7 +362,7 @@ export class AppComponent implements OnInit {
         formData.append('EnglishQualifications.Toefl.Date', rawValue.englishQualifications.toefl.date);
       }
     }
-    
+
     // Other
     if (rawValue.englishQualifications.other.name) {
       formData.append('EnglishQualifications.Other.Name', rawValue.englishQualifications.other.name);
@@ -373,7 +371,7 @@ export class AppComponent implements OnInit {
         formData.append('EnglishQualifications.Other.Date', rawValue.englishQualifications.other.date);
       }
     }
-    
+
     // English certificate files (shared for all qualifications)
     const englishFiles = rawValue.englishQualifications.certificateFile || [];
     if (Array.isArray(englishFiles)) {
@@ -381,7 +379,7 @@ export class AppComponent implements OnInit {
         formData.append('EnglishQualifications.Files', file);
       });
     }
-    
+
     // ========== EMPLOYMENT HISTORY ==========
     // Position 1
     if (rawValue.employmentHistory.position1.organization) {
@@ -395,7 +393,7 @@ export class AppComponent implements OnInit {
         formData.append('EmploymentHistory.Position1.Address', rawValue.employmentHistory.position1.address);
       }
     }
-    
+
     // Position 2
     if (rawValue.employmentHistory.position2.organization) {
       formData.append('EmploymentHistory.Position2.OrganizationName', rawValue.employmentHistory.position2.organization);
@@ -408,13 +406,13 @@ export class AppComponent implements OnInit {
         formData.append('EmploymentHistory.Position2.Address', rawValue.employmentHistory.position2.address);
       }
     }
-    
+
     // ========== DECLARATION ==========
     formData.append('Declaration.agreed', rawValue.declaration.agreed.toString());
     if (rawValue.declaration.agreed) {
       formData.append('Declaration.AcceptedDate', new Date().toISOString().split('T')[0]);
     }
-    
+
     return formData;
   }
 
@@ -425,15 +423,15 @@ export class AppComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const cursorPosition = input.selectionStart || 0;
     const oldLength = input.value.length;
-    
+
     // Convert to uppercase, remove special characters
     input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    
+
     // Restore cursor position
     const newLength = input.value.length;
     const newPosition = cursorPosition - (oldLength - newLength);
     input.setSelectionRange(newPosition, newPosition);
-    
+
     // Update form control value
     this.personalDetails.get('passportNo')?.setValue(input.value, { emitEvent: true });
   }
@@ -445,7 +443,7 @@ export class AppComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     // Auto lowercase and remove spaces
     input.value = input.value.toLowerCase().replace(/\s/g, '');
-    
+
     // Update form control value
     this.personalDetails.get('email')?.setValue(input.value, { emitEvent: true });
   }
@@ -453,25 +451,25 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Load programs
     this.loadPrograms();
-    
+
     // Load languages
     this.loadLanguages();
-    
+
     // Load countries
     this.loadCountries();
-    
+
     // Load provinces (cities)
     this.loadProvinces();
-    
+
     // Setup conditional validation for IELTS
     this.setupConditionalValidation('ielts');
-    
+
     // Setup conditional validation for TOEFL
     this.setupConditionalValidation('toefl');
-    
+
     // Setup conditional validation for Other English test
     this.setupConditionalValidation('other');
-    
+
     // Setup beforeunload warning
     this.setupBeforeUnloadWarning();
   }
@@ -500,7 +498,7 @@ export class AppComponent implements OnInit {
     this._mbaService.getActivePrograms().subscribe({
       next: (programs) => {
         this.programs.set(programs);
-        
+
         // Auto-select MBA program if available
         const mbaProgram = programs.find(p => p.code === 'MBA' || p.name.includes('Master of Business Administration'));
         if (mbaProgram) {
@@ -566,7 +564,7 @@ export class AppComponent implements OnInit {
   onProgramChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const programId = selectElement.value;
-    
+
     if (programId) {
       const selectedProgram = this.programs().find(p => p.id === programId);
       if (selectedProgram) {
@@ -589,14 +587,14 @@ export class AppComponent implements OnInit {
   onNationalityChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const nationalityId = selectElement.value;
-    
+
     if (nationalityId) {
       const selectedCountry = this.countries().find(c => c.id === nationalityId);
       if (selectedCountry) {
         this.personalDetails.patchValue({
           nationality: selectedCountry.name
         });
-        
+
         // Reset city fields when nationality changes
         this.personalDetails.patchValue({
           correspondenceCityId: '',
@@ -618,9 +616,9 @@ export class AppComponent implements OnInit {
   onCountryChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
     const selectElement = event.target as HTMLSelectElement;
     const countryId = selectElement.value;
-    
+
     let sectionGroup: FormGroup;
-    
+
     if (section === 'undergraduates' && index !== undefined) {
       sectionGroup = this.undergraduates.at(index) as FormGroup;
     } else if (section === 'postgraduates' && index !== undefined) {
@@ -628,7 +626,7 @@ export class AppComponent implements OnInit {
     } else {
       return;
     }
-    
+
     if (countryId) {
       const selectedCountry = this.countries().find(c => c.id === countryId);
       if (selectedCountry) {
@@ -649,7 +647,7 @@ export class AppComponent implements OnInit {
   onCorrespondenceCityChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const provinceCode = selectElement.value;
-    
+
     if (provinceCode) {
       const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
       if (selectedProvince) {
@@ -657,10 +655,10 @@ export class AppComponent implements OnInit {
           correspondenceCityName: selectedProvince.provinceName
         });
       }
-      
+
       // Enable ward dropdown
       this.personalDetails.get('correspondenceDistrictId')?.enable();
-      
+
       // Load wards for selected province
       this._mbaService.getWardsByProvinceCode(provinceCode).subscribe({
         next: (wards) => {
@@ -694,7 +692,7 @@ export class AppComponent implements OnInit {
   onCorrespondenceDistrictChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const wardCode = selectElement.value;
-    
+
     if (wardCode) {
       const selectedWard = this.correspondenceWards().find(w => w.wardCode === wardCode);
       if (selectedWard) {
@@ -715,7 +713,7 @@ export class AppComponent implements OnInit {
   onPermanentCityChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const provinceCode = selectElement.value;
-    
+
     if (provinceCode) {
       const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
       if (selectedProvince) {
@@ -723,10 +721,10 @@ export class AppComponent implements OnInit {
           permanentCityName: selectedProvince.provinceName
         });
       }
-      
+
       // Enable ward dropdown
       this.personalDetails.get('permanentDistrictId')?.enable();
-      
+
       // Load wards for selected province
       this._mbaService.getWardsByProvinceCode(provinceCode).subscribe({
         next: (wards) => {
@@ -760,7 +758,7 @@ export class AppComponent implements OnInit {
   onPermanentDistrictChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const wardCode = selectElement.value;
-    
+
     if (wardCode) {
       const selectedWard = this.permanentWards().find(w => w.wardCode === wardCode);
       if (selectedWard) {
@@ -784,35 +782,35 @@ export class AppComponent implements OnInit {
       const files = Array.from(input.files);
       const validFiles: File[] = [];
       const errors: string[] = [];
-      
+
       for (const file of files) {
         // Validate file size (max 5MB per file)
         if (file.size > 5 * 1024 * 1024) {
           errors.push(`${file.name}: File size must be less than 5MB`);
           continue;
         }
-        
+
         // Validate file type
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
           errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
           continue;
         }
-        
+
         validFiles.push(file);
       }
-      
+
       if (errors.length > 0) {
         alert('Some files were rejected:\n\n' + errors.join('\n'));
       }
-      
+
       if (validFiles.length > 0) {
         // Merge with existing files
         const existingFiles = this.personalDetails.get('passportFile')?.value || [];
         const allFiles = [...existingFiles, ...validFiles];
         this.personalDetails.patchValue({ passportFile: allFiles });
       }
-      
+
       // Reset input to allow selecting the same file again
       input.value = '';
     }
@@ -857,7 +855,7 @@ export class AppComponent implements OnInit {
       country: [''],
       major: ['', Validators.required],
       graduationYear: ['', [
-        Validators.required, 
+        Validators.required,
         minYearValidator(1950),
         maxYearValidator(new Date().getFullYear())
       ]],
@@ -961,31 +959,31 @@ export class AppComponent implements OnInit {
       const files = Array.from(input.files);
       const validFiles: File[] = [];
       const errors: string[] = [];
-      
+
       for (const file of files) {
         // Validate file size (max 5MB per file)
         if (file.size > 5 * 1024 * 1024) {
           errors.push(`${file.name}: File size must be less than 5MB`);
           continue;
         }
-        
+
         // Validate file type
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
           errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
           continue;
         }
-        
+
         validFiles.push(file);
       }
-      
+
       if (errors.length > 0) {
         alert('Some files were rejected:\n\n' + errors.join('\n'));
       }
-      
+
       if (validFiles.length > 0) {
         let existingFiles: File[] = [];
-        
+
         if (section === 'undergraduates' && index !== undefined) {
           existingFiles = this.undergraduates.at(index).get('file')?.value || [];
           const allFiles = [...existingFiles, ...validFiles];
@@ -996,8 +994,8 @@ export class AppComponent implements OnInit {
           this.postgraduates.at(index).patchValue({ file: allFiles });
         }
       }
-      
-      
+
+
       // Reset input to allow selecting the same file again
       input.value = '';
     }
@@ -1008,7 +1006,7 @@ export class AppComponent implements OnInit {
    */
   removeEducationFile(section: 'undergraduates' | 'postgraduates', fileIndex: number, arrayIndex?: number): void {
     let files: File[] = [];
-    
+
     if (section === 'undergraduates' && arrayIndex !== undefined) {
       files = this.undergraduates.at(arrayIndex).get('file')?.value || [];
       const updatedFiles = files.filter((_, i) => i !== fileIndex);
@@ -1029,35 +1027,35 @@ export class AppComponent implements OnInit {
       const files = Array.from(input.files);
       const validFiles: File[] = [];
       const errors: string[] = [];
-      
+
       for (const file of files) {
         // Validate file size (max 5MB per file)
         if (file.size > 5 * 1024 * 1024) {
           errors.push(`${file.name}: File size must be less than 5MB`);
           continue;
         }
-        
+
         // Validate file type
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
           errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
           continue;
         }
-        
+
         validFiles.push(file);
       }
-      
+
       if (errors.length > 0) {
         alert('Some files were rejected:\n\n' + errors.join('\n'));
       }
-      
+
       if (validFiles.length > 0) {
         // Merge with existing files
         const existingFiles = this.englishQualifications.get('certificateFile')?.value || [];
         const allFiles = [...existingFiles, ...validFiles];
         this.englishQualifications.patchValue({ certificateFile: allFiles });
       }
-      
+
       // Reset input to allow selecting the same file again
       input.value = '';
     }
@@ -1080,9 +1078,9 @@ export class AppComponent implements OnInit {
   onLanguageChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
     const selectElement = event.target as HTMLSelectElement;
     const languageId = selectElement.value;
-    
+
     let sectionGroup: FormGroup;
-    
+
     if (section === 'undergraduates' && index !== undefined) {
       sectionGroup = this.undergraduates.at(index) as FormGroup;
     } else if (section === 'postgraduates' && index !== undefined) {
@@ -1090,7 +1088,7 @@ export class AppComponent implements OnInit {
     } else {
       return;
     }
-    
+
     if (languageId) {
       const selectedLanguage = this.languages().find(l => l.id === languageId);
       if (selectedLanguage) {
@@ -1122,18 +1120,18 @@ export class AppComponent implements OnInit {
     // When date changes
     dateControl?.valueChanges.subscribe(date => {
       if (date) {
-        const validators = testType === 'ielts' 
+        const validators = testType === 'ielts'
           ? [Validators.required, scoreRangeValidator(0, 9)]
           : testType === 'toefl'
-          ? [Validators.required, scoreRangeValidator(0, 120)]
-          : [Validators.required];
+            ? [Validators.required, scoreRangeValidator(0, 120)]
+            : [Validators.required];
         scoreControl?.setValidators(validators);
       } else {
-        const validators = testType === 'ielts' 
+        const validators = testType === 'ielts'
           ? [scoreRangeValidator(0, 9)]
           : testType === 'toefl'
-          ? [scoreRangeValidator(0, 120)]
-          : [];
+            ? [scoreRangeValidator(0, 120)]
+            : [];
         scoreControl?.setValidators(validators);
       }
       scoreControl?.updateValueAndValidity({ emitEvent: false });
