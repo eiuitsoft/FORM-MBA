@@ -11,7 +11,7 @@
     <ul class="nav-menu" [class.show]="showMobileMenu()">
       @if (!isLoggedIn) {
         <li>
-          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+          <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
             <span class="material-icons">edit</span> {{ 'NAVBAR.MBA_APPLICATION' | translate }}
           </a>
         </li>
@@ -23,10 +23,10 @@
           <span class="material-icons">language</span> {{ currentLang === 'en' ? 'VI' : 'EN' }}
         </button>
       </li>
-      
+
       @if (isLoggedIn) {
         <li>
-          <a [routerLink]="['/application', tokenService.studentId()]" routerLinkActive="active" class="nav-link">
+          <a [routerLink]="['/application']" routerLinkActive="active" class="nav-link">
             <span class="material-icons">assignment</span> {{ 'NAVBAR.MY_APPLICATION' | translate }}
           </a>
         </li>

@@ -6,7 +6,7 @@
       <span class="login100-form-logo">
         <img src="assets/images/logo-footer.png" class="thumb-fluid" alt="" />
       </span>
-      
+
       <!-- Send OTP Form -->
       @if (showFormSendOTP()) {
         <div>
@@ -21,7 +21,7 @@
                 }
               </select>
             </div>
-            
+
             <!-- Value Input -->
             <div class="form-group">
               <label class="text-muted">
@@ -36,8 +36,8 @@
               <input
                 formControlName="value"
                 type="text"
-                [placeholder]="loginForm.value.method == LoginMethodEnum.CCCD 
-                  ? '284501234114' 
+                [placeholder]="loginForm.value.method == LoginMethodEnum.CCCD
+                  ? '284501234114'
                   : loginForm.value.method == LoginMethodEnum.CODE
                   ? ('LOGIN.ENTER_PROFILE_CODE' | translate)
                   : ('LOGIN.ENTER_PHONE' | translate)"
@@ -48,12 +48,12 @@
               }
             </div>
           </div>
-          
+
           <div class="container-login100-form-btn group-btn-get-otp mt-3">
             <button
               type="button"
               class="login100-form-btn mr-4"
-              routerLink="/"
+              routerLink="/register"
               [disabled]="isSendingOTP()">
               <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -73,7 +73,7 @@
           </div>
         </div>
       }
-      
+
       <!-- OTP Input Form -->
       @if (!showFormSendOTP()) {
         <div>
@@ -162,7 +162,7 @@
 @if (showModalChooseOTP()) {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal-content-wrapper" (click)="$event.stopPropagation()">
-      
+
       <!-- Modal Header -->
       <div class="modal-header">
         <h5 class="modal-title">{{ 'LOGIN.CHOOSE_OTP_METHOD' | translate }}</h5>
@@ -172,7 +172,7 @@
           </svg>
         </button>
       </div>
-      
+
       <!-- Modal Body -->
       <div class="modal-body" [formGroup]="loginForm">
         <div class="radio-group">
@@ -186,7 +186,7 @@
         <b class="text-danger">⚠ {{ 'LOGIN.NOTE' | translate }}:</b>
         <span>{{ sendOtpTypeMap[loginForm.value.sendType]?.messageKey | translate }}</span>
       </div>
-      
+
       <!-- Modal Footer -->
       <div class="modal-footer">
         <button type="button" class="btn btn-primary button-login" (click)="sendOTP()" [disabled]="isSendingOTP()">

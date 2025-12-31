@@ -1,7 +1,7 @@
-import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
-import { AuthService } from '../services/auth/auth.service';
-import { TokenService } from '../services/auth/token.service';
+import { inject } from "@angular/core";
+import { Router, CanActivateFn } from "@angular/router";
+import { AuthService } from "../services/auth/auth.service";
+import { TokenService } from "../services/auth/token.service";
 
 /**
  * Auth Guard - Protects routes that require authentication
@@ -9,30 +9,19 @@ import { TokenService } from '../services/auth/token.service';
  *
  * Usage:
  * {
- *   path: 'application/:id',
+ *   path: 'application',
  *   component: ApplicationDetailComponent,
  *   canActivate: [authGuard]
  * }
  */
 export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
+  const auth = inject(AuthService);
   const router = inject(Router);
-
-  if (authService.isLoggedIn()) {
-    // Additional logic based on route data can be added here
-    // Example:
-    // const requiredRole = route.data['role'];
-    // if (requiredRole && !hasRole(requiredRole)) {
-    //   router.navigate(['/unauthorized']);
-    //   return false;
-    // }
-
-    return true;
-  }
-
-  // Save the attempted URL for redirecting after login
-  router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-  return false;
+  return auth.isLoggedIn()
+    ? true
+    : router.createUrlTree(["/login"], {
+        queryParams: { returnUrl: state.url },
+      });
 };
 
 /**
@@ -40,20 +29,16 @@ export const authGuard: CanActivateFn = (route, state) => {
  * Redirects to application detail if user is already logged in
  */
 export const guestGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const tokenService = inject(TokenService);
+  const auth = inject(AuthService);
+  const token = inject(TokenService);
   const router = inject(Router);
 
-  if (!authService.isLoggedIn()) {
-    return true;
+  if (!auth.isLoggedIn()) {
+    // return true; // cho phép vào login / register
+    return router.createUrlTree(["/register"]);
   }
 
-  // User is logged in, redirect to their application detail
-  const studentId = tokenService.studentId();
-  if (studentId) {
-    router.navigate(['/application']);
-  } else {
-    router.navigate(['/login']);
-  }
-  return false;
+  return token.studentId()
+    ? router.createUrlTree(["/application"])
+    : router.createUrlTree(["/login"]);
 };

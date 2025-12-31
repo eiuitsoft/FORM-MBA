@@ -3,6 +3,7 @@ import { LoginComponent } from "./components/login/login.component";
 import { ApplicationDetailComponent } from "./components/application-detail/application-detail.component";
 import { AppComponent } from "../app.component";
 import { authGuard, guestGuard } from "./core/guards/auth.guard";
+import { NotFoundComponent } from "./components/not-found/not-found.component";
 
 export const routes: Routes = [
   // {
@@ -32,6 +33,12 @@ export const routes: Routes = [
   {
     path: "",
     component: AppComponent,
+    canActivate: [guestGuard],
+    pathMatch: "full",
+  },
+  {
+    path: "**",
+    component: NotFoundComponent,
     canActivate: [guestGuard],
   },
 ];
