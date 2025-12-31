@@ -27,7 +27,7 @@
   },
   "SECTIONS": {
     "PERSONAL": "SECTION A - PERSONAL DETAILS",
-    "APPLICATION": "SECTION B - APPLICATION DETAILS",
+    "APPLICATION": "SECTION B - APPLICATION INFORMATION",
     "EDUCATION": "SECTION C - PREVIOUS EDUCATION DETAILS",
     "ENGLISH": "SECTION D - ENGLISH QUALIFICATIONS",
     "EMPLOYMENT": "SECTION E - EMPLOYMENT HISTORY",
@@ -98,7 +98,7 @@
     "OTHER_POSTGRAD": "th postgraduate",
     "UNIVERSITY": "University/ Institution",
     "ENTER_UNIVERSITY": "Enter university or institution name",
-    "COUNTRY": "Country",
+    "COUNTRY": "Country of Award",
     "MAJOR": "Major",
     "ENTER_MAJOR": "Enter major",
     "GRAD_YEAR": "Year of graduation",
@@ -107,6 +107,7 @@
     "LANGUAGE": "Language of instruction",
     "UPLOAD_CERT": "Upload Certificate (Optional)",
     "THESIS": "Thesis title",
+    "ENTER_THESIS": "Enter thesis title",
     "ADD_UNDERGRAD": "Add More Undergraduate",
     "ADD_POSTGRAD": "Add More Postgraduate",
     "NO_UNDERGRAD": "No undergraduate degrees recorded",
@@ -144,13 +145,13 @@
     "NO_HISTORY": "No employment history recorded"
   },
   "DECLARATION": {
-    "P1": "By applying for admission to the Master of Business Administration program at Eastern International University, I hereby commit to fulfilling all academic, research, and financial obligations upon admission as follows:",
-    "L1": "Comply with all training regulations and policies of Eastern International University;",
-    "L2": "Ensure adequate time for studying and conducting research; participate in academic activities; and strictly follow the university study and research plan;",
-    "L3": "Pay tuition fees and any other required fees in accordance with university regulations;",
-    "L4": "Provide consent for Eastern International University to use and verify my certificates and academic qualifications.",
-    "P2": "I hereby declare that all information provided in this Application Form is true and accurate and shall take full responsibility for any false declarations.",
-    "AGREE": "I agree to the terms and conditions."
+    "P1": "By applying for the Master's program at Eastern International University, I hereby commit to fulfilling the following academic, research, and financial obligations upon admission:",
+    "L1": "Strictly comply with the Master's Degree Training Regulations and all other regulations of Eastern International University;",
+    "L2": "Ensure sufficient time for study and research, attend all scientific activities, participate in activities organized by professional departments, and strictly follow the University's study and research plans;",
+    "L3": "Pay tuition and other fees in accordance with the University's regulations;",
+    "L4": "Authorize Eastern International University to use my certificate and diploma information for verification purposes.",
+    "P2": "I solemnly declare that the information provided in this application is true and correct. I accept full legal responsibility for any false statements.",
+    "AGREE": "I agree to the terms and conditions above."
   },
   "CONFIRM_DIALOG": {
     "TITLE": "Confirm Submission",

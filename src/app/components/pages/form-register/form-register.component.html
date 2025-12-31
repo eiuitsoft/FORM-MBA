@@ -521,9 +521,14 @@
             <div>
               <label for="admissionIntake" class="block text-sm font-medium text-gray-700">{{
                 "APPLICATION_DETAILS.ADMISSION_INTAKE" | translate
-                }}</label>
-              <input type="text" id="admissionIntake" formControlName="admissionIntake"
-                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm px-3 py-2 cursor-not-allowed" />
+                }}
+                <span class="text-red-600">*</span>
+              </label>
+              <select id="admissionIntake" formControlName="admissionIntake"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                <option [value]="'1'">1 (Tháng 4)</option>
+                <option [value]="'2'">2 (Tháng 9)</option>
+              </select>
             </div>
           </div>
         </div>
@@ -1054,7 +1059,7 @@
                 <span [textContent]="
                       englishQualifications.get('certificateFile')?.value.length
                     "></span>
-                {{ "ENGLISH.FILE_SELECTED" | translate }}:
+                {{ "COMMON.FILE_SELECTED" | translate }}:
               </p>
               @for (file of
               englishQualifications.get('certificateFile')?.value; track
@@ -1088,7 +1093,7 @@
         </div>
       </section>
 
-      <!-- Section D: Employment History -->
+      <!-- Section E: Employment History -->
       <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="employmentHistory">
         <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">
           {{ "SECTIONS.EMPLOYMENT" | translate }}
@@ -1193,7 +1198,7 @@
         </div>
       </section>
 
-      <!-- Section E: Declaration -->
+      <!-- Section F: Declaration -->
       <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="declaration">
         <h3 class="px-6 py-4 bg-[#153a5e] text-xl font-bold text-white tracking-wider">
           {{ "SECTIONS.DECLARATION" | translate }}

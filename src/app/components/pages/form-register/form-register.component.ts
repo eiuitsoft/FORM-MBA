@@ -100,7 +100,7 @@ export class FormRegisterComponent implements OnInit {
       programName: [''],
       track: [{ value: 'Application', disabled: true }, Validators.required],
       admissionYear: [this.currentYear, [Validators.required, minYearValidator(this.currentYear)]],
-      admissionIntake: [{ value: '1', disabled: true }, Validators.required],
+      admissionIntake: [{ value: '1' }, Validators.required],
     }),
     educationDetails: this.fb.group({
       undergraduates: this.fb.array([
@@ -506,7 +506,8 @@ export class FormRegisterComponent implements OnInit {
           this.applicationDetails.get('programId')?.setValue(mbaProgram.id);
           this.applicationDetails.patchValue({
             programCode: mbaProgram.code,
-            programName: mbaProgram.name
+            programName: mbaProgram.name,
+            admissionIntake: '1' // Default intake
           });
         }
       },
