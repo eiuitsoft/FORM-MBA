@@ -2,7 +2,7 @@ import { Routes } from "@angular/router";
 import { LoginComponent } from "./components/login/login.component";
 import { ApplicationDetailComponent } from "./components/application-detail/application-detail.component";
 import { AppComponent } from "../app.component";
-import { authGuard } from "./core/guards/auth.guard";
+import { authGuard, guestGuard } from "./core/guards/auth.guard";
 
 export const routes: Routes = [
   // {
@@ -31,7 +31,7 @@ export const routes: Routes = [
   },
   {
     path: "",
-    redirectTo: "application",
-    pathMatch: "full"
+    component: AppComponent,
+    canActivate: [guestGuard],
   },
 ];
