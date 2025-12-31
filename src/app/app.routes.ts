@@ -7,10 +7,14 @@ export const routes: Routes = [
     path: '',
     component: PageComponent,
     loadChildren: () =>
-      import('./components/pages/page.routing').then((m) => m.PageRoutes),
+      import('./components/pages/page.routing').then((m) => m.pageRoutes),
   },
   {
     path: "login",
     component: LoginComponent,
-  }
+  },
+  {
+    path: "**",
+    redirectTo: '',
+  },
 ];

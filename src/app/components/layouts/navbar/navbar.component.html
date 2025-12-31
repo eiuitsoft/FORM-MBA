@@ -18,7 +18,7 @@
 
       @if (!isLoggedIn) {
         <li>
-          <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link" (click)="closeMenu()">
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link" (click)="closeMenu()">
             <span class="material-icons">edit</span> {{ 'NAVBAR.MBA_APPLICATION' | translate }}
           </a>
         </li>

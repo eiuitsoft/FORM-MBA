@@ -473,7 +473,7 @@ export class ApplicationDetailComponent implements OnInit {
       }),
       educationDetails: this._fb.group({
         undergraduates: this._fb.array(
-          data.educationDetails.undergraduates.map((ug: any, index: number) => {
+          (data?.educationDetails?.undergraduates ?? []).map((ug: any, index: number) => {
             const validators = index === 0
               ? [Validators.required, minYearValidator(1950)]
               : (ug.graduationYear ? [minYearValidator(1950)] : []);
@@ -490,7 +490,7 @@ export class ApplicationDetailComponent implements OnInit {
           })
         ),
         postgraduates: this._fb.array(
-          data.educationDetails.postgraduates.map((pg: any) => {
+          (data?.educationDetails?.postgraduates ?? []).map((pg: any) => {
             const validators = pg.graduationYear ? [minYearValidator(1950)] : [];
 
             return this._fb.group({
@@ -624,7 +624,7 @@ export class ApplicationDetailComponent implements OnInit {
         admissionYear: rawValue.applicationDetails.admissionYear
       },
       educationDetails: {
-        undergraduates: rawValue.educationDetails.undergraduates.map((ug: any, index: number) => {
+        undergraduates: (rawValue?.educationDetails?.undergraduates ?? [] ).map((ug: any, index: number) => {
           return {
             id: ug.id,
             university: ug.university,
@@ -639,7 +639,7 @@ export class ApplicationDetailComponent implements OnInit {
             // files removed - already uploaded via file manager
           };
         }),
-        postgraduates: rawValue.educationDetails.postgraduates.map((pg: any, index: number) => {
+        postgraduates: (rawValue?.educationDetails?.postgraduates ?? [] ).map((pg: any, index: number) => {
           return {
             id: pg.id,
             university: pg.university,
