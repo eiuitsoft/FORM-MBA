@@ -31,7 +31,14 @@ export class NavbarComponent {
   // Close dropdown when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    this.showUserMenu.set(false);
+    const target = event.target as HTMLElement;
+    const navbar = target.closest('.navbar');
+    
+    // Nếu click ra ngoài navbar thì đóng cả 2 menu
+    if (!navbar) {
+      this.showUserMenu.set(false);
+      this.showMobileMenu.set(false);
+    }
   }
 
   // Computed signals from TokenService
