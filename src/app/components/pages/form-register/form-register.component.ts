@@ -118,6 +118,7 @@ export class FormRegisterComponent implements OnInit {
         )]
       ],
       dateIssued: ['', Validators.required],
+      placeOfIssue: ['', Validators.required],
       email: ['', [Validators.required, Validators.email, emailFormatValidator()]],
       mobile: [
         undefined,
@@ -178,6 +179,8 @@ export class FormRegisterComponent implements OnInit {
       certificateFile: [null], // File upload for all English qualifications
     }, { validators: atLeastOneEnglishQualificationValidator() }),
     employmentHistory: this.fb.group({
+      totalExperienceYears: ['', Validators.required],
+      totalExperienceMonths: ['', Validators.required],
       position1: this.fb.group({
         organization: [''],
         title: [''],
@@ -322,6 +325,7 @@ export class FormRegisterComponent implements OnInit {
     formData.append('PersonalDetails.PlaceOfBirth', rawValue.personalDetails.placeOfBirth || '');
     formData.append('PersonalDetails.PassportNo', rawValue.personalDetails.passportNo?.trim().toUpperCase() || '');
     formData.append('PersonalDetails.DateIssued', rawValue.personalDetails.dateIssued || '');
+    formData.append('PersonalDetails.PlaceOfIssue', rawValue.personalDetails.placeOfIssue || '');
     formData.append('PersonalDetails.Email', rawValue.personalDetails.email?.trim().toLowerCase() || '');
     // Extract phone number in E.164 format
     const mobile = rawValue.personalDetails.mobile?.e164Number || rawValue.personalDetails.mobile || '';
@@ -378,6 +382,8 @@ export class FormRegisterComponent implements OnInit {
       formData.append(`EducationDetails.Undergraduates[${index}].CountryId`, ug.countryId || '');
       formData.append(`EducationDetails.Undergraduates[${index}].Major`, ug.major || '');
       formData.append(`EducationDetails.Undergraduates[${index}].GraduationYear`, ug.graduationYear?.toString() || '');
+      formData.append(`EducationDetails.Undergraduates[${index}].Gpa`, ug.gpa || '');
+      formData.append(`EducationDetails.Undergraduates[${index}].GraduationClassification`, ug.graduationClassification || '');
       formData.append(`EducationDetails.Undergraduates[${index}].LanguageId`, ug.languageId || '');
       formData.append(`EducationDetails.Undergraduates[${index}].SortOrder`, index.toString());
 
@@ -447,6 +453,14 @@ export class FormRegisterComponent implements OnInit {
     }
 
     // ========== EMPLOYMENT HISTORY ==========
+    // Total Experience
+    if (rawValue.employmentHistory.totalExperienceYears) {
+      formData.append('EmploymentHistory.TotalExperienceYears', rawValue.employmentHistory.totalExperienceYears);
+    }
+    if (rawValue.employmentHistory.totalExperienceMonths) {
+      formData.append('EmploymentHistory.TotalExperienceMonths', rawValue.employmentHistory.totalExperienceMonths);
+    }
+
     // Position 1
     if (rawValue.employmentHistory.position1.organization) {
       formData.append('EmploymentHistory.Position1.OrganizationName', rawValue.employmentHistory.position1.organization);
@@ -908,6 +922,8 @@ export class FormRegisterComponent implements OnInit {
         minYearValidator(1950),
         maxYearValidator(new Date().getFullYear())
       ]],
+      gpa: ['', Validators.required],
+      graduationClassification: ['', Validators.required],
       languageId: ['', Validators.required],
       language: [''],
       file: [null],
@@ -927,6 +943,8 @@ export class FormRegisterComponent implements OnInit {
         minYearValidator(1950),
         maxYearValidator(new Date().getFullYear())
       ]],
+      gpa: [''],
+      graduationClassification: [''],
       languageId: [''],
       language: [''],
       file: [null],

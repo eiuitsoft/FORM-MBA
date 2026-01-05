@@ -120,76 +120,6 @@
             }
           </div>
           <div>
-            <label for="passportNo" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.PASSPORT" |
-              translate }}
-              <span class="text-red-600">*</span></label>
-            <div class="relative">
-              <input type="text" id="passportNo" formControlName="passportNo" (input)="formatPassportInput($event)"
-                [placeholder]="
-                    'PERSONAL_DETAILS.PASSPORT_PLACEHOLDER' | translate
-                  "
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10" />
-              @if (personalDetails.get('passportNo')?.pending) {
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                  </path>
-                </svg>
-              </div>
-              } @if (personalDetails.get('passportNo')?.valid &&
-              personalDetails.get('passportNo')?.touched &&
-              !personalDetails.get('passportNo')?.pending) {
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clip-rule="evenodd" />
-                </svg>
-              </div>
-              }
-            </div>
-            @if (personalDetails.get('passportNo')?.hasError('required') &&
-            personalDetails.get('passportNo')?.touched) {
-            <p class="text-red-600 text-sm mt-1">
-              {{ "PERSONAL_DETAILS.PASSPORT" | translate }}
-              {{ "COMMON.REQUIRED_FIELD" | translate }}
-            </p>
-            } @if
-            (personalDetails.get('passportNo')?.hasError('invalidLength')) {
-            <p class="text-red-600 text-sm mt-1">
-              {{ "PERSONAL_DETAILS.PASSPORT_LENGTH" | translate }}
-            </p>
-            } @if
-            (personalDetails.get('passportNo')?.hasError('invalidFormat')) {
-            <p class="text-red-600 text-sm mt-1">
-              {{ "PERSONAL_DETAILS.PASSPORT_FORMAT" | translate }}
-            </p>
-            } @if
-            (personalDetails.get('passportNo')?.hasError('passportExists') &&
-            personalDetails.get('passportNo')?.touched) {
-            <p class="text-red-600 text-sm mt-1">
-              {{ "PERSONAL_DETAILS.PASSPORT_EXISTS" | translate }}
-            </p>
-            }
-          </div>
-          <div>
-            <label for="dateIssued" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.DATE_ISSUED" |
-              translate
-              }}<span class="text-red-600">*</span></label>
-            <input type="date" id="dateIssued" formControlName="dateIssued"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-            @if (personalDetails.get('dateIssued')?.hasError('required') &&
-            personalDetails.get('dateIssued')?.touched) {
-            <p class="text-red-600 text-sm mt-1">
-              {{ "PERSONAL_DETAILS.DATE_ISSUED" | translate }}
-              {{ "COMMON.REQUIRED_FIELD" | translate }}
-            </p>
-            }
-          </div>
-          <div>
             <label for="email" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.EMAIL" | translate
               }}
               <span class="text-red-600">*</span></label>
@@ -314,7 +244,95 @@
             </p>
             }
           </div>
-
+          <div class="md:col-span-1">
+            <div class="grid grid-cols-2 gap-x-3">
+              <div>
+                <label for="passportNo" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.PASSPORT" |
+                  translate }}
+                  <span class="text-red-600">*</span></label>
+                <div class="relative">
+                  <input type="text" id="passportNo" formControlName="passportNo" (input)="formatPassportInput($event)"
+                    [placeholder]="
+                        'PERSONAL_DETAILS.PASSPORT_PLACEHOLDER' | translate
+                      "
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 pr-10" />
+                  @if (personalDetails.get('passportNo')?.pending) {
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                      viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                      </path>
+                    </svg>
+                  </div>
+                  } @if (personalDetails.get('passportNo')?.valid &&
+                  personalDetails.get('passportNo')?.touched &&
+                  !personalDetails.get('passportNo')?.pending) {
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  }
+                </div>
+                @if (personalDetails.get('passportNo')?.hasError('required') &&
+                personalDetails.get('passportNo')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "PERSONAL_DETAILS.PASSPORT" | translate }}
+                  {{ "COMMON.REQUIRED_FIELD" | translate }}
+                </p>
+                } @if
+                (personalDetails.get('passportNo')?.hasError('invalidLength')) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "PERSONAL_DETAILS.PASSPORT_LENGTH" | translate }}
+                </p>
+                } @if
+                (personalDetails.get('passportNo')?.hasError('invalidFormat')) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "PERSONAL_DETAILS.PASSPORT_FORMAT" | translate }}
+                </p>
+                } @if
+                (personalDetails.get('passportNo')?.hasError('passportExists') &&
+                personalDetails.get('passportNo')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "PERSONAL_DETAILS.PASSPORT_EXISTS" | translate }}
+                </p>
+                }
+              </div>
+              <div>
+                <label for="dateIssued" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.DATE_ISSUED" |
+                  translate
+                  }}<span class="text-red-600">*</span></label>
+                <input type="date" id="dateIssued" formControlName="dateIssued"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (personalDetails.get('dateIssued')?.hasError('required') &&
+                personalDetails.get('dateIssued')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "PERSONAL_DETAILS.DATE_ISSUED" | translate }}
+                  {{ "COMMON.REQUIRED_FIELD" | translate }}
+                </p>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="md:col-span-1">
+            <label for="placeOfIssue" class="block text-sm font-medium text-gray-700">{{ "PERSONAL_DETAILS.PLACE_OF_ISSUE" |
+              translate
+              }}<span class="text-red-600">*</span></label>
+            <input type="text" id="placeOfIssue" formControlName="placeOfIssue"
+              [placeholder]="'PERSONAL_DETAILS.PLACE_OF_ISSUE_PLACEHOLDER' | translate"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            @if (personalDetails.get('placeOfIssue')?.hasError('required') &&
+            personalDetails.get('placeOfIssue')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ "PERSONAL_DETAILS.PLACE_OF_ISSUE" | translate }}
+              {{ "COMMON.REQUIRED_FIELD" | translate }}
+            </p>
+            }
+          </div>
           <div class="md:col-span-1">
             <div class="grid grid-cols-2 gap-x-3">
               <div>
@@ -666,6 +684,40 @@
                   undergraduates.at(ugIndex).get('graduationYear')?.touched) {
                   <p class="text-red-600 text-sm mt-1">
                     {{ "EDUCATION_DETAILS.GRAD_YEAR_FUTURE" | translate }}
+                  </p>
+                  }
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ "EDUCATION_DETAILS.GPA" | translate }}
+                    @if (ugIndex === 0) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <input type="text" formControlName="gpa" [placeholder]="'EDUCATION_DETAILS.GPA_PLACEHOLDER' | translate"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if (undergraduates.at(ugIndex).get('gpa')?.hasError('required') &&
+                  undergraduates.at(ugIndex).get('gpa')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.GPA" | translate }}
+                    {{ "COMMON.REQUIRED_FIELD" | translate }}
+                  </p>
+                  }
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ "EDUCATION_DETAILS.GRADUATION_CLASSIFICATION" | translate }}
+                    @if (ugIndex === 0) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <input type="text" formControlName="graduationClassification" [placeholder]="'EDUCATION_DETAILS.GRADUATION_CLASSIFICATION_PLACEHOLDER' | translate"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if (undergraduates.at(ugIndex).get('graduationClassification')?.hasError('required') &&
+                  undergraduates.at(ugIndex).get('graduationClassification')?.touched) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ "EDUCATION_DETAILS.GRADUATION_CLASSIFICATION" | translate }}
+                    {{ "COMMON.REQUIRED_FIELD" | translate }}
                   </p>
                   }
                 </div>
@@ -1099,6 +1151,47 @@
           {{ "SECTIONS.EMPLOYMENT" | translate }}
         </h3>
         <div class="p-6 space-y-6">
+          <!-- Total Experience -->
+          <div class="border border-gray-200 rounded-md p-4">
+            <h4 class="font-semibold text-lg text-[#153a5e] mb-2">
+              {{ "EMPLOYMENT.TOTAL_EXPERIENCE" | translate }}
+            </h4>
+            <div class="grid grid-cols-2 gap-x-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.YEARS" | translate
+                  }}<span class="text-red-600">*</span></label>
+                <input type="number" formControlName="totalExperienceYears" min="0"
+                  [placeholder]="'EMPLOYMENT.YEARS_PLACEHOLDER' | translate"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (employmentHistory.get('totalExperienceYears')?.hasError('required') &&
+                employmentHistory.get('totalExperienceYears')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "EMPLOYMENT.YEARS" | translate }}
+                  {{ "COMMON.REQUIRED_FIELD" | translate }}
+                </p>
+                }
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">{{
+                  "EMPLOYMENT.MONTHS" | translate
+                  }}<span class="text-red-600">*</span></label>
+                <input type="number" formControlName="totalExperienceMonths" min="0" max="11"
+                  [placeholder]="'EMPLOYMENT.MONTHS_PLACEHOLDER' | translate"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (employmentHistory.get('totalExperienceMonths')?.hasError('required') &&
+                employmentHistory.get('totalExperienceMonths')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ "EMPLOYMENT.MONTHS" | translate }}
+                  {{ "COMMON.REQUIRED_FIELD" | translate }}
+                </p>
+                }
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+              {{ "EMPLOYMENT.TOTAL_EXPERIENCE_HINT" | translate }}
+            </p>
+          </div>
           <div class="border border-gray-200 rounded-md p-4" formGroupName="position1">
             <h4 class="font-semibold text-lg text-[#153a5e] mb-2">
               {{ "EMPLOYMENT.POSITION_1" | translate }}
