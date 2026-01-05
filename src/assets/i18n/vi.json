@@ -83,7 +83,8 @@
     "ADMISSION_YEAR_ERROR": "Năm tuyển sinh phải từ {{year}} trở đi",
     "ADMISSION_INTAKE": "Đợt tuyển sinh",
     "ADMISSION_INTAKE_1": "1 (tháng 4)",
-    "ADMISSION_INTAKE_2": "2 (tháng 9)"
+    "ADMISSION_INTAKE_2": "2 (tháng 9)",
+    "PROGRAM_NAME_1": "Thạc sĩ Quản trị kinh doanh"
   },
   "EDUCATION_DETAILS": {
     "UNDERGRAD_TITLE": "Văn bằng đại học (Bằng thứ nhất)",
@@ -159,6 +160,13 @@
     "TITLE": "Xác Nhận Gửi",
     "MESSAGE": "Bạn có chắc chắn muốn gửi đơn đăng ký này không?"
   },
+  "SUBMIT_RESULT": {
+    "SUCCESS_TITLE": "Thành công!",
+    "SUCCESS_MESSAGE": "Đơn đăng ký đã được gửi thành công! Đang chuyển hướng đến trang đăng nhập...",
+    "ERROR_TITLE": "Lỗi",
+    "ERROR_MESSAGE": "Gửi đơn đăng ký thất bại",
+    "SYSTEM_ERROR": "Đã xảy ra lỗi khi gửi đơn đăng ký"
+  },
   "APPLICATION_PAGE": {
     "TITLE": "Đơn Đăng Ký MBA",
     "TITLE_EDIT": "Đơn Đăng Ký MBA - Chế Độ Chỉnh Sửa",
@@ -188,7 +196,23 @@
     "TITLE_PASSPORT": "Quản lý tệp CMND/Hộ chiếu",
     "TITLE_UNDERGRAD": "Quản lý tệp bằng đại học",
     "TITLE_POSTGRAD": "Quản lý tệp bằng sau đại học",
-    "TITLE_ENGLISH": "Quản lý tệp chứng chỉ tiếng Anh"
+    "TITLE_ENGLISH": "Quản lý tệp chứng chỉ tiếng Anh",
+    "ERROR": "Lỗi",
+    "FILE_SIZE_LIMIT": "vượt quá giới hạn 5MB",
+    "FILE_INVALID_TYPE": "có định dạng không hợp lệ",
+    "SAVED_SUCCESS": "Đã lưu thành công",
+    "UPLOAD_SUCCESS": "Đã tải lên thành công",
+    "UPLOAD_FAILED": "Tải lên thất bại - không có dữ liệu trả về",
+    "UPLOAD_ERROR": "Đã xảy ra lỗi khi tải tệp lên",
+    "CONFIRM_DELETE": "Xác nhận xóa",
+    "CONFIRM_DELETE_MSG": "Bạn có chắc chắn muốn xóa",
+    "FILE_DELETED": "Đã xóa tệp",
+    "DELETE_FAILED": "Xóa tệp thất bại",
+    "DELETE_ERROR": "Đã xảy ra lỗi khi xóa tệp",
+    "DOWNLOAD_ERROR": "Không thể tải xuống tệp",
+    "TYPE_DOCUMENT": "Tài liệu",
+    "TYPE_IMAGE": "Hình ảnh",
+    "TYPE_FILE": "Tệp"
   },
   "LOGIN": {
     "CITIZEN_ID": "Số CCCD",

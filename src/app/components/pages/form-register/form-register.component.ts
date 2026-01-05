@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { of } from 'rxjs';
 import { AlertService } from '../../../core/services/alert/alert.service';
@@ -29,6 +29,7 @@ export class FormRegisterComponent implements OnInit {
   private readonly _alertService = inject(AlertService);
   private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
+  private readonly _translate = inject(TranslateService);
 
   loading = signal(false);
   submitting = signal(false);
@@ -223,7 +224,11 @@ export class FormRegisterComponent implements OnInit {
       next: (res) => {
         this.submitting.set(false);
         if (res.success) {
-          this._alertService.success('Success!', 'Application submitted successfully! Redirecting to login...', 3000);
+          this._alertService.success(
+            this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'), 
+            this._translate.instant('SUBMIT_RESULT.SUCCESS_MESSAGE'), 
+            3000
+          );
           // Reset form after successful submission
           this.applicationForm.reset();
           this.submitted.set(false);
@@ -233,13 +238,19 @@ export class FormRegisterComponent implements OnInit {
             this._router.navigate(['/login']);
           }, 3000);
         } else {
-          this._alertService.error('Error', res.message || 'Failed to submit application');
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'), 
+            res.message || this._translate.instant('SUBMIT_RESULT.ERROR_MESSAGE')
+          );
         }
       },
       error: (err) => {
         this.submitting.set(false);
         console.error('Submit error:', err);
-        this._alertService.error('Error', 'An error occurred while submitting the application');
+        this._alertService.error(
+          this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'), 
+          this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR')
+        );
       }
     });
   }
@@ -297,6 +308,10 @@ export class FormRegisterComponent implements OnInit {
   private transformFormData(): FormData {
     const rawValue = this.applicationForm.getRawValue();
     const formData = new FormData();
+
+    // ========== LANGUAGE (for email template) ==========
+    const language = localStorage.getItem('lang') || 'en';
+    formData.append('Language', language);
 
     // ========== PERSONAL DETAILS ==========
     formData.append('PersonalDetails.FullName', rawValue.personalDetails.fullName || '');

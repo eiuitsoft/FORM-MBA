@@ -470,7 +470,7 @@
                 {{ "COMMON.SELECT_PROGRAM" | translate }}
               </option>
               @for (program of programs(); track program.id) {
-              <option [value]="program.id" [textContent]="program.name"></option>
+              <option [value]="program.id">{{ "APPLICATION_DETAILS.PROGRAM_NAME_1" | translate }}</option>
               }
             </select>
           </div>

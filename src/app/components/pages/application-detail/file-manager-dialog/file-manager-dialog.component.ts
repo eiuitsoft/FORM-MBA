@@ -3,7 +3,7 @@ import { TokenService } from '@/src/app/core/services/auth/token.service';
 import { MbaService } from '@/src/app/core/services/mba/mba.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-file-manager-dialog',
@@ -175,6 +175,7 @@ export class FileManagerDialogComponent implements OnChanges {
   private readonly _alertService = inject(AlertService);
   private readonly _mbaService = inject(MbaService);
   private readonly _tokenService = inject(TokenService);
+  private readonly _translate = inject(TranslateService);
 
   @Input() isOpen = false;
   @Input() title = 'File Attachments';
@@ -228,9 +229,15 @@ export class FileManagerDialogComponent implements OnChanges {
     const selectedFiles = event.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
     for (const file of selectedFiles) {
-      if (file.size > 5 * 1024 * 1024) { this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`); continue; }
+      if (file.size > 5 * 1024 * 1024) { 
+        this._alertService.error(this._translate.instant('FILE_DIALOG.ERROR'), `${file.name} ${this._translate.instant('FILE_DIALOG.FILE_SIZE_LIMIT')}`); 
+        continue; 
+      }
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-      if (!allowedTypes.includes(file.type)) { this._alertService.error('Error', `File ${file.name} has invalid type`); continue; }
+      if (!allowedTypes.includes(file.type)) { 
+        this._alertService.error(this._translate.instant('FILE_DIALOG.ERROR'), `${file.name} ${this._translate.instant('FILE_DIALOG.FILE_INVALID_TYPE')}`); 
+        continue; 
+      }
       this.pendingFiles.push(file);
     }
     event.target.value = '';
@@ -246,7 +253,11 @@ export class FileManagerDialogComponent implements OnChanges {
   }
 
   saveFiles(): void {
-    if (this.pendingFiles.length === 0) { this.onSave.emit(this.files); this._alertService.successMin('Saved successfully'); return; }
+    if (this.pendingFiles.length === 0) { 
+      this.onSave.emit(this.files); 
+      this._alertService.successMin(this._translate.instant('FILE_DIALOG.SAVED_SUCCESS')); 
+      return; 
+    }
     this.uploading = true;
     const formData = new FormData();
     formData.append('StudentId', this.studentId);
@@ -268,28 +279,38 @@ export class FileManagerDialogComponent implements OnChanges {
           this.filesChange.emit(this.files);
           this.onSave.emit(this.files);
           this.pendingFiles = [];
-          this._alertService.successMin(`Successfully uploaded ${uploadedFiles.length} file(s)`);
+          this._alertService.successMin(`${this._translate.instant('FILE_DIALOG.UPLOAD_SUCCESS')} ${uploadedFiles.length} ${this._translate.instant('FILE_DIALOG.FILES')}`);
         } else {
-          this._alertService.error('Error', 'Upload failed - no data returned');
+          this._alertService.error(this._translate.instant('FILE_DIALOG.ERROR'), this._translate.instant('FILE_DIALOG.UPLOAD_FAILED'));
         }
       },
-      error: () => { this.uploading = false; this._alertService.error('Error', 'An error occurred while uploading files'); }
+      error: () => { 
+        this.uploading = false; 
+        this._alertService.error(this._translate.instant('FILE_DIALOG.ERROR'), this._translate.instant('FILE_DIALOG.UPLOAD_ERROR')); 
+      }
     });
   }
 
   async deleteUploadedFile(index: number): Promise<void> {
     const file = this.uploadedFiles[index];
-    const confirmed = await this._alertService.confirmSwal('Confirm Delete', `Are you sure you want to delete "${file.fileName}"?`);
+    const confirmed = await this._alertService.confirmSwal(
+      this._translate.instant('FILE_DIALOG.CONFIRM_DELETE'), 
+      `${this._translate.instant('FILE_DIALOG.CONFIRM_DELETE_MSG')} "${file.fileName}"?`
+    );
     if (confirmed && file.fileLocalName) {
       this._mbaService.removeFile(file.fileLocalName).subscribe({
         next: (result) => {
           if (result.success) {
             const fileIndex = this.files.findIndex(f => f.fileLocalName === file.fileLocalName);
             if (fileIndex !== -1) { this.files.splice(fileIndex, 1); this.filesChange.emit(this.files); }
-            this._alertService.successMin('File deleted');
-          } else { this._alertService.error('Error', result.message || 'Failed to delete file'); }
+            this._alertService.successMin(this._translate.instant('FILE_DIALOG.FILE_DELETED'));
+          } else { 
+            this._alertService.error(this._translate.instant('FILE_DIALOG.ERROR'), result.message || this._translate.instant('FILE_DIALOG.DELETE_FAILED')); 
+          }
         },
-        error: () => { this._alertService.error('Error', 'An error occurred while deleting file'); }
+        error: () => { 
+          this._alertService.error(this._translate.instant('FILE_DIALOG.ERROR'), this._translate.instant('FILE_DIALOG.DELETE_ERROR')); 
+        }
       });
     }
   }
@@ -303,14 +324,16 @@ export class FileManagerDialogComponent implements OnChanges {
           link.href = url; link.download = file.fileName; link.click();
           window.URL.revokeObjectURL(url);
         },
-        error: () => { this._alertService.error('Error', 'Unable to download file'); }
+        error: () => { 
+          this._alertService.error(this._translate.instant('FILE_DIALOG.ERROR'), this._translate.instant('FILE_DIALOG.DOWNLOAD_ERROR')); 
+        }
       });
     }
   }
 
   getFileTypeLabel(fileType: string): string {
-    if (fileType?.includes('pdf')) return 'Document';
-    if (fileType?.includes('image')) return 'Image';
-    return 'File';
+    if (fileType?.includes('pdf')) return this._translate.instant('FILE_DIALOG.TYPE_DOCUMENT');
+    if (fileType?.includes('image')) return this._translate.instant('FILE_DIALOG.TYPE_IMAGE');
+    return this._translate.instant('FILE_DIALOG.TYPE_FILE');
   }
 }

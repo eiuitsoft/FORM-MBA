@@ -83,8 +83,8 @@
     "ADMISSION_YEAR_ERROR": "Admission year must be {{year}} or later",
     "ADMISSION_INTAKE": "Admission Intake",
     "ADMISSION_INTAKE_1": "1 (April)",
-    "ADMISSION_INTAKE_2": "2 (September)"
-
+    "ADMISSION_INTAKE_2": "2 (September)",
+    "PROGRAM_NAME_1": "Master of Business Administration"
   },
   "EDUCATION_DETAILS": {
     "UNDERGRAD_TITLE": "Undergraduate qualifications (First degree)",
@@ -160,6 +160,13 @@
     "TITLE": "Confirm Submission",
     "MESSAGE": "Are you sure you want to submit this application?"
   },
+  "SUBMIT_RESULT": {
+    "SUCCESS_TITLE": "Success!",
+    "SUCCESS_MESSAGE": "Application submitted successfully! Redirecting to login...",
+    "ERROR_TITLE": "Error",
+    "ERROR_MESSAGE": "Failed to submit application",
+    "SYSTEM_ERROR": "An error occurred while submitting the application"
+  },
   "APPLICATION_PAGE": {
     "TITLE": "MBA Application",
     "TITLE_EDIT": "MBA Application - Edit Mode",
@@ -189,7 +196,23 @@
     "TITLE_PASSPORT": "Manage ID/Passport Files",
     "TITLE_UNDERGRAD": "Manage Undergraduate Degree Files",
     "TITLE_POSTGRAD": "Manage Postgraduate Degree Files",
-    "TITLE_ENGLISH": "Manage English Certificate Files"
+    "TITLE_ENGLISH": "Manage English Certificate Files",
+    "ERROR": "Error",
+    "FILE_SIZE_LIMIT": "exceeds 5MB limit",
+    "FILE_INVALID_TYPE": "has invalid type",
+    "SAVED_SUCCESS": "Saved successfully",
+    "UPLOAD_SUCCESS": "Successfully uploaded",
+    "UPLOAD_FAILED": "Upload failed - no data returned",
+    "UPLOAD_ERROR": "An error occurred while uploading files",
+    "CONFIRM_DELETE": "Confirm Delete",
+    "CONFIRM_DELETE_MSG": "Are you sure you want to delete",
+    "FILE_DELETED": "File deleted",
+    "DELETE_FAILED": "Failed to delete file",
+    "DELETE_ERROR": "An error occurred while deleting file",
+    "DOWNLOAD_ERROR": "Unable to download file",
+    "TYPE_DOCUMENT": "Document",
+    "TYPE_IMAGE": "Image",
+    "TYPE_FILE": "File"
   },
   "LOGIN": {
     "CITIZEN_ID": "Citizen ID",
