@@ -48,8 +48,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 }}</label>
                 <div
                   class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate"
-                  [title]="degree.countryName || '--'">
-                  {{ degree.countryName || '--' }}
+                  [title]="getCountryName(degree.countryId, degree.countryName)">
+                  {{ getCountryName(degree.countryId, degree.countryName) }}
                 </div>
               </div>
               <div>
@@ -98,8 +98,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 }}</label>
                 <div
                   class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate"
-                  [title]="degree.languageName || '--'">
-                  {{ degree.languageName || '--' }}
+                  [title]="getLanguageName(degree.languageId, degree.languageName)">
+                  {{ getLanguageName(degree.languageId, degree.languageName) }}
                 </div>
               </div>
             </div>
@@ -179,8 +179,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 }}</label>
                 <div
                   class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate"
-                  [title]="degree.countryName || '--'">
-                  {{ degree.countryName || '--' }}
+                  [title]="getCountryName(degree.countryId, degree.countryName)">
+                  {{ getCountryName(degree.countryId, degree.countryName) }}
                 </div>
               </div>
               <div>
@@ -208,32 +208,12 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
               <div>
                 <label class="block text-xs font-medium text-gray-600 mb-1">{{
-                  'EDUCATION_DETAILS.GPA' | translate
-                }}</label>
-                <div
-                  class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate"
-                  [title]="degree.gpa || '--'">
-                  {{ degree.gpa || '--' }}
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">{{
-                  'EDUCATION_DETAILS.GRADUATION_CLASSIFICATION' | translate
-                }}</label>
-                <div
-                  class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate"
-                  [title]="degree.graduationRank || '--'">
-                  {{ degree.graduationRank || '--' }}
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">{{
                   'EDUCATION_DETAILS.LANGUAGE' | translate
                 }}</label>
                 <div
                   class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate"
-                  [title]="degree.languageName || '--'">
-                  {{ degree.languageName || '--' }}
+                  [title]="getLanguageName(degree.languageId, degree.languageName)">
+                  {{ getLanguageName(degree.languageId, degree.languageName) }}
                 </div>
               </div>
               <div class="md:col-span-3">
@@ -311,6 +291,8 @@ export class EducationDetailsViewComponent {
   private readonly translate = inject(TranslateService);
 
   @Input() data: EducationDetails;
+  @Input() countries: any[] = [];
+  @Input() languages: any[] = [];
   @Input() undergraduateFiles: any[][] = [];
   @Input() postgraduateFiles: any[][] = [];
   @Output() undergraduateFilesChange = new EventEmitter<any[][]>();
@@ -326,11 +308,33 @@ export class EducationDetailsViewComponent {
   currentCategoryId = 2;
   currentEntityId?: string;
 
+  get isLangVi(): boolean {
+    return (localStorage.getItem('lang') || 'vi') === 'vi';
+  }
+
+  getCountryName(countryId: string, fallbackName: string): string {
+    if (!countryId) return '--';
+    const country = this.countries.find((c) => c.id === countryId);
+    if (country) {
+      return this.isLangVi ? country.name : country.name_EN;
+    }
+    return fallbackName || '--';
+  }
+
+  getLanguageName(languageId: string, fallbackName: string): string {
+    if (!languageId) return '--';
+    const lang = this.languages.find((l) => l.id === languageId);
+    if (lang) {
+      return this.isLangVi ? lang.name : lang.name_EN;
+    }
+    return fallbackName || '--';
+  }
+
   openFileManager(type: string, index: number): void {
     this.currentType = type;
     this.currentIndex = index;
 
-    if (type === 'undergraduate') {
+    if (type === EDUCATION_LEVELS.UNDERGRADUATE) {
       this.currentDialogTitle = this.translate.instant('FILE_DIALOG.TITLE_UNDERGRAD');
       this.currentFiles = this.undergraduateFiles[index] || [];
       this.currentCategoryId = 2;

@@ -23,13 +23,13 @@ import { TranslatePipe } from '@ngx-translate/core';
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.YEARS' | translate }}</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data.totalExpYears || '--' }}
+                {{ data.totalExpYears !== null && data.totalExpYears !== undefined ? data.totalExpYears : '--' }}
               </div>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.MONTHS' | translate }}</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data.totalExpMonths || '--' }}
+                {{ data.totalExpMonths !== null && data.totalExpMonths !== undefined ? data.totalExpMonths : '--' }}
               </div>
             </div>
           </div>

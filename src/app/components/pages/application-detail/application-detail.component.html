@@ -68,6 +68,7 @@
   <app-personal-details-view
     class="block mb-8"
     [data]="applicationData()?.personalDetails"
+    [countries]="countries()"
     [uploadedFiles]="uploadedFiles()"
     (onFilesUpdate)="onViewFilesUpdate($event)" />
 
@@ -78,6 +79,8 @@
   <app-education-details-view
     class="block mb-8"
     [data]="applicationData()?.educationDetails"
+    [countries]="countries()"
+    [languages]="languages()"
     [undergraduateFiles]="undergraduateFiles()"
     [postgraduateFiles]="postgraduateFiles()"
     (onFilesUpdate)="onEducationFilesUpdate($event)" />

@@ -467,10 +467,10 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
   private appendEmploymentHistory(formData: FormData, rawValue: any): void {
     const employment = rawValue.employmentHistory;
 
-    if (employment.totalExpYears) {
+    if (employment.totalExpYears !== null && employment.totalExpYears !== undefined && employment.totalExpYears !== '') {
       formData.append('EmploymentHistory.TotalExpYears', employment.totalExpYears);
     }
-    if (employment.totalExpMonths) {
+    if (employment.totalExpMonths !== null && employment.totalExpMonths !== undefined && employment.totalExpMonths !== '') {
       formData.append('EmploymentHistory.TotalExpMonths', employment.totalExpMonths);
     }
 
