@@ -2,16 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { MBA_API, MAIN_API, ADMINISTRATIVE_API, FILE_API } from '../../constants/api.const';
-import { OperationResult } from '../../models/general/operation-result';
-import { MBAApplication } from '../../models/mba/mba-application';
-import { MBAProgram } from '../../models/mba/mba-program';
-import { MBALanguage } from '../../models/mba/mba-language';
-import { MBACountry } from '../../models/mba/mba-country';
-import { MBACity } from '../../models/mba/mba-city';
-import { City, District } from '../../models/mba/mba-address';
+import { ADMINISTRATIVE_API, FILE_API, MAIN_API, MBA_API } from '../../constants/api.const';
 import { Province } from '../../models/administrative/province';
 import { Ward } from '../../models/administrative/ward';
+import { OperationResult } from '../../models/general/operation-result';
+import { City, District } from '../../models/mba/mba-address';
+import { MBAApplication, MBAApplicationDetail } from '../../models/mba/mba-application';
+import { MBACity } from '../../models/mba/mba-city';
+import { MBACountry } from '../../models/mba/mba-country';
+import { MBALanguage } from '../../models/mba/mba-language';
+import { MBAProgram } from '../../models/mba/mba-program';
 
 @Injectable({
   providedIn: 'root'
@@ -54,41 +54,46 @@ export class MbaService {
   /**
    * Get application information by ID
    */
-  getById(id: string): Observable<any> {
-    return this._httpClient.get<{ success: boolean; data: any }>(MBA_API.GET_BY_ID(id))
-      .pipe(map(response => response.data));
+  getById(id: string): Observable<MBAApplicationDetail> {
+    return this._httpClient
+      .get<{ success: boolean; data: MBAApplicationDetail }>(MBA_API.GET_BY_ID(id))
+      .pipe(map((response) => response.data));
   }
 
   /**
    * Get list of active programs
    */
   getActivePrograms(): Observable<MBAProgram[]> {
-    return this._httpClient.get<{ success: boolean; data: MBAProgram[] }>(MBA_API.GET_ACTIVE_PROGRAMS)
-      .pipe(map(response => response.data || []));
+    return this._httpClient
+      .get<{ success: boolean; data: MBAProgram[] }>(MBA_API.GET_ACTIVE_PROGRAMS)
+      .pipe(map((response) => response.data || []));
   }
 
   /**
    * Get list of active languages
    */
   getActiveLanguages(): Observable<MBALanguage[]> {
-    return this._httpClient.get<{ success: boolean; data: MBALanguage[] }>(MBA_API.GET_ACTIVE_LANGUAGES)
-      .pipe(map(response => response.data || []));
+    return this._httpClient
+      .get<{ success: boolean; data: MBALanguage[] }>(MBA_API.GET_ACTIVE_LANGUAGES)
+      .pipe(map((response) => response.data || []));
   }
 
   /**
    * Get list of active countries
    */
   getActiveCountries(): Observable<MBACountry[]> {
-    return this._httpClient.get<{ success: boolean; data: MBACountry[] }>(MBA_API.GET_ACTIVE_COUNTRIES)
-      .pipe(map(response => response.data || []));
+    return this._httpClient
+      .get<{ success: boolean; data: MBACountry[] }>(MBA_API.GET_ACTIVE_COUNTRIES)
+      .pipe(map((response) => response.data || []));
   }
 
   /**
    * Get list of active cities
    */
   getActiveCities(): Observable<MBACity[]> {
-    return this._httpClient.get<{ success: boolean; data: MBACity[] }>(MBA_API.GET_ACTIVE_CITIES)
-      .pipe(map(response => response.data || []));
+    return this._httpClient
+      .get<{ success: boolean; data: MBACity[] }>(MBA_API.GET_ACTIVE_CITIES)
+      .pipe(map((response) => response.data || []));
   }
 
   /**
@@ -101,7 +106,7 @@ export class MbaService {
     const formData = new FormData();
     formData.append('data', JSON.stringify(data));
     formData.append('pdf', pdfBlob, 'mba-application.pdf');
-    
+
     return this._httpClient.post<OperationResult>(MBA_API.SEND_EMAIL_WITH_PDF(language), formData);
   }
 
@@ -109,26 +114,26 @@ export class MbaService {
    * Get list of all cities/provinces
    */
   getAllCities(): Observable<City[]> {
-    return this._httpClient.get<City[] | { success: boolean; data: City[] }>(MAIN_API.GET_ALL_CITY)
-      .pipe(
-        map(response => {
-          // Check if response is wrapped in success/data structure
-          if (response && typeof response === 'object' && 'data' in response) {
-            return response.data || [];
-          }
-          // Otherwise assume it's direct array
-          return Array.isArray(response) ? response : [];
-        })
-      );
+    return this._httpClient.get<City[] | { success: boolean; data: City[] }>(MAIN_API.GET_ALL_CITY).pipe(
+      map((response) => {
+        // Check if response is wrapped in success/data structure
+        if (response && typeof response === 'object' && 'data' in response) {
+          return response.data || [];
+        }
+        // Otherwise assume it's direct array
+        return Array.isArray(response) ? response : [];
+      })
+    );
   }
 
   /**
    * Get list of districts by city code
    */
   getDistrictsByCity(cityCode: string): Observable<District[]> {
-    return this._httpClient.get<District[] | { success: boolean; data: District[] }>(MAIN_API.GET_ALL_DISTINCT_BY_CITY(cityCode))
+    return this._httpClient
+      .get<District[] | { success: boolean; data: District[] }>(MAIN_API.GET_ALL_DISTINCT_BY_CITY(cityCode))
       .pipe(
-        map(response => {
+        map((response) => {
           // Check if response is wrapped in success/data structure
           if (response && typeof response === 'object' && 'data' in response) {
             return response.data || [];
@@ -175,7 +180,7 @@ export class MbaService {
   uploadAdmissionFiles(formData: FormData): Observable<any> {
     // Don't set Content-Type header - let browser set it with boundary
     return this._httpClient.post<any>(
-      FILE_API.UPLOAD_ADMISSION_FILES, 
+      FILE_API.UPLOAD_ADMISSION_FILES,
       formData
       // No headers needed - browser will auto-set multipart/form-data with boundary
     );

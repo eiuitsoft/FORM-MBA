@@ -7,12 +7,12 @@ import { passportFormatValidator } from '@/src/validators/passport-format.valida
 import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
 import { maxYearValidator, minYearValidator } from '@/src/validators/year.validator';
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
+import { Component, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
-import { of } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { AlertService } from '../../../core/services/alert/alert.service';
 import { MbaService } from '../../../core/services/mba/mba.service';
 
@@ -23,13 +23,13 @@ import { MbaService } from '../../../core/services/mba/mba.service';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, TranslatePipe]
 })
-export class FormRegisterComponent implements OnInit {
+export class FormRegisterComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly _mbaService = inject(MbaService);
   private readonly _alertService = inject(AlertService);
   private readonly _router = inject(Router);
-  private readonly _route = inject(ActivatedRoute);
   private readonly _translate = inject(TranslateService);
+  private readonly langChangeSub$: Subscription;
 
   loading = signal(false);
   submitting = signal(false);
@@ -44,6 +44,21 @@ export class FormRegisterComponent implements OnInit {
   permanentWards = signal<any[]>([]); // Changed from districts to wards
 
   currentYear = new Date().getFullYear();
+  currentLanguage = 'vi';
+  isLangVi: boolean = this.currentLanguage === 'vi';
+
+  constructor() {
+    // Subscribe to language change events
+    this.currentLanguage = this._translate.getCurrentLang() || 'vi';
+    this.langChangeSub$ = this._translate.onLangChange.subscribe((event) => {
+      this.currentLanguage = event.lang;
+      this.isLangVi = this.currentLanguage === 'vi';
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.langChangeSub$) this.langChangeSub$.unsubscribe();
+  }
 
   /**
    * Check if user has entered any meaningful data in the form
@@ -56,10 +71,19 @@ export class FormRegisterComponent implements OnInit {
     const employment = this.applicationForm.get('employmentHistory')?.value;
 
     // Check personal details (excluding gender which has default)
-    if (personal?.fullName || personal?.dateOfBirth || personal?.placeOfBirth ||
-        personal?.passportNo || personal?.email || personal?.mobile ||
-        personal?.jobTitle || personal?.organization || personal?.correspondenceAddress ||
-        personal?.permanentAddress || personal?.nationalityId) {
+    if (
+      personal?.fullName ||
+      personal?.dateOfBirth ||
+      personal?.placeOfBirth ||
+      personal?.passportNo ||
+      personal?.email ||
+      personal?.mobile ||
+      personal?.jobTitle ||
+      personal?.organization ||
+      personal?.correspondenceAddress ||
+      personal?.permanentAddress ||
+      personal?.nationalityId
+    ) {
       return true;
     }
 
@@ -86,14 +110,11 @@ export class FormRegisterComponent implements OnInit {
    * Warn user before leaving page with unsaved changes (Create mode)
    */
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
+  onBeforeUnload(event: BeforeUnloadEvent): void {
     // Only warn if user has entered data AND not yet submitted
     if (this.hasUserEnteredData() && !this.submitted()) {
       event.preventDefault();
-      event.returnValue = '';
-      return '';
     }
-    return undefined;
   }
 
   applicationForm: FormGroup = this.fb.group({
@@ -106,32 +127,23 @@ export class FormRegisterComponent implements OnInit {
       placeOfBirth: ['', Validators.required],
       passportNo: [
         '',
-        [
-          Validators.required,
-          Validators.minLength(6),
-          Validators.maxLength(12),
-          passportFormatValidator()
-        ],
-        [uniqueFieldValidator(
-          (val) => this._mbaService.checkPassportExists(val),
-          'passportExists'
-        )]
+        [Validators.required, Validators.minLength(6), Validators.maxLength(12), passportFormatValidator()],
+        [uniqueFieldValidator((val) => this._mbaService.checkPassportExists(val), 'passportExists')]
       ],
       dateIssued: ['', Validators.required],
-      placeOfIssue: ['', Validators.required],
+      passportPlaceIssued: ['', Validators.required],
       email: ['', [Validators.required, Validators.email, emailFormatValidator()]],
       mobile: [
         undefined,
         [Validators.required],
-        [uniqueFieldValidator(
-          (val: any) => {
+        [
+          uniqueFieldValidator((val: any) => {
             // Extract e164Number from intl-tel-input object (format: +84845333577)
             const phoneNumber = val?.e164Number || val;
             if (!phoneNumber) return of(false);
             return this._mbaService.checkMobileExists(phoneNumber);
-          },
-          'mobileExists'
-        )]
+          }, 'mobileExists')
+        ]
       ],
       jobTitle: ['', Validators.required],
       organization: ['', Validators.required],
@@ -145,7 +157,7 @@ export class FormRegisterComponent implements OnInit {
       permanentDistrictId: [{ value: '', disabled: true }],
       permanentDistrictName: [''],
       permanentAddress: ['', Validators.required],
-      passportFile: [null],
+      passportFile: [null]
     }),
     applicationDetails: this.fb.group({
       programId: [{ value: '', disabled: true }, Validators.required],
@@ -153,52 +165,61 @@ export class FormRegisterComponent implements OnInit {
       programName: [''],
       track: [{ value: 'Application', disabled: true }, Validators.required],
       admissionYear: [this.currentYear, [Validators.required, minYearValidator(this.currentYear)]],
-      admissionIntake: [{ value: '1' }, Validators.required],
+      admissionIntake: [{ value: '1' }, Validators.required]
     }),
     educationDetails: this.fb.group({
       undergraduates: this.fb.array([
         this.createUndergraduateGroup(), // First degree - required
         this.createOptionalUndergraduateGroup() // Second degree - optional
       ]),
-      postgraduates: this.fb.array([this.createPostgraduateGroup()]),
+      postgraduates: this.fb.array([this.createPostgraduateGroup()])
     }),
-    englishQualifications: this.fb.group({
-      ielts: this.fb.group({
-        score: ['', [scoreRangeValidator(0, 9)]],
-        date: ['', [maxDateValidator()]]
-      }),
-      toefl: this.fb.group({
-        score: ['', [scoreRangeValidator(0, 120)]],
-        date: ['', [maxDateValidator()]]
-      }),
-      other: this.fb.group({
-        name: [''],
-        score: [''],
-        date: ['', [maxDateValidator()]]
-      }),
-      certificateFile: [null], // File upload for all English qualifications
-    }, { validators: atLeastOneEnglishQualificationValidator() }),
+    englishQualifications: this.fb.group(
+      {
+        ielts: this.fb.group({
+          score: ['', [scoreRangeValidator(0, 9)]],
+          date: ['', [maxDateValidator()]]
+        }),
+        toefl: this.fb.group({
+          score: ['', [scoreRangeValidator(0, 120)]],
+          date: ['', [maxDateValidator()]]
+        }),
+        other: this.fb.group({
+          name: [''],
+          score: [''],
+          date: ['', [maxDateValidator()]]
+        }),
+        certificateFile: [null] // File upload for all English qualifications
+      },
+      { validators: atLeastOneEnglishQualificationValidator() }
+    ),
     employmentHistory: this.fb.group({
-      totalExperienceYears: ['', Validators.required],
-      totalExperienceMonths: ['', Validators.required],
-      position1: this.fb.group({
-        organization: [''],
-        title: [''],
-        from: [''],
-        to: [''],
-        address: [''],
-      }, { validators: dateRangeValidator('from', 'to') }),
-      position2: this.fb.group({
-        organization: [''],
-        title: [''],
-        from: [''],
-        to: [''],
-        address: [''],
-      }, { validators: dateRangeValidator('from', 'to') }),
+      totalExpYears: ['', Validators.required],
+      totalExpMonths: ['', Validators.required],
+      position1: this.fb.group(
+        {
+          organization: [''],
+          title: [''],
+          from: [''],
+          to: [''],
+          address: ['']
+        },
+        { validators: dateRangeValidator('from', 'to') }
+      ),
+      position2: this.fb.group(
+        {
+          organization: [''],
+          title: [''],
+          from: [''],
+          to: [''],
+          address: ['']
+        },
+        { validators: dateRangeValidator('from', 'to') }
+      )
     }),
     declaration: this.fb.group({
-      agreed: [false, Validators.requiredTrue],
-    }),
+      agreed: [false, Validators.requiredTrue]
+    })
   });
 
   submitForm(): void {
@@ -228,8 +249,8 @@ export class FormRegisterComponent implements OnInit {
         this.submitting.set(false);
         if (res.success) {
           this._alertService.success(
-            this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'), 
-            this._translate.instant('SUBMIT_RESULT.SUCCESS_MESSAGE'), 
+            this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'),
+            this._translate.instant('SUBMIT_RESULT.SUCCESS_MESSAGE'),
             3000
           );
           // Reset form after successful submission
@@ -242,7 +263,7 @@ export class FormRegisterComponent implements OnInit {
           }, 3000);
         } else {
           this._alertService.error(
-            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'), 
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
             res.message || this._translate.instant('SUBMIT_RESULT.ERROR_MESSAGE')
           );
         }
@@ -251,7 +272,7 @@ export class FormRegisterComponent implements OnInit {
         this.submitting.set(false);
         console.error('Submit error:', err);
         this._alertService.error(
-          this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'), 
+          this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
           this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR')
         );
       }
@@ -269,14 +290,14 @@ export class FormRegisterComponent implements OnInit {
    * Mark all fields in a form group as touched to trigger validation display
    */
   private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
 
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       } else if (control instanceof FormArray) {
-        control.controls.forEach(c => {
+        control.controls.forEach((c) => {
           if (c instanceof FormGroup) {
             this.markFormGroupTouched(c);
           } else {
@@ -298,7 +319,10 @@ export class FormRegisterComponent implements OnInit {
   /**
    * Get CSS classes for input field based on validation state
    */
-  getFieldClasses(controlPath: string, baseClasses: string = 'mt-1 block w-full rounded-md shadow-sm px-3 py-2'): string {
+  getFieldClasses(
+    controlPath: string,
+    baseClasses: string = 'mt-1 block w-full rounded-md shadow-sm px-3 py-2'
+  ): string {
     const control = this.applicationForm.get(controlPath);
     const isInvalid = control && control.invalid && (control.touched || this.submitted());
 
@@ -312,188 +336,176 @@ export class FormRegisterComponent implements OnInit {
     const rawValue = this.applicationForm.getRawValue();
     const formData = new FormData();
 
-    // ========== LANGUAGE (for email template) ==========
+    this.appendPersonalDetails(formData, rawValue);
+    this.appendApplicationDetails(formData, rawValue);
+    this.appendEducationDetails(formData, rawValue);
+    this.appendEnglishQualifications(formData, rawValue);
+    this.appendEmploymentHistory(formData, rawValue);
+    this.appendDeclaration(formData, rawValue);
+
+    return formData;
+  }
+
+  private appendPersonalDetails(formData: FormData, rawValue: any): void {
     const language = localStorage.getItem('lang') || 'en';
     formData.append('Language', language);
 
-    // ========== PERSONAL DETAILS ==========
-    formData.append('PersonalDetails.FullName', rawValue.personalDetails.fullName || '');
-    formData.append('PersonalDetails.NationalityId', rawValue.personalDetails.nationalityId || '');
-    // Gender: 0=Male, 1=Female (BE spec)
-    formData.append('PersonalDetails.Gender', rawValue.personalDetails.gender === 'Male' ? '1' : '2');
-    formData.append('PersonalDetails.DateOfBirth', rawValue.personalDetails.dateOfBirth || '');
-    formData.append('PersonalDetails.PlaceOfBirth', rawValue.personalDetails.placeOfBirth || '');
-    formData.append('PersonalDetails.PassportNo', rawValue.personalDetails.passportNo?.trim().toUpperCase() || '');
-    formData.append('PersonalDetails.DateIssued', rawValue.personalDetails.dateIssued || '');
-    formData.append('PersonalDetails.PlaceOfIssue', rawValue.personalDetails.placeOfIssue || '');
-    formData.append('PersonalDetails.Email', rawValue.personalDetails.email?.trim().toLowerCase() || '');
-    // Extract phone number in E.164 format
-    const mobile = rawValue.personalDetails.mobile?.e164Number || rawValue.personalDetails.mobile || '';
+    const personal = rawValue.personalDetails;
+    formData.append('PersonalDetails.FullName', personal.fullName || '');
+    formData.append('PersonalDetails.NationalityId', personal.nationalityId || '');
+    formData.append('PersonalDetails.Gender', personal.gender === 'Male' ? '1' : '2');
+    formData.append('PersonalDetails.DateOfBirth', personal.dateOfBirth || '');
+    formData.append('PersonalDetails.PlaceOfBirth', personal.placeOfBirth || '');
+    formData.append('PersonalDetails.PassportNo', personal.passportNo?.trim().toUpperCase() || '');
+    formData.append('PersonalDetails.DateIssued', personal.dateIssued || '');
+    formData.append('PersonalDetails.PassportPlaceIssued', personal.passportPlaceIssued || '');
+    formData.append('PersonalDetails.Email', personal.email?.trim().toLowerCase() || '');
+
+    const mobile = personal.mobile?.e164Number || personal.mobile || '';
     formData.append('PersonalDetails.Mobile', mobile);
 
-    // Optional fields - only append if has value
-    if (rawValue.personalDetails.jobTitle) {
-      formData.append('PersonalDetails.JobTitle', rawValue.personalDetails.jobTitle);
+    if (personal.jobTitle) {
+      formData.append('PersonalDetails.JobTitle', personal.jobTitle);
     }
-    if (rawValue.personalDetails.organization) {
-      formData.append('PersonalDetails.Organization', rawValue.personalDetails.organization);
+    if (personal.organization) {
+      formData.append('PersonalDetails.Organization', personal.organization);
     }
 
-    // City IDs - get from ward selection (ward.id is integer)
-    if (rawValue.personalDetails.correspondenceDistrictId) {
-      const correspondenceWard = this.correspondenceWards().find(w => w.wardCode === rawValue.personalDetails.correspondenceDistrictId);
-      if (correspondenceWard?.id) {
-        formData.append('PersonalDetails.CorrespondenceCityId', correspondenceWard.id.toString());
+    this.appendAddressDetails(formData, personal, 'Correspondence');
+    this.appendAddressDetails(formData, personal, 'Permanent');
+    this.appendFiles(formData, personal.passportFile, 'PersonalDetails.Files');
+  }
+
+  private appendAddressDetails(formData: FormData, personal: any, type: 'Correspondence' | 'Permanent'): void {
+    const districtIdKey = `${type.toLowerCase()}DistrictId`;
+    const addressKey = `${type.toLowerCase()}Address`;
+    const wardsArray = type === 'Correspondence' ? this.correspondenceWards() : this.permanentWards();
+
+    if (personal[districtIdKey]) {
+      const ward = wardsArray.find((w) => w.wardCode === personal[districtIdKey]);
+      if (ward?.id) {
+        formData.append(`PersonalDetails.${type}CityId`, ward.id.toString());
       }
     }
-    if (rawValue.personalDetails.correspondenceAddress) {
-      formData.append('PersonalDetails.CorrespondenceAddress', rawValue.personalDetails.correspondenceAddress);
+    if (personal[addressKey]) {
+      formData.append(`PersonalDetails.${type}Address`, personal[addressKey]);
     }
+  }
 
-    if (rawValue.personalDetails.permanentDistrictId) {
-      const permanentWard = this.permanentWards().find(w => w.wardCode === rawValue.personalDetails.permanentDistrictId);
-      if (permanentWard?.id) {
-        formData.append('PersonalDetails.PermanentCityId', permanentWard.id.toString());
-      }
-    }
-    if (rawValue.personalDetails.permanentAddress) {
-      formData.append('PersonalDetails.PermanentAddress', rawValue.personalDetails.permanentAddress);
-    }
-
-    // Passport files
-    const passportFiles = rawValue.personalDetails.passportFile || [];
-    if (Array.isArray(passportFiles)) {
-      passportFiles.forEach((file: File) => {
-        formData.append('PersonalDetails.Files', file);
-      });
-    }
-
-    // ========== APPLICATION DETAILS ==========
+  private appendApplicationDetails(formData: FormData, rawValue: any): void {
+    const app = rawValue.applicationDetails;
     formData.append('ApplicationDetails.ProgramId', this.applicationDetails.get('programId')?.value || '');
-    formData.append('ApplicationDetails.Track', '0'); // 0=Application
-    formData.append('ApplicationDetails.AdmissionYear', rawValue.applicationDetails.admissionYear?.toString() || '');
-    formData.append('ApplicationDetails.AdmissionIntake', rawValue.applicationDetails.admissionIntake || '');
+    formData.append('ApplicationDetails.Track', '0');
+    formData.append('ApplicationDetails.AdmissionYear', app.admissionYear?.toString() || '');
+    formData.append('ApplicationDetails.AdmissionIntake', app.admissionIntake || '');
+  }
 
-    // ========== EDUCATION DETAILS ==========
-    // Undergraduates
-    const undergraduates = rawValue.educationDetails.undergraduates.filter((ug: any) => ug.university);
+  private appendEducationDetails(formData: FormData, rawValue: any): void {
+    const education = rawValue.educationDetails;
+
+    const undergraduates = education.undergraduates.filter((ug: any) => ug.university);
     undergraduates.forEach((ug: any, index: number) => {
-      formData.append(`EducationDetails.Undergraduates[${index}].University`, ug.university || '');
-      formData.append(`EducationDetails.Undergraduates[${index}].CountryId`, ug.countryId || '');
-      formData.append(`EducationDetails.Undergraduates[${index}].Major`, ug.major || '');
-      formData.append(`EducationDetails.Undergraduates[${index}].GraduationYear`, ug.graduationYear?.toString() || '');
-      formData.append(`EducationDetails.Undergraduates[${index}].Gpa`, ug.gpa || '');
-      formData.append(`EducationDetails.Undergraduates[${index}].GraduationClassification`, ug.graduationClassification || '');
-      formData.append(`EducationDetails.Undergraduates[${index}].LanguageId`, ug.languageId || '');
-      formData.append(`EducationDetails.Undergraduates[${index}].SortOrder`, index.toString());
-
-      // Files for this degree
-      const files = ug.file || [];
-      if (Array.isArray(files)) {
-        files.forEach((file: File) => {
-          formData.append(`EducationDetails.Undergraduates[${index}].Files`, file);
-        });
-      }
+      this.appendDegreeData(formData, ug, index, 'Undergraduates');
     });
 
-    // Postgraduates
-    const postgraduates = rawValue.educationDetails.postgraduates.filter((pg: any) => pg.university);
+    const postgraduates = education.postgraduates.filter((pg: any) => pg.university);
     postgraduates.forEach((pg: any, index: number) => {
-      formData.append(`EducationDetails.Postgraduates[${index}].University`, pg.university || '');
-      formData.append(`EducationDetails.Postgraduates[${index}].CountryId`, pg.countryId || '');
-      formData.append(`EducationDetails.Postgraduates[${index}].Major`, pg.major || '');
-      formData.append(`EducationDetails.Postgraduates[${index}].GraduationYear`, pg.graduationYear?.toString() || '');
-      formData.append(`EducationDetails.Postgraduates[${index}].LanguageId`, pg.languageId || '');
+      this.appendDegreeData(formData, pg, index, 'Postgraduates');
       if (pg.thesisTitle) {
         formData.append(`EducationDetails.Postgraduates[${index}].ThesisTitle`, pg.thesisTitle);
       }
-      formData.append(`EducationDetails.Postgraduates[${index}].SortOrder`, index.toString());
-
-      // Files for this degree
-      const files = pg.file || [];
-      if (Array.isArray(files)) {
-        files.forEach((file: File) => {
-          formData.append(`EducationDetails.Postgraduates[${index}].Files`, file);
-        });
-      }
     });
+  }
 
-    // ========== ENGLISH QUALIFICATIONS ==========
-    // IELTS
-    if (rawValue.englishQualifications.ielts.score) {
-      formData.append('EnglishQualifications.Ielts.Score', rawValue.englishQualifications.ielts.score);
-      if (rawValue.englishQualifications.ielts.date) {
-        formData.append('EnglishQualifications.Ielts.Date', rawValue.englishQualifications.ielts.date);
+  private appendDegreeData(
+    formData: FormData,
+    degree: any,
+    index: number,
+    degreeType: 'Undergraduates' | 'Postgraduates'
+  ): void {
+    formData.append(`EducationDetails.${degreeType}[${index}].University`, degree.university || '');
+    formData.append(`EducationDetails.${degreeType}[${index}].CountryId`, degree.countryId || '');
+    formData.append(`EducationDetails.${degreeType}[${index}].Major`, degree.major || '');
+    formData.append(`EducationDetails.${degreeType}[${index}].GraduationYear`, degree.graduationYear?.toString() || '');
+    formData.append(`EducationDetails.${degreeType}[${index}].LanguageId`, degree.languageId || '');
+    formData.append(`EducationDetails.${degreeType}[${index}].SortOrder`, index.toString());
+
+    if (degreeType === 'Undergraduates') {
+      formData.append(`EducationDetails.${degreeType}[${index}].Gpa`, degree.gpa || '');
+      formData.append(`EducationDetails.${degreeType}[${index}].GraduationRank`, degree.graduationRank || '');
+    }
+
+    this.appendFiles(formData, degree.file, `EducationDetails.${degreeType}[${index}].Files`);
+  }
+
+  private appendEnglishQualifications(formData: FormData, rawValue: any): void {
+    const english = rawValue.englishQualifications;
+
+    this.appendEnglishTest(formData, english.ielts, 'Ielts');
+    this.appendEnglishTest(formData, english.toefl, 'Toefl');
+
+    if (english.other.name) {
+      formData.append('EnglishQualifications.Other.Name', english.other.name);
+      formData.append('EnglishQualifications.Other.Score', english.other.score || '');
+      if (english.other.date) {
+        formData.append('EnglishQualifications.Other.Date', english.other.date);
       }
     }
 
-    // TOEFL
-    if (rawValue.englishQualifications.toefl.score) {
-      formData.append('EnglishQualifications.Toefl.Score', rawValue.englishQualifications.toefl.score);
-      if (rawValue.englishQualifications.toefl.date) {
-        formData.append('EnglishQualifications.Toefl.Date', rawValue.englishQualifications.toefl.date);
+    this.appendFiles(formData, english.certificateFile, 'EnglishQualifications.Files');
+  }
+
+  private appendEnglishTest(formData: FormData, test: any, testName: 'Ielts' | 'Toefl'): void {
+    if (test.score) {
+      formData.append(`EnglishQualifications.${testName}.Score`, test.score);
+      if (test.date) {
+        formData.append(`EnglishQualifications.${testName}.Date`, test.date);
       }
     }
+  }
 
-    // Other
-    if (rawValue.englishQualifications.other.name) {
-      formData.append('EnglishQualifications.Other.Name', rawValue.englishQualifications.other.name);
-      formData.append('EnglishQualifications.Other.Score', rawValue.englishQualifications.other.score || '');
-      if (rawValue.englishQualifications.other.date) {
-        formData.append('EnglishQualifications.Other.Date', rawValue.englishQualifications.other.date);
+  private appendEmploymentHistory(formData: FormData, rawValue: any): void {
+    const employment = rawValue.employmentHistory;
+
+    if (employment.totalExpYears) {
+      formData.append('EmploymentHistory.TotalExpYears', employment.totalExpYears);
+    }
+    if (employment.totalExpMonths) {
+      formData.append('EmploymentHistory.TotalExpMonths', employment.totalExpMonths);
+    }
+
+    this.appendEmploymentPosition(formData, employment.position1, 'Position1');
+    this.appendEmploymentPosition(formData, employment.position2, 'Position2');
+  }
+
+  private appendEmploymentPosition(formData: FormData, position: any, positionName: 'Position1' | 'Position2'): void {
+    if (position.organization) {
+      formData.append(`EmploymentHistory.${positionName}.OrganizationName`, position.organization);
+      formData.append(`EmploymentHistory.${positionName}.JobTitle`, position.title || '');
+      formData.append(`EmploymentHistory.${positionName}.FromDate`, position.from || '');
+      if (position.to) {
+        formData.append(`EmploymentHistory.${positionName}.ToDate`, position.to);
+      }
+      if (position.address) {
+        formData.append(`EmploymentHistory.${positionName}.Address`, position.address);
       }
     }
+  }
 
-    // English certificate files (shared for all qualifications)
-    const englishFiles = rawValue.englishQualifications.certificateFile || [];
-    if (Array.isArray(englishFiles)) {
-      englishFiles.forEach((file: File) => {
-        formData.append('EnglishQualifications.Files', file);
-      });
-    }
-
-    // ========== EMPLOYMENT HISTORY ==========
-    // Total Experience
-    if (rawValue.employmentHistory.totalExperienceYears) {
-      formData.append('EmploymentHistory.TotalExperienceYears', rawValue.employmentHistory.totalExperienceYears);
-    }
-    if (rawValue.employmentHistory.totalExperienceMonths) {
-      formData.append('EmploymentHistory.TotalExperienceMonths', rawValue.employmentHistory.totalExperienceMonths);
-    }
-
-    // Position 1
-    if (rawValue.employmentHistory.position1.organization) {
-      formData.append('EmploymentHistory.Position1.OrganizationName', rawValue.employmentHistory.position1.organization);
-      formData.append('EmploymentHistory.Position1.JobTitle', rawValue.employmentHistory.position1.title || '');
-      formData.append('EmploymentHistory.Position1.FromDate', rawValue.employmentHistory.position1.from || '');
-      if (rawValue.employmentHistory.position1.to) {
-        formData.append('EmploymentHistory.Position1.ToDate', rawValue.employmentHistory.position1.to);
-      }
-      if (rawValue.employmentHistory.position1.address) {
-        formData.append('EmploymentHistory.Position1.Address', rawValue.employmentHistory.position1.address);
-      }
-    }
-
-    // Position 2
-    if (rawValue.employmentHistory.position2.organization) {
-      formData.append('EmploymentHistory.Position2.OrganizationName', rawValue.employmentHistory.position2.organization);
-      formData.append('EmploymentHistory.Position2.JobTitle', rawValue.employmentHistory.position2.title || '');
-      formData.append('EmploymentHistory.Position2.FromDate', rawValue.employmentHistory.position2.from || '');
-      if (rawValue.employmentHistory.position2.to) {
-        formData.append('EmploymentHistory.Position2.ToDate', rawValue.employmentHistory.position2.to);
-      }
-      if (rawValue.employmentHistory.position2.address) {
-        formData.append('EmploymentHistory.Position2.Address', rawValue.employmentHistory.position2.address);
-      }
-    }
-
-    // ========== DECLARATION ==========
+  private appendDeclaration(formData: FormData, rawValue: any): void {
     formData.append('Declaration.agreed', rawValue.declaration.agreed.toString());
     if (rawValue.declaration.agreed) {
       formData.append('Declaration.AcceptedDate', new Date().toISOString().split('T')[0]);
     }
+  }
 
-    return formData;
+  private appendFiles(formData: FormData, files: any, fieldName: string): void {
+    const fileArray = files || [];
+    if (Array.isArray(fileArray)) {
+      fileArray.forEach((file: File) => {
+        formData.append(fieldName, file);
+      });
+    }
   }
 
   /**
@@ -529,6 +541,9 @@ export class FormRegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.currentLanguage = localStorage.getItem('lang') || 'vi';
+    this.isLangVi = this.currentLanguage === 'vi';
+
     // Load programs
     this.loadPrograms();
 
@@ -560,13 +575,13 @@ export class FormRegisterComponent implements OnInit {
         this.programs.set(programs);
 
         // Auto-select MBA program if available
-        const mbaProgram = programs.find(p => p.code === 'MBA' || p.name.includes('Master of Business Administration'));
+        const mbaProgram = programs.find((p) => p.code === '8340101');
         if (mbaProgram) {
           // Use setValue to update disabled control
           this.applicationDetails.get('programId')?.setValue(mbaProgram.id);
           this.applicationDetails.patchValue({
             programCode: mbaProgram.code,
-            programName: mbaProgram.name,
+            programName: this.isLangVi ? mbaProgram.name : mbaProgram.name_EN,
             admissionIntake: '1' // Default intake
           });
           // Reset dirty state after auto-select (user hasn't actually changed anything)
@@ -629,7 +644,7 @@ export class FormRegisterComponent implements OnInit {
     const programId = selectElement.value;
 
     if (programId) {
-      const selectedProgram = this.programs().find(p => p.id === programId);
+      const selectedProgram = this.programs().find((p) => p.id === programId);
       if (selectedProgram) {
         this.applicationDetails.patchValue({
           programCode: selectedProgram.code,
@@ -652,7 +667,7 @@ export class FormRegisterComponent implements OnInit {
     const nationalityId = selectElement.value;
 
     if (nationalityId) {
-      const selectedCountry = this.countries().find(c => c.id === nationalityId);
+      const selectedCountry = this.countries().find((c) => c.id === nationalityId);
       if (selectedCountry) {
         this.personalDetails.patchValue({
           nationality: selectedCountry.name
@@ -691,7 +706,7 @@ export class FormRegisterComponent implements OnInit {
     }
 
     if (countryId) {
-      const selectedCountry = this.countries().find(c => c.id === countryId);
+      const selectedCountry = this.countries().find((c) => c.id === countryId);
       if (selectedCountry) {
         sectionGroup.patchValue({
           country: selectedCountry.name
@@ -712,7 +727,7 @@ export class FormRegisterComponent implements OnInit {
     const provinceCode = selectElement.value;
 
     if (provinceCode) {
-      const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
+      const selectedProvince = this.provinces().find((p) => p.provinceCode === provinceCode);
       if (selectedProvince) {
         this.personalDetails.patchValue({
           correspondenceCityName: selectedProvince.provinceName
@@ -757,7 +772,7 @@ export class FormRegisterComponent implements OnInit {
     const wardCode = selectElement.value;
 
     if (wardCode) {
-      const selectedWard = this.correspondenceWards().find(w => w.wardCode === wardCode);
+      const selectedWard = this.correspondenceWards().find((w) => w.wardCode === wardCode);
       if (selectedWard) {
         this.personalDetails.patchValue({
           correspondenceDistrictName: selectedWard.wardName
@@ -778,7 +793,7 @@ export class FormRegisterComponent implements OnInit {
     const provinceCode = selectElement.value;
 
     if (provinceCode) {
-      const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
+      const selectedProvince = this.provinces().find((p) => p.provinceCode === provinceCode);
       if (selectedProvince) {
         this.personalDetails.patchValue({
           permanentCityName: selectedProvince.provinceName
@@ -823,7 +838,7 @@ export class FormRegisterComponent implements OnInit {
     const wardCode = selectElement.value;
 
     if (wardCode) {
-      const selectedWard = this.permanentWards().find(w => w.wardCode === wardCode);
+      const selectedWard = this.permanentWards().find((w) => w.wardCode === wardCode);
       if (selectedWard) {
         this.personalDetails.patchValue({
           permanentDistrictName: selectedWard.wardName
@@ -886,7 +901,9 @@ export class FormRegisterComponent implements OnInit {
     const files = this.personalDetails.get('passportFile')?.value || [];
     if (files.length > 0) {
       const updatedFiles = files.filter((_: any, i: number) => i !== index);
-      this.personalDetails.patchValue({ passportFile: updatedFiles.length > 0 ? updatedFiles : null });
+      this.personalDetails.patchValue({
+        passportFile: updatedFiles.length > 0 ? updatedFiles : null
+      });
     }
   }
 
@@ -905,7 +922,7 @@ export class FormRegisterComponent implements OnInit {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   }
 
   /**
@@ -917,16 +934,12 @@ export class FormRegisterComponent implements OnInit {
       countryId: ['', Validators.required],
       country: [''],
       major: ['', Validators.required],
-      graduationYear: ['', [
-        Validators.required,
-        minYearValidator(1950),
-        maxYearValidator(new Date().getFullYear())
-      ]],
+      graduationYear: ['', [Validators.required, minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
       gpa: ['', Validators.required],
-      graduationClassification: ['', Validators.required],
+      graduationRank: ['', Validators.required],
       languageId: ['', Validators.required],
       language: [''],
-      file: [null],
+      file: [null]
     });
   }
 
@@ -939,15 +952,12 @@ export class FormRegisterComponent implements OnInit {
       countryId: [''],
       country: [''],
       major: [''],
-      graduationYear: ['', [
-        minYearValidator(1950),
-        maxYearValidator(new Date().getFullYear())
-      ]],
+      graduationYear: ['', [minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
       gpa: [''],
-      graduationClassification: [''],
+      graduationRank: [''],
       languageId: [''],
       language: [''],
-      file: [null],
+      file: [null]
     });
   }
 
@@ -960,14 +970,11 @@ export class FormRegisterComponent implements OnInit {
       countryId: [''],
       country: [''],
       major: [''],
-      graduationYear: ['', [
-        minYearValidator(1950),
-        maxYearValidator(new Date().getFullYear())
-      ]],
+      graduationYear: ['', [minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
       thesisTitle: [''],
       languageId: [''],
       language: [''],
-      file: [null],
+      file: [null]
     });
   }
 
@@ -1018,53 +1025,70 @@ export class FormRegisterComponent implements OnInit {
   }
 
   /**
+   * Validate uploaded files and return valid files and errors
+   */
+  private validateEducationFiles(files: File[]): { validFiles: File[]; errors: string[] } {
+    const validFiles: File[] = [];
+    const errors: string[] = [];
+
+    for (const file of files) {
+      // Validate file size (max 5MB per file)
+      if (file.size > 5 * 1024 * 1024) {
+        errors.push(`${file.name}: File size must be less than 5MB`);
+        continue;
+      }
+
+      // Validate file type
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
+        continue;
+      }
+
+      validFiles.push(file);
+    }
+
+    return { validFiles, errors };
+  }
+
+  /**
    * Handle education file upload - Multiple files
    */
   onEducationFileChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const files = Array.from(input.files);
-      const validFiles: File[] = [];
-      const errors: string[] = [];
-
-      for (const file of files) {
-        // Validate file size (max 5MB per file)
-        if (file.size > 5 * 1024 * 1024) {
-          errors.push(`${file.name}: File size must be less than 5MB`);
-          continue;
-        }
-
-        // Validate file type
-        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-        if (!allowedTypes.includes(file.type)) {
-          errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
-          continue;
-        }
-
-        validFiles.push(file);
-      }
+      const { validFiles, errors } = this.validateEducationFiles(files);
 
       if (errors.length > 0) {
         alert('Some files were rejected:\n\n' + errors.join('\n'));
       }
 
       if (validFiles.length > 0) {
-        let existingFiles: File[] = [];
-
-        if (section === 'undergraduates' && index !== undefined) {
-          existingFiles = this.undergraduates.at(index).get('file')?.value || [];
-          const allFiles = [...existingFiles, ...validFiles];
-          this.undergraduates.at(index).patchValue({ file: allFiles });
-        } else if (section === 'postgraduates' && index !== undefined) {
-          existingFiles = this.postgraduates.at(index).get('file')?.value || [];
-          const allFiles = [...existingFiles, ...validFiles];
-          this.postgraduates.at(index).patchValue({ file: allFiles });
-        }
+        this.updateEducationFiles(section, index, validFiles);
       }
-
 
       // Reset input to allow selecting the same file again
       input.value = '';
+    }
+  }
+
+  /**
+   * Update education files for the specified section
+   */
+  private updateEducationFiles(
+    section: 'undergraduates' | 'postgraduates',
+    index: number | undefined,
+    validFiles: File[]
+  ): void {
+    if (section === 'undergraduates' && index !== undefined) {
+      const existingFiles = this.undergraduates.at(index).get('file')?.value || [];
+      const allFiles = [...existingFiles, ...validFiles];
+      this.undergraduates.at(index).patchValue({ file: allFiles });
+    } else if (section === 'postgraduates' && index !== undefined) {
+      const existingFiles = this.postgraduates.at(index).get('file')?.value || [];
+      const allFiles = [...existingFiles, ...validFiles];
+      this.postgraduates.at(index).patchValue({ file: allFiles });
     }
   }
 
@@ -1135,7 +1159,9 @@ export class FormRegisterComponent implements OnInit {
     const files = this.englishQualifications.get('certificateFile')?.value || [];
     if (files.length > 0) {
       const updatedFiles = files.filter((_: any, i: number) => i !== index);
-      this.englishQualifications.patchValue({ certificateFile: updatedFiles.length > 0 ? updatedFiles : null });
+      this.englishQualifications.patchValue({
+        certificateFile: updatedFiles.length > 0 ? updatedFiles : null
+      });
     }
   }
 
@@ -1157,7 +1183,7 @@ export class FormRegisterComponent implements OnInit {
     }
 
     if (languageId) {
-      const selectedLanguage = this.languages().find(l => l.id === languageId);
+      const selectedLanguage = this.languages().find((l) => l.id === languageId);
       if (selectedLanguage) {
         sectionGroup.patchValue({
           language: selectedLanguage.name
@@ -1169,13 +1195,24 @@ export class FormRegisterComponent implements OnInit {
       });
     }
   }
+
+  private getScoreValidators(testType: 'ielts' | 'toefl' | 'other', includeRequired: boolean): any[] {
+    if (testType === 'ielts') {
+      return includeRequired ? [Validators.required, scoreRangeValidator(0, 9)] : [scoreRangeValidator(0, 9)];
+    } else if (testType === 'toefl') {
+      return includeRequired ? [Validators.required, scoreRangeValidator(0, 120)] : [scoreRangeValidator(0, 120)];
+    } else {
+      return includeRequired ? [Validators.required] : [];
+    }
+  }
+
   private setupConditionalValidation(testType: 'ielts' | 'toefl' | 'other'): void {
     const testGroup = this.englishQualifications.get(testType) as FormGroup;
     const scoreControl = testGroup.get('score');
     const dateControl = testGroup.get('date');
 
     // When score changes
-    scoreControl?.valueChanges.subscribe(score => {
+    scoreControl?.valueChanges.subscribe((score) => {
       if (score) {
         dateControl?.setValidators([Validators.required, maxDateValidator()]);
       } else {
@@ -1185,20 +1222,12 @@ export class FormRegisterComponent implements OnInit {
     });
 
     // When date changes
-    dateControl?.valueChanges.subscribe(date => {
+    dateControl?.valueChanges.subscribe((date) => {
       if (date) {
-        const validators = testType === 'ielts'
-          ? [Validators.required, scoreRangeValidator(0, 9)]
-          : testType === 'toefl'
-            ? [Validators.required, scoreRangeValidator(0, 120)]
-            : [Validators.required];
+        const validators = this.getScoreValidators(testType, true);
         scoreControl?.setValidators(validators);
       } else {
-        const validators = testType === 'ielts'
-          ? [scoreRangeValidator(0, 9)]
-          : testType === 'toefl'
-            ? [scoreRangeValidator(0, 120)]
-            : [];
+        const validators = this.getScoreValidators(testType, false);
         scoreControl?.setValidators(validators);
       }
       scoreControl?.updateValueAndValidity({ emitEvent: false });
@@ -1206,10 +1235,22 @@ export class FormRegisterComponent implements OnInit {
   }
 
   // Helper to easily access nested form groups in the template
-  get personalDetails() { return this.applicationForm.get('personalDetails') as FormGroup; }
-  get applicationDetails() { return this.applicationForm.get('applicationDetails') as FormGroup; }
-  get educationDetails() { return this.applicationForm.get('educationDetails') as FormGroup; }
-  get englishQualifications() { return this.applicationForm.get('englishQualifications') as FormGroup; }
-  get employmentHistory() { return this.applicationForm.get('employmentHistory') as FormGroup; }
-  get declaration() { return this.applicationForm.get('declaration') as FormGroup; }
+  get personalDetails() {
+    return this.applicationForm.get('personalDetails') as FormGroup;
+  }
+  get applicationDetails() {
+    return this.applicationForm.get('applicationDetails') as FormGroup;
+  }
+  get educationDetails() {
+    return this.applicationForm.get('educationDetails') as FormGroup;
+  }
+  get englishQualifications() {
+    return this.applicationForm.get('englishQualifications') as FormGroup;
+  }
+  get employmentHistory() {
+    return this.applicationForm.get('employmentHistory') as FormGroup;
+  }
+  get declaration() {
+    return this.applicationForm.get('declaration') as FormGroup;
+  }
 }

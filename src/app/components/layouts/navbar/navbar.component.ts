@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  inject,
+  signal
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth/auth.service';
@@ -22,7 +28,7 @@ export class NavbarComponent {
   // Signals
   showMobileMenu = signal(false);
   showUserMenu = signal(false);
-  currentLang: string = localStorage.getItem('lang') || 'en';
+  currentLang: string = localStorage.getItem('lang') || 'vi';
 
   constructor() {
     this.translate.use(this.currentLang);
@@ -33,7 +39,7 @@ export class NavbarComponent {
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     const navbar = target.closest('.navbar');
-    
+
     // Nếu click ra ngoài navbar thì đóng cả 2 menu
     if (!navbar) {
       this.showUserMenu.set(false);
@@ -55,7 +61,7 @@ export class NavbarComponent {
   }
 
   toggleMenu(): void {
-    this.showMobileMenu.update(show => !show);
+    this.showMobileMenu.update((show) => !show);
   }
 
   closeMenu(): void {
@@ -63,7 +69,7 @@ export class NavbarComponent {
   }
 
   toggleUserMenu(): void {
-    this.showUserMenu.update(show => !show);
+    this.showUserMenu.update((show) => !show);
   }
 
   logout(): void {

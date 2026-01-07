@@ -1,3 +1,4 @@
+import { EducationRecord, MBAApplicationDetail } from '@/src/app/core/models/mba/mba-application';
 import { AlertService } from '@/src/app/core/services/alert/alert.service';
 import { TokenService } from '@/src/app/core/services/auth/token.service';
 import { MbaService } from '@/src/app/core/services/mba/mba.service';
@@ -60,7 +61,7 @@ export class ApplicationDetailComponent implements OnInit {
   saving = signal(false);
   exporting = signal(false);
   isEditMode = signal(false);
-  applicationData = signal<any>(null);
+  applicationData = signal<MBAApplicationDetail>(null);
   uploadedFiles = signal<any[]>([]);
   undergraduateFiles = signal<any[][]>([]);
   postgraduateFiles = signal<any[][]>([]);
@@ -82,14 +83,11 @@ export class ApplicationDetailComponent implements OnInit {
    * Warn user before leaving page with unsaved changes (Edit mode)
    */
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
+  onBeforeUnload(event: BeforeUnloadEvent): void {
     // Only warn if in edit mode AND form has been changed
     if (this.isEditMode() && this.editForm?.dirty) {
       event.preventDefault();
-      event.returnValue = '';
-      return '';
     }
-    return undefined;
   }
 
   ngOnInit(): void {
@@ -108,94 +106,8 @@ export class ApplicationDetailComponent implements OnInit {
   private loadApplicationData(id: string): void {
     this.loading.set(true);
 
-    // TEMPORARY: Mock data for development when BE is not available
-    if (id === 'mock' || id === 'test') {
-      const mockData = {
-        id: 'mock-id-123',
-        personalDetails: {
-          id: 'pd-1',
-          fullName: 'John Doe',
-          nationalityId: '11111111-1111-1111-1111-111111111111',
-          nationalityName: 'Vietnam',
-          gender: 1,
-          dateOfBirth: '1990-01-01',
-          placeOfBirth: 'Hanoi',
-          passportNo: 'A1234567',
-          dateIssued: '2020-01-01',
-          email: 'john.doe@example.com',
-          mobile: '+84123456789',
-          jobTitle: 'Software Engineer',
-          organization: 'Tech Company',
-          correspondenceCityId: '79',
-          correspondenceCityName: 'Thành phố Hồ Chí Minh',
-          correspondenceDistrictId: '',
-          correspondenceDistrictName: '',
-          correspondenceAddress: '123 Main St',
-          permanentCityId: '79',
-          permanentCityName: 'Thành phố Hồ Chí Minh',
-          permanentDistrictId: '',
-          permanentDistrictName: '',
-          permanentAddress: '123 Main St',
-          uploadedFiles: []
-        },
-        applicationDetails: {
-          programId: '99999999-9999-9999-9999-999999999999',
-          programName: 'Master of Business Administration',
-          programCode: 'MBA',
-          track: 0,
-          admissionYear: 2025,
-          admissionIntake: 'Fall'
-        },
-        educationDetails: {
-          undergraduates: [{
-            id: 'ug-1',
-            university: 'Test University',
-            countryId: '11111111-1111-1111-1111-111111111111',
-            countryName: 'Vietnam',
-            major: 'Computer Science',
-            graduationYear: 2015,
-            languageId: 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA',
-            languageName: 'English',
-            thesisTitle: '',
-            uploadedFiles: []
-          }],
-          postgraduates: []
-        },
-        englishQualifications: {
-          ielts: {
-            id: 'ielts-1',
-            name: 'IELTS',
-            score: '7.5',
-            date: '2023-01-01',
-            uploadedFiles: []
-          },
-          toefl: null,
-          other: null
-        },
-        employmentHistory: {
-          position1: {
-            id: 'emp-1',
-            organizationName: 'Tech Company',
-            jobTitle: 'Software Engineer',
-            fromDate: '2020-01-01',
-            toDate: '2024-12-31',
-            address: '123 Tech St'
-          },
-          position2: null
-        },
-        declaration: {
-          agreed: true
-        }
-      };
-
-      this.applicationData.set(mockData);
-      this.uploadedFiles.set([]);
-      this.loading.set(false);
-      return;
-    }
-
     this._mbaService.getById(id).subscribe({
-      next: (data) => {
+      next: (data: MBAApplicationDetail) => {
         // Load ward info for correspondence and permanent cities
         const loadPromises: Promise<void>[] = [];
 
@@ -274,7 +186,7 @@ export class ApplicationDetailComponent implements OnInit {
   /**
    * Load files for all entities (personal, education, english)
    */
-  private loadAllFiles(studentId: string, data: any): void {
+  private loadAllFiles(studentId: string, data: MBAApplicationDetail): void {
     // Load personal details files (category 1, no entityId)
     this._mbaService.getFilesByCategory(studentId, 1).subscribe({
       next: (result) => {
@@ -292,7 +204,7 @@ export class ApplicationDetailComponent implements OnInit {
 
     // Load undergraduate files for each degree
     const ugFiles: any[][] = [];
-    data?.educationDetails?.undergraduates?.forEach((ug: any, index: number) => {
+    data?.educationDetails?.undergraduates?.forEach((ug: EducationRecord, index: number) => {
       if (ug.id) {
         this._mbaService.getFilesByCategory(studentId, 2, ug.id).subscribe({
           next: (result) => {
@@ -315,7 +227,7 @@ export class ApplicationDetailComponent implements OnInit {
 
     // Load postgraduate files for each degree
     const pgFiles: any[][] = [];
-    data?.educationDetails?.postgraduates?.forEach((pg: any, index: number) => {
+    data?.educationDetails?.postgraduates?.forEach((pg: EducationRecord, index: number) => {
       if (pg.id) {
         this._mbaService.getFilesByCategory(studentId, 3, pg.id).subscribe({
           next: (result) => {
@@ -337,28 +249,19 @@ export class ApplicationDetailComponent implements OnInit {
     }
 
     // Load english qualification files (category 4)
-    // Get entityId from first non-null english qualification
-    const englishEntityId = data?.englishQualifications?.ielts?.id
-      || data?.englishQualifications?.toefl?.id
-      || data?.englishQualifications?.other?.id;
-
-    if (englishEntityId) {
-      this._mbaService.getFilesByCategory(studentId, 4, englishEntityId).subscribe({
-        next: (result) => {
-          if (result.success && result.data?.files) {
-            this.englishFiles.set(result.data.files);
-          } else {
-            this.englishFiles.set([]);
-          }
-        },
-        error: (err) => {
-          console.error('Error loading english files:', err);
+    this._mbaService.getFilesByCategory(studentId, 4).subscribe({
+      next: (result) => {
+        if (result.success && result.data?.files) {
+          this.englishFiles.set(result.data.files);
+        } else {
           this.englishFiles.set([]);
         }
-      });
-    } else {
-      this.englishFiles.set([]);
-    }
+      },
+      error: (err) => {
+        console.error('Error loading english files:', err);
+        this.englishFiles.set([]);
+      }
+    });
   }
 
   toggleEditMode(): void {
@@ -437,41 +340,38 @@ export class ApplicationDetailComponent implements OnInit {
         fullName: [data.personalDetails.fullName, [Validators.required, Validators.minLength(2)]],
         nationalityId: [data.personalDetails.nationalityId, Validators.required],
         gender: [data.personalDetails.gender, Validators.required],
-        dateOfBirth: [this.formatDateForInput(data.personalDetails.dateOfBirth), [Validators.required, minAgeValidator(18)]],
+        dateOfBirth: [
+          this.formatDateForInput(data.personalDetails.dateOfBirth),
+          [Validators.required, minAgeValidator(18)]
+        ],
         placeOfBirth: [data.personalDetails.placeOfBirth, Validators.required],
         passportNo: [
           data.personalDetails.passportNo,
+          [Validators.required, Validators.minLength(6), Validators.maxLength(12), passportFormatValidator()],
           [
-            Validators.required,
-            Validators.minLength(6),
-            Validators.maxLength(12),
-            passportFormatValidator()
-          ],
-          [uniqueFieldValidator(
-            (val) => {
+            uniqueFieldValidator((val) => {
               // Only check if value changed from original
               if (val === originalPassport) return of(false);
               return this._mbaService.checkPassportExists(val);
-            },
-            'passportExists'
-          )]
+            }, 'passportExists')
+          ]
         ],
         dateIssued: [this.formatDateForInput(data.personalDetails.dateIssued), Validators.required],
+        passportPlaceIssued: [data.personalDetails.passportPlaceIssued, Validators.required],
         email: [data.personalDetails.email, [Validators.required, Validators.email, emailFormatValidator()]],
         mobile: [
           data.personalDetails.mobile,
           [Validators.required],
-          [uniqueFieldValidator(
-            (val: any) => {
+          [
+            uniqueFieldValidator((val: any) => {
               // Extract e164Number from intl-tel-input object
               const phoneNumber = val?.e164Number || val;
               // Only check if value changed from original
               if (phoneNumber === originalMobile) return of(false);
               if (!phoneNumber) return of(false);
               return this._mbaService.checkMobileExists(phoneNumber);
-            },
-            'mobileExists'
-          )]
+            }, 'mobileExists')
+          ]
         ],
         jobTitle: [data.personalDetails.jobTitle, Validators.required],
         organization: [data.personalDetails.organization, Validators.required],
@@ -484,17 +384,19 @@ export class ApplicationDetailComponent implements OnInit {
         permanentCityName: [data.personalDetails.permanentCityName || ''],
         permanentDistrictId: [data.personalDetails.permanentDistrictId || ''],
         permanentDistrictName: [data.personalDetails.permanentDistrictName || ''],
-        permanentAddress: [data.personalDetails.permanentAddress, Validators.required],
+        permanentAddress: [data.personalDetails.permanentAddress, Validators.required]
       }),
       applicationDetails: this._fb.group({
-        admissionYear: [data.applicationDetails.admissionYear || new Date().getFullYear(), [Validators.required, minYearValidator(new Date().getFullYear())]]
+        admissionYear: [
+          data.applicationDetails.admissionYear || new Date().getFullYear(),
+          [Validators.required, minYearValidator(new Date().getFullYear())]
+        ]
       }),
       educationDetails: this._fb.group({
         undergraduates: this._fb.array(
-          (data?.educationDetails?.undergraduates ?? []).map((ug: any, index: number) => {
-            const validators = index === 0
-              ? [Validators.required, minYearValidator(1950)]
-              : (ug.graduationYear ? [minYearValidator(1950)] : []);
+          (data?.educationDetails?.undergraduates ?? []).map((ug: EducationRecord, index: number) => {
+            const graduationYearValidators = ug.graduationYear ? [minYearValidator(1950)] : [];
+            const validators = index === 0 ? [Validators.required, minYearValidator(1950)] : graduationYearValidators;
 
             return this._fb.group({
               id: [ug.id],
@@ -502,13 +404,15 @@ export class ApplicationDetailComponent implements OnInit {
               countryId: [ug.countryId, index === 0 ? Validators.required : null],
               major: [ug.major, index === 0 ? Validators.required : null],
               graduationYear: [ug.graduationYear || '', validators],
+              gpa: [ug.gpa || ''],
+              graduationRank: [ug.graduationRank || ''],
               languageId: [ug.languageId, index === 0 ? Validators.required : null],
               thesisTitle: [ug.thesisTitle || '']
             });
           })
         ),
         postgraduates: this._fb.array(
-          (data?.educationDetails?.postgraduates ?? []).map((pg: any) => {
+          (data?.educationDetails?.postgraduates ?? []).map((pg: EducationRecord) => {
             const validators = pg.graduationYear ? [minYearValidator(1950)] : [];
 
             return this._fb.group({
@@ -516,6 +420,8 @@ export class ApplicationDetailComponent implements OnInit {
               university: [pg.university || ''],
               countryId: [pg.countryId || ''],
               major: [pg.major || ''],
+              gpa: [pg.gpa || ''],
+              graduationRank: [pg.graduationRank || ''],
               graduationYear: [pg.graduationYear || '', validators],
               languageId: [pg.languageId || ''],
               thesisTitle: [pg.thesisTitle || '']
@@ -523,41 +429,55 @@ export class ApplicationDetailComponent implements OnInit {
           })
         )
       }),
-      englishQualifications: this._fb.group({
-        ielts: this._fb.group({
-          id: [data.englishQualifications.ielts?.id],
-          score: [data.englishQualifications.ielts?.score || '', scoreRangeValidator(0, 9)],
-          date: [this.formatDateForInput(data.englishQualifications.ielts?.date), maxDateValidator()]
-        }),
-        toefl: this._fb.group({
-          id: [data.englishQualifications.toefl?.id],
-          score: [data.englishQualifications.toefl?.score || '', scoreRangeValidator(0, 120)],
-          date: [this.formatDateForInput(data.englishQualifications.toefl?.date), maxDateValidator()]
-        }),
-        other: this._fb.group({
-          id: [data.englishQualifications.other?.id],
-          name: [data.englishQualifications.other?.name || ''],
-          score: [data.englishQualifications.other?.score || ''],
-          date: [this.formatDateForInput(data.englishQualifications.other?.date), maxDateValidator()]
-        })
-      }, { validators: atLeastOneEnglishQualificationValidator() }),
+      englishQualifications: this._fb.group(
+        {
+          ielts: this._fb.group({
+            id: [data.englishQualifications.ielts?.id],
+            score: [data.englishQualifications.ielts?.score || '', scoreRangeValidator(0, 9)],
+            date: [this.formatDateForInput(data.englishQualifications.ielts?.date), maxDateValidator()]
+          }),
+          toefl: this._fb.group({
+            id: [data.englishQualifications.toefl?.id],
+            score: [data.englishQualifications.toefl?.score || '', scoreRangeValidator(0, 120)],
+            date: [this.formatDateForInput(data.englishQualifications.toefl?.date), maxDateValidator()]
+          }),
+          other: this._fb.group({
+            id: [data.englishQualifications.other?.id],
+            name: [data.englishQualifications.other?.name || ''],
+            score: [data.englishQualifications.other?.score || ''],
+            date: [this.formatDateForInput(data.englishQualifications.other?.date), maxDateValidator()]
+          })
+        },
+        { validators: atLeastOneEnglishQualificationValidator() }
+      ),
       employmentHistory: this._fb.group({
-        position1: this._fb.group({
-          id: [data.employmentHistory.position1?.id],
-          organizationName: [data.employmentHistory.position1?.organizationName || ''],
-          jobTitle: [data.employmentHistory.position1?.jobTitle || ''],
-          fromDate: [this.formatMonthForInput(data.employmentHistory.position1?.fromDate)],
-          toDate: [this.formatMonthForInput(data.employmentHistory.position1?.toDate)],
-          address: [data.employmentHistory.position1?.address || '']
-        }, { validators: dateRangeValidator('fromDate', 'toDate') }),
-        position2: this._fb.group({
-          id: [data.employmentHistory.position2?.id],
-          organizationName: [data.employmentHistory.position2?.organizationName || ''],
-          jobTitle: [data.employmentHistory.position2?.jobTitle || ''],
-          fromDate: [this.formatMonthForInput(data.employmentHistory.position2?.fromDate)],
-          toDate: [this.formatMonthForInput(data.employmentHistory.position2?.toDate)],
-          address: [data.employmentHistory.position2?.address || '']
-        }, { validators: dateRangeValidator('fromDate', 'toDate') })
+        totalExpYears: [data.employmentHistory.totalExpYears, [Validators.required, Validators.min(0)]],
+        totalExpMonths: [
+          data.employmentHistory.totalExpMonths,
+          [Validators.required, Validators.min(0), Validators.max(12)]
+        ],
+        position1: this._fb.group(
+          {
+            id: [data.employmentHistory.position1?.id],
+            organizationName: [data.employmentHistory.position1?.organizationName || ''],
+            jobTitle: [data.employmentHistory.position1?.jobTitle || ''],
+            fromDate: [this.formatMonthForInput(data.employmentHistory.position1?.fromDate)],
+            toDate: [this.formatMonthForInput(data.employmentHistory.position1?.toDate)],
+            address: [data.employmentHistory.position1?.address || '']
+          },
+          { validators: dateRangeValidator('fromDate', 'toDate') }
+        ),
+        position2: this._fb.group(
+          {
+            id: [data.employmentHistory.position2?.id],
+            organizationName: [data.employmentHistory.position2?.organizationName || ''],
+            jobTitle: [data.employmentHistory.position2?.jobTitle || ''],
+            fromDate: [this.formatMonthForInput(data.employmentHistory.position2?.fromDate)],
+            toDate: [this.formatMonthForInput(data.employmentHistory.position2?.toDate)],
+            address: [data.employmentHistory.position2?.address || '']
+          },
+          { validators: dateRangeValidator('fromDate', 'toDate') }
+        )
       })
     });
 
@@ -602,75 +522,83 @@ export class ApplicationDetailComponent implements OnInit {
   }
 
   private transformFormData(): any {
-    const rawValue = this.editForm.getRawValue();
-    const data = this.applicationData();
+    const appDetail = this.applicationData();
+    const rawValue = this.editForm.getRawValue() as MBAApplicationDetail;
+    const editPersonal = rawValue.personalDetails;
+    const editEnglish = rawValue.englishQualifications;
+    const editEmployment = rawValue.employmentHistory;
 
     // Extract phone number from intl-tel-input object if needed
-    let mobileValue = rawValue.personalDetails.mobile;
+    let mobileValue = editPersonal.mobile;
     if (typeof mobileValue === 'object' && mobileValue?.e164Number) {
       mobileValue = mobileValue.e164Number;
     }
 
     // Get ward.id for correspondence and permanent cities
     // If user changed ward, use the new ward.id, otherwise use original
-    const correspondenceCityId = this.correspondenceWardInfo()?.id || data.personalDetails.correspondenceCityId;
-    const permanentCityId = this.permanentWardInfo()?.id || data.personalDetails.permanentCityId;
+    const correspondenceCityId = this.correspondenceWardInfo()?.id || appDetail.personalDetails.correspondenceCityId;
+    const permanentCityId = this.permanentWardInfo()?.id || appDetail.personalDetails.permanentCityId;
 
     // Files are already uploaded via file manager dialog, no need to send in payload
 
     return {
       id: this.applicationId(),
       personalDetails: {
-        id: data.personalDetails.id,
-        fullName: rawValue.personalDetails.fullName,
-        nationalityId: rawValue.personalDetails.nationalityId,
-        nationalityName: this.countries().find(c => c.id === rawValue.personalDetails.nationalityId)?.name || '',
-        gender: rawValue.personalDetails.gender,
-        dateOfBirth: rawValue.personalDetails.dateOfBirth,
-        placeOfBirth: rawValue.personalDetails.placeOfBirth,
-        passportNo: rawValue.personalDetails.passportNo,
-        dateIssued: rawValue.personalDetails.dateIssued,
-        email: rawValue.personalDetails.email,
+        id: appDetail.personalDetails.id,
+        profileCode: appDetail.personalDetails.profileCode || '',
+        fullName: editPersonal.fullName,
+        nationalityId: editPersonal.nationalityId,
+        nationalityName: this.countries().find((c) => c.id === editPersonal.nationalityId)?.name || '',
+        gender: editPersonal.gender,
+        dateOfBirth: editPersonal.dateOfBirth,
+        placeOfBirth: editPersonal.placeOfBirth,
+        passportNo: editPersonal.passportNo,
+        dateIssued: editPersonal.dateIssued,
+        passportPlaceIssued: editPersonal.passportPlaceIssued,
+        email: editPersonal.email,
         mobile: mobileValue,
-        jobTitle: rawValue.personalDetails.jobTitle,
-        organization: rawValue.personalDetails.organization,
-        profileCode: data.personalDetails.profileCode || '',
+        jobTitle: editPersonal.jobTitle,
+        organization: editPersonal.organization,
         correspondenceCityId: correspondenceCityId,
-        correspondenceAddress: rawValue.personalDetails.correspondenceAddress,
+        correspondenceAddress: editPersonal.correspondenceAddress,
         permanentCityId: permanentCityId,
-        permanentAddress: rawValue.personalDetails.permanentAddress
+        permanentAddress: editPersonal.permanentAddress
         // files removed - already uploaded via file manager
       },
       applicationDetails: {
-        ...data.applicationDetails,
+        ...appDetail.applicationDetails,
         admissionYear: rawValue.applicationDetails.admissionYear
       },
       educationDetails: {
-        undergraduates: (rawValue?.educationDetails?.undergraduates ?? [] ).map((ug: any, index: number) => {
+        undergraduates: (rawValue?.educationDetails?.undergraduates ?? []).map((ug: EducationRecord, index: number) => {
           return {
             id: ug.id,
             university: ug.university,
             countryId: ug.countryId,
-            countryName: this.countries().find(c => c.id === ug.countryId)?.name || '',
+            countryName: this.countries().find((c) => c.id === ug.countryId)?.name || '',
             major: ug.major,
             graduationYear: ug.graduationYear,
+            gpa: ug.gpa,
+            graduationRank: ug.graduationRank,
             languageId: ug.languageId,
-            languageName: this.languages().find(l => l.id === ug.languageId)?.name || '',
+            languageName: this.languages().find((l) => l.id === ug.languageId)?.name || '',
             sortOrder: index,
             thesisTitle: ug.thesisTitle || ''
             // files removed - already uploaded via file manager
           };
         }),
-        postgraduates: (rawValue?.educationDetails?.postgraduates ?? [] ).map((pg: any, index: number) => {
+        postgraduates: (rawValue?.educationDetails?.postgraduates ?? []).map((pg: EducationRecord, index: number) => {
           return {
             id: pg.id,
             university: pg.university,
             countryId: pg.countryId,
-            countryName: this.countries().find(c => c.id === pg.countryId)?.name || '',
+            countryName: this.countries().find((c) => c.id === pg.countryId)?.name || '',
             major: pg.major,
             graduationYear: pg.graduationYear,
+            gpa: pg.gpa,
+            graduationRank: pg.graduationRank,
             languageId: pg.languageId,
-            languageName: this.languages().find(l => l.id === pg.languageId)?.name || '',
+            languageName: this.languages().find((l) => l.id === pg.languageId)?.name || '',
             sortOrder: index,
             thesisTitle: pg.thesisTitle || ''
             // files removed - already uploaded via file manager
@@ -678,45 +606,57 @@ export class ApplicationDetailComponent implements OnInit {
         })
       },
       englishQualifications: {
-        ielts: rawValue.englishQualifications.ielts.score ? {
-          id: rawValue.englishQualifications.ielts.id,
-          name: 'IELTS',
-          score: rawValue.englishQualifications.ielts.score,
-          date: rawValue.englishQualifications.ielts.date
-        } : null,
-        toefl: rawValue.englishQualifications.toefl.score ? {
-          id: rawValue.englishQualifications.toefl.id,
-          name: 'TOEFL',
-          score: rawValue.englishQualifications.toefl.score,
-          date: rawValue.englishQualifications.toefl.date
-        } : null,
-        other: rawValue.englishQualifications.other.name ? {
-          id: rawValue.englishQualifications.other.id,
-          name: rawValue.englishQualifications.other.name,
-          score: rawValue.englishQualifications.other.score,
-          date: rawValue.englishQualifications.other.date
-        } : null
+        ielts: editEnglish.ielts.score
+          ? {
+              id: editEnglish.ielts.id,
+              name: 'IELTS',
+              score: editEnglish.ielts.score,
+              date: editEnglish.ielts.date
+            }
+          : null,
+        toefl: editEnglish.toefl.score
+          ? {
+              id: editEnglish.toefl.id,
+              name: 'TOEFL',
+              score: editEnglish.toefl.score,
+              date: editEnglish.toefl.date
+            }
+          : null,
+        other: editEnglish.other.name
+          ? {
+              id: editEnglish.other.id,
+              name: editEnglish.other.name,
+              score: editEnglish.other.score,
+              date: editEnglish.other.date
+            }
+          : null
         // files removed - already uploaded via file manager
       },
       employmentHistory: {
-        position1: rawValue.employmentHistory.position1.organizationName ? {
-          id: rawValue.employmentHistory.position1.id,
-          organizationName: rawValue.employmentHistory.position1.organizationName,
-          jobTitle: rawValue.employmentHistory.position1.jobTitle,
-          fromDate: rawValue.employmentHistory.position1.fromDate,
-          toDate: rawValue.employmentHistory.position1.toDate,
-          address: rawValue.employmentHistory.position1.address
-        } : null,
-        position2: rawValue.employmentHistory.position2.organizationName ? {
-          id: rawValue.employmentHistory.position2.id,
-          organizationName: rawValue.employmentHistory.position2.organizationName,
-          jobTitle: rawValue.employmentHistory.position2.jobTitle,
-          fromDate: rawValue.employmentHistory.position2.fromDate,
-          toDate: rawValue.employmentHistory.position2.toDate,
-          address: rawValue.employmentHistory.position2.address
-        } : null
+        totalExpYears: editEmployment.totalExpYears,
+        totalExpMonths: editEmployment.totalExpMonths,
+        position1: editEmployment.position1.organizationName
+          ? {
+              id: editEmployment.position1.id,
+              organizationName: editEmployment.position1.organizationName,
+              jobTitle: editEmployment.position1.jobTitle,
+              fromDate: editEmployment.position1.fromDate,
+              toDate: editEmployment.position1.toDate,
+              address: editEmployment.position1.address
+            }
+          : null,
+        position2: editEmployment.position2.organizationName
+          ? {
+              id: editEmployment.position2.id,
+              organizationName: editEmployment.position2.organizationName,
+              jobTitle: editEmployment.position2.jobTitle,
+              fromDate: editEmployment.position2.fromDate,
+              toDate: editEmployment.position2.toDate,
+              address: editEmployment.position2.address
+            }
+          : null
       },
-      declaration: data.declaration
+      declaration: appDetail.declaration
     };
   }
 
@@ -730,49 +670,52 @@ export class ApplicationDetailComponent implements OnInit {
   }
 
   addUndergraduate(): void {
-    const newIndex = this.undergraduatesArray.length;
-    this.undergraduatesArray.push(this._fb.group({
-      id: [null],
-      university: [''],
-      countryId: [''],
-      major: [''],
-      graduationYear: ['', minYearValidator(1950)],
-      languageId: [''],
-      thesisTitle: ['']
-    }));
+    this.undergraduatesArray.push(
+      this._fb.group({
+        id: [null],
+        university: [''],
+        countryId: [''],
+        major: [''],
+        graduationYear: ['', minYearValidator(1950)],
+        languageId: [''],
+        thesisTitle: ['']
+      })
+    );
 
     // Add empty file array for new degree
-    this.undergraduateFiles.update(files => [...files, []]);
+    this.undergraduateFiles.update((files) => [...files, []]);
   }
 
   removeUndergraduate(index: number): void {
     if (this.undergraduatesArray.length > 1) {
       this.undergraduatesArray.removeAt(index);
       // Remove files for this degree
-      this.undergraduateFiles.update(files => files.filter((_, i) => i !== index));
+      this.undergraduateFiles.update((files) => files.filter((_, i) => i !== index));
     }
   }
 
   addPostgraduate(): void {
-    this.postgraduatesArray.push(this._fb.group({
-      id: [null],
-      university: [''],
-      countryId: [''],
-      major: [''],
-      graduationYear: ['', minYearValidator(1950)],
-      languageId: [''],
-      thesisTitle: ['']
-    }));
+    this.postgraduatesArray.push(
+      this._fb.group({
+        id: [null],
+        university: [''],
+        countryId: [''],
+        major: [''],
+        graduationYear: ['', minYearValidator(1950)],
+        languageId: [''],
+        thesisTitle: ['']
+      })
+    );
 
     // Add empty file array for new degree
-    this.postgraduateFiles.update(files => [...files, []]);
+    this.postgraduateFiles.update((files) => [...files, []]);
   }
 
   removePostgraduate(index: number): void {
     if (this.postgraduatesArray.length > 1) {
       this.postgraduatesArray.removeAt(index);
       // Remove files for this degree
-      this.postgraduateFiles.update(files => files.filter((_, i) => i !== index));
+      this.postgraduateFiles.update((files) => files.filter((_, i) => i !== index));
     }
   }
 
@@ -892,7 +835,7 @@ export class ApplicationDetailComponent implements OnInit {
 
           // Update signal when all files are processed
           if (newFiles.length === files.length || i === files.length - 1) {
-            this.uploadedFiles.update(current => [...current, ...newFiles]);
+            this.uploadedFiles.update((current) => [...current, ...newFiles]);
           }
         };
         reader.readAsDataURL(file);
@@ -901,7 +844,7 @@ export class ApplicationDetailComponent implements OnInit {
   }
 
   removePassportFile(index: number): void {
-    this.uploadedFiles.update(files => files.filter((_, i) => i !== index));
+    this.uploadedFiles.update((files) => files.filter((_, i) => i !== index));
   }
 
   // Education file handlers
@@ -936,14 +879,14 @@ export class ApplicationDetailComponent implements OnInit {
 
           if (newFiles.length === files.length || i === files.length - 1) {
             if (type === 'undergraduate') {
-              this.undergraduateFiles.update(current => {
+              this.undergraduateFiles.update((current) => {
                 const updated = [...current];
                 if (!updated[index]) updated[index] = [];
                 updated[index] = [...updated[index], ...newFiles];
                 return updated;
               });
             } else {
-              this.postgraduateFiles.update(current => {
+              this.postgraduateFiles.update((current) => {
                 const updated = [...current];
                 if (!updated[index]) updated[index] = [];
                 updated[index] = [...updated[index], ...newFiles];
@@ -959,7 +902,7 @@ export class ApplicationDetailComponent implements OnInit {
 
   removeDegreeFile(type: string, degreeIndex: number, fileIndex: number): void {
     if (type === 'undergraduate') {
-      this.undergraduateFiles.update(files => {
+      this.undergraduateFiles.update((files) => {
         const updated = [...files];
         if (updated[degreeIndex]) {
           updated[degreeIndex] = updated[degreeIndex].filter((_, i) => i !== fileIndex);
@@ -967,7 +910,7 @@ export class ApplicationDetailComponent implements OnInit {
         return updated;
       });
     } else {
-      this.postgraduateFiles.update(files => {
+      this.postgraduateFiles.update((files) => {
         const updated = [...files];
         if (updated[degreeIndex]) {
           updated[degreeIndex] = updated[degreeIndex].filter((_, i) => i !== fileIndex);
@@ -1008,7 +951,7 @@ export class ApplicationDetailComponent implements OnInit {
           });
 
           if (newFiles.length === files.length || i === files.length - 1) {
-            this.englishFiles.update(current => [...current, ...newFiles]);
+            this.englishFiles.update((current) => [...current, ...newFiles]);
           }
         };
         reader.readAsDataURL(file);
@@ -1017,7 +960,7 @@ export class ApplicationDetailComponent implements OnInit {
   }
 
   removeEnglishFile(index: number): void {
-    this.englishFiles.update(files => files.filter((_, i) => i !== index));
+    this.englishFiles.update((files) => files.filter((_, i) => i !== index));
   }
 
   // Handle file updates from view mode
@@ -1026,15 +969,16 @@ export class ApplicationDetailComponent implements OnInit {
     // Optionally save to server immediately or wait for explicit save
   }
 
-  onEducationFilesUpdate(event: {type: string, index: number, files: any[]}): void {
+  onEducationFilesUpdate(event: { type: string; index: number; files: any[] }): void {
     if (event.type === 'undergraduate') {
-      this.undergraduateFiles.update(current => {
+      this.undergraduateFiles.update((current) => {
+        debugger;
         const updated = [...current];
         updated[event.index] = event.files;
         return updated;
       });
     } else {
-      this.postgraduateFiles.update(current => {
+      this.postgraduateFiles.update((current) => {
         const updated = [...current];
         updated[event.index] = event.files;
         return updated;
@@ -1054,7 +998,7 @@ export class ApplicationDetailComponent implements OnInit {
     const provinceCode = selectElement.value;
 
     if (provinceCode) {
-      const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
+      const selectedProvince = this.provinces().find((p) => p.provinceCode === provinceCode);
       if (selectedProvince) {
         this.personalDetailsForm.patchValue({
           correspondenceCityName: selectedProvince.provinceName
@@ -1094,7 +1038,7 @@ export class ApplicationDetailComponent implements OnInit {
     const wardCode = selectElement.value;
 
     if (wardCode) {
-      const selectedWard = this.correspondenceWards().find(w => w.wardCode === wardCode);
+      const selectedWard = this.correspondenceWards().find((w) => w.wardCode === wardCode);
       if (selectedWard) {
         this.personalDetailsForm.patchValue({
           correspondenceDistrictName: selectedWard.wardName
@@ -1118,7 +1062,7 @@ export class ApplicationDetailComponent implements OnInit {
     const provinceCode = selectElement.value;
 
     if (provinceCode) {
-      const selectedProvince = this.provinces().find(p => p.provinceCode === provinceCode);
+      const selectedProvince = this.provinces().find((p) => p.provinceCode === provinceCode);
       if (selectedProvince) {
         this.personalDetailsForm.patchValue({
           permanentCityName: selectedProvince.provinceName
@@ -1158,7 +1102,7 @@ export class ApplicationDetailComponent implements OnInit {
     const wardCode = selectElement.value;
 
     if (wardCode) {
-      const selectedWard = this.permanentWards().find(w => w.wardCode === wardCode);
+      const selectedWard = this.permanentWards().find((w) => w.wardCode === wardCode);
       if (selectedWard) {
         this.personalDetailsForm.patchValue({
           permanentDistrictName: selectedWard.wardName
@@ -1179,120 +1123,69 @@ export class ApplicationDetailComponent implements OnInit {
    */
   private logValidationErrors(): void {
     console.log('=== VALIDATION ERRORS ===');
+    this.logSimpleGroupErrors(this.editForm.get('personalDetails') as FormGroup, 'Personal Details Errors');
+    this.logSimpleGroupErrors(this.editForm.get('applicationDetails') as FormGroup, 'Application Details Errors');
 
-    // Check personal details
-    const personalDetails = this.editForm.get('personalDetails') as FormGroup;
-    if (personalDetails && personalDetails.invalid) {
-      console.log('Personal Details Errors:');
-      Object.keys(personalDetails.controls).forEach(key => {
-        const control = personalDetails.get(key);
-        if (control && control.invalid) {
-          console.log(`  - ${key}:`, control.errors);
-        }
-      });
-    }
-
-    // Check application details
-    const applicationDetails = this.editForm.get('applicationDetails') as FormGroup;
-    if (applicationDetails && applicationDetails.invalid) {
-      console.log('Application Details Errors:');
-      Object.keys(applicationDetails.controls).forEach(key => {
-        const control = applicationDetails.get(key);
-        if (control && control.invalid) {
-          console.log(`  - ${key}:`, control.errors);
-        }
-      });
-    }
-
-    // Check education details
     const educationDetails = this.editForm.get('educationDetails') as FormGroup;
-    if (educationDetails && educationDetails.invalid) {
+    if (educationDetails?.invalid) {
       console.log('Education Details Errors:');
-
-      // Check undergraduates
-      const undergraduates = educationDetails.get('undergraduates') as FormArray;
-      if (undergraduates && undergraduates.invalid) {
-        undergraduates.controls.forEach((control, index) => {
-          if (control.invalid) {
-            console.log(`  Undergraduate ${index}:`);
-            Object.keys((control as FormGroup).controls).forEach(key => {
-              const fieldControl = control.get(key);
-              if (fieldControl && fieldControl.invalid) {
-                console.log(`    - ${key}:`, fieldControl.errors, 'Value:', fieldControl.value);
-              }
-            });
-          }
-        });
-      }
-
-      // Check postgraduates
-      const postgraduates = educationDetails.get('postgraduates') as FormArray;
-      if (postgraduates && postgraduates.invalid) {
-        postgraduates.controls.forEach((control, index) => {
-          if (control.invalid) {
-            console.log(`  Postgraduate ${index}:`);
-            Object.keys((control as FormGroup).controls).forEach(key => {
-              const fieldControl = control.get(key);
-              if (fieldControl && fieldControl.invalid) {
-                console.log(`    - ${key}:`, fieldControl.errors, 'Value:', fieldControl.value);
-              }
-            });
-          }
-        });
-      }
+      this.logFormArrayErrors(educationDetails.get('undergraduates') as FormArray, 'Undergraduate');
+      this.logFormArrayErrors(educationDetails.get('postgraduates') as FormArray, 'Postgraduate');
     }
 
-    // Check english qualifications
-    const englishQualifications = this.editForm.get('englishQualifications') as FormGroup;
-    if (englishQualifications && englishQualifications.invalid) {
+    const englishQuals = this.editForm.get('englishQualifications') as FormGroup;
+    if (englishQuals?.invalid) {
       console.log('English Qualifications Errors:');
-
-      // Check group-level errors
-      if (englishQualifications.errors) {
-        console.log('  Group errors:', englishQualifications.errors);
-      }
-
-      // Check individual fields
-      ['ielts', 'toefl', 'other'].forEach(type => {
-        const group = englishQualifications.get(type) as FormGroup;
-        if (group && group.invalid) {
-          console.log(`  ${type}:`);
-          Object.keys(group.controls).forEach(key => {
-            const control = group.get(key);
-            if (control && control.invalid) {
-              console.log(`    - ${key}:`, control.errors);
-            }
-          });
-        }
-      });
+      if (englishQuals.errors) console.log('  Group errors:', englishQuals.errors);
+      ['ielts', 'toefl', 'other'].forEach((type) =>
+        this.logNestedGroupErrors(englishQuals.get(type) as FormGroup, type)
+      );
     }
 
-    // Check employment history
-    const employmentHistory = this.editForm.get('employmentHistory') as FormGroup;
-    if (employmentHistory && employmentHistory.invalid) {
+    const empHistory = this.editForm.get('employmentHistory') as FormGroup;
+    if (empHistory?.invalid) {
       console.log('Employment History Errors:');
-
-      ['position1', 'position2'].forEach(pos => {
-        const group = employmentHistory.get(pos) as FormGroup;
-        if (group && group.invalid) {
-          console.log(`  ${pos}:`);
-
-          // Check group-level errors (dateRange validator)
-          if (group.errors) {
-            console.log(`    Group errors:`, group.errors);
-          }
-
-          // Check individual fields
-          Object.keys(group.controls).forEach(key => {
-            const control = group.get(key);
-            if (control && control.invalid) {
-              console.log(`    - ${key}:`, control.errors);
-            }
-          });
-        }
-      });
+      ['position1', 'position2'].forEach((pos) =>
+        this.logNestedGroupErrors(empHistory.get(pos) as FormGroup, pos, true)
+      );
     }
 
     console.log('=== END VALIDATION ERRORS ===');
+  }
+
+  private logSimpleGroupErrors(group: FormGroup, title: string): void {
+    if (group?.invalid) {
+      console.log(`${title}:`);
+      Object.keys(group.controls).forEach((key) => {
+        const control = group.get(key);
+        if (control?.invalid) console.log(`  - ${key}:`, control.errors);
+      });
+    }
+  }
+
+  private logFormArrayErrors(array: FormArray, prefix: string): void {
+    if (array?.invalid) {
+      array.controls.forEach((control, index) => {
+        if (control.invalid) {
+          console.log(`  ${prefix} ${index}:`);
+          const group = control as FormGroup;
+          Object.keys(group.controls).forEach((key) => {
+            const field = group.get(key);
+            if (field?.invalid) console.log(`    - ${key}:`, field.errors, 'Value:', field.value);
+          });
+        }
+      });
+    }
+  }
+
+  private logNestedGroupErrors(group: FormGroup, title: string, checkGroupErrors = false): void {
+    if (group?.invalid) {
+      console.log(`  ${title}:`);
+      if (checkGroupErrors && group.errors) console.log(`    Group errors:`, group.errors);
+      Object.keys(group.controls).forEach((key) => {
+        const control = group.get(key);
+        if (control?.invalid) console.log(`    - ${key}:`, control.errors);
+      });
+    }
   }
 }

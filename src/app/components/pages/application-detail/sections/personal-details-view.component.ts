@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-dialog.component';
 
@@ -18,30 +18,38 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         <!-- Row 1 -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.FULL_NAME' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.FULL_NAME' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.fullName || '--' }}
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.NATIONALITY' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.NATIONALITY' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.nationalityName || '--' }}
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.GENDER' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.GENDER' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.gender === 1 ? ('PERSONAL_DETAILS.MALE' | translate) : ('PERSONAL_DETAILS.FEMALE' | translate) }}
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.DOB' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.DOB' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ formatDate(data?.dateOfBirth) }}
+              {{ (data?.dateOfBirth | date : 'dd/MM/yyyy') || '--' }}
             </div>
           </div>
         </div>
@@ -49,30 +57,38 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         <!-- Row 2 -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.POB' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.POB' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.placeOfBirth || '--' }}
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.PASSPORT' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.PASSPORT' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 font-mono">
               {{ data?.passportNo || '--' }}
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ formatDate(data?.dateIssued) }}
+              {{ (data?.dateIssued | date : 'dd/MM/yyyy') || '--' }}
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.EMAIL' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.PLACE_OF_ISSUE' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.email || '--' }}
+              {{ data?.passportPlaceIssued || '--' }}
             </div>
           </div>
         </div>
@@ -80,21 +96,35 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         <!-- Row 3 -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.MOBILE' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.EMAIL' | translate }} <span class="text-red-500">*</span></label
+            >
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+              {{ data?.email || '--' }}
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.MOBILE' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.mobile || '--' }}
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.JOB_TITLE' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.JOB_TITLE' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.jobTitle || '--' }}
             </div>
           </div>
 
-          <div class="md:col-span-2">
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.ORGANIZATION' | translate }} <span class="text-red-500">*</span></label>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.ORGANIZATION' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.organization || '--' }}
             </div>
@@ -105,20 +135,26 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.CORR_CITY' | translate }}</label>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{
+                'PERSONAL_DETAILS.CORR_CITY' | translate
+              }}</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
                 {{ data?.correspondenceCityName || '--' }}
               </div>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.CORR_DISTRICT' | translate }}</label>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{
+                'PERSONAL_DETAILS.CORR_DISTRICT' | translate
+              }}</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
                 {{ data?.correspondenceDistrictName || '--' }}
               </div>
             </div>
           </div>
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.CORR_ADDRESS' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.CORR_ADDRESS' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.correspondenceAddress || '--' }}
             </div>
@@ -129,20 +165,26 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.PERM_CITY' | translate }}</label>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{
+                'PERSONAL_DETAILS.PERM_CITY' | translate
+              }}</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
                 {{ data?.permanentCityName || '--' }}
               </div>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.PERM_DISTRICT' | translate }}</label>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{
+                'PERSONAL_DETAILS.PERM_DISTRICT' | translate
+              }}</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
                 {{ data?.permanentDistrictName || '--' }}
               </div>
             </div>
           </div>
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'PERSONAL_DETAILS.PERM_ADDRESS' | translate }} <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-medium text-gray-600 mb-1"
+              >{{ 'PERSONAL_DETAILS.PERM_ADDRESS' | translate }} <span class="text-red-500">*</span></label
+            >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
               {{ data?.permanentAddress || '--' }}
             </div>
@@ -151,16 +193,37 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
 
         <!-- Upload Section -->
         <div>
-          <label class="block text-xs font-medium text-gray-600 mb-2">{{ 'PERSONAL_DETAILS.UPLOAD_PASSPORT' | translate }}</label>
-          <button type="button" (click)="openFileManager()" 
-                  [class]="uploadedFiles && uploadedFiles.length > 0 
-                    ? 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-green-400 rounded bg-green-50 hover:border-green-500 hover:bg-green-100 transition-colors'
-                    : 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-blue-300 rounded bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-colors'">
-            <svg class="w-5 h-5 mr-2" [class]="uploadedFiles && uploadedFiles.length > 0 ? 'text-green-600' : 'text-blue-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          <label class="block text-xs font-medium text-gray-600 mb-2">{{
+            'PERSONAL_DETAILS.UPLOAD_PASSPORT' | translate
+          }}</label>
+          <button
+            type="button"
+            (click)="openFileManager()"
+            [class]="
+              uploadedFiles && uploadedFiles.length > 0
+                ? 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-green-400 rounded bg-green-50 hover:border-green-500 hover:bg-green-100 transition-colors'
+                : 'w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-blue-300 rounded bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-colors'
+            ">
+            <svg
+              class="w-5 h-5 mr-2"
+              [class]="uploadedFiles && uploadedFiles.length > 0 ? 'text-green-600' : 'text-blue-500'"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
-            <span class="text-sm font-medium" [class]="uploadedFiles && uploadedFiles.length > 0 ? 'text-green-700' : 'text-blue-700'">
-              {{ uploadedFiles && uploadedFiles.length > 0 ? (uploadedFiles.length + ' ' + ('COMMON.FILE_SELECTED' | translate)) : ('COMMON.FILE_UPLOAD' | translate) }}
+            <span
+              class="text-sm font-medium"
+              [class]="uploadedFiles && uploadedFiles.length > 0 ? 'text-green-700' : 'text-blue-700'">
+              {{
+                uploadedFiles && uploadedFiles.length > 0
+                  ? uploadedFiles.length + ' ' + ('COMMON.FILE_SELECTED' | translate)
+                  : ('COMMON.FILE_UPLOAD' | translate)
+              }}
             </span>
           </button>
           <p class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</p>
@@ -173,7 +236,6 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
       [(isOpen)]="isFileManagerOpen"
       [title]="dialogTitle"
       [fileCategoryId]="1"
-      [entityId]="getPersonalDetailsEntityId()"
       [(files)]="uploadedFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>
@@ -181,7 +243,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
 })
 export class PersonalDetailsViewComponent {
   private readonly translate = inject(TranslateService);
-  
+
   @Input() data: any;
   @Input() uploadedFiles: any[] = [];
   @Output() uploadedFilesChange = new EventEmitter<any[]>();
@@ -193,10 +255,6 @@ export class PersonalDetailsViewComponent {
   openFileManager(): void {
     this.dialogTitle = this.translate.instant('FILE_DIALOG.TITLE_PASSPORT');
     this.isFileManagerOpen = true;
-  }
-
-  getPersonalDetailsEntityId(): string | undefined {
-    return undefined;
   }
 
   onFilesSaved(files: any[]): void {

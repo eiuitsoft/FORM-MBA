@@ -1,3 +1,5 @@
+import { ChangeData } from 'ngx-intl-tel-input';
+
 export interface MBAApplication {
   personalDetails: PersonalDetails;
   applicationDetails: ApplicationDetails;
@@ -5,6 +7,14 @@ export interface MBAApplication {
   englishQualifications: EnglishQualifications;
   employmentHistory: EmploymentHistory;
   declaration: Declaration;
+}
+
+export interface MBAApplicationDetail extends MBAApplication {
+  id: string;
+  statusId: number;
+  statusName?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PersonalDetails {
@@ -17,16 +27,21 @@ export interface PersonalDetails {
   placeOfBirth: string;
   passportNo: string;
   dateIssued: string;
+  passportPlaceIssued: string;
   email: string;
-  mobile: string;
+  mobile: string | ChangeData;
   jobTitle?: string;
   organization?: string;
   profileCode?: string;
   correspondenceCityId?: number;
   correspondenceCityName?: string;
+  correspondenceDistrictId?: number;
+  correspondenceDistrictName?: string;
   correspondenceAddress: string;
   permanentCityId?: number;
   permanentCityName?: string;
+  permanentDistrictId?: number;
+  permanentDistrictName?: string;
   permanentAddress: string;
   uploadedFiles?: UploadedFile[];
 }
@@ -52,8 +67,8 @@ export interface ApplicationDetails {
 }
 
 export interface EducationDetails {
-  undergraduate: EducationRecord;
-  postgraduate?: EducationRecord;
+  undergraduates: EducationRecord[];
+  postgraduates?: EducationRecord[];
 }
 
 export interface EducationRecord {
@@ -63,6 +78,8 @@ export interface EducationRecord {
   countryName?: string;
   major: string;
   graduationYear: number;
+  gpa: string;
+  graduationRank?: string;
   languageId?: string;
   languageName?: string;
   sortOrder?: number;
@@ -83,6 +100,8 @@ export interface TestScore {
 }
 
 export interface EmploymentHistory {
+  totalExpYears: number;
+  totalExpMonths: number;
   position1: EmploymentRecord;
   position2?: EmploymentRecord;
 }
