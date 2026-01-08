@@ -27,9 +27,12 @@ bootstrapApplication(AppRootComponent, {
       })
     }),
     provideAppInitializer(() => {
-       const  translate = inject(TranslateService);
-       translate.use(translate.getBrowserLang() || "en");
-     })
+      const translate = inject(TranslateService);
+      // Check localStorage first, then browser lang, fallback to 'vi'
+      const savedLang = localStorage.getItem('lang');
+      const lang = savedLang || translate.getBrowserLang() || 'vi';
+      translate.use(lang);
+    })
   ],
 }).catch((err) => console.error(err));
 
