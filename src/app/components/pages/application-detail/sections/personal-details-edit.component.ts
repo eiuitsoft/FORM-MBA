@@ -44,7 +44,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
             <option value="">{{ 'COMMON.SELECT_DEFAULT' | translate }}</option>
             @for (country of countries; track country.id) {
-            <option [value]="country.id">{{ country.name }}</option>
+            <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
             }
           </select>
           @if (formGroup.get('nationalityId')?.hasError('required') && formGroup.get('nationalityId')?.touched) {
@@ -63,7 +63,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             formControlName="gender"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
             <option value="1">{{ 'PERSONAL_DETAILS.MALE' | translate }}</option>
-            <option value="0">{{ 'PERSONAL_DETAILS.FEMALE' | translate }}</option>
+            <option value="2">{{ 'PERSONAL_DETAILS.FEMALE' | translate }}</option>
           </select>
         </div>
 
@@ -483,6 +483,10 @@ export class PersonalDetailsEditComponent {
 
   isFileManagerOpen = false;
   dialogTitle = '';
+
+  get isLangVi(): boolean {
+    return (localStorage.getItem('lang') || 'vi') === 'vi';
+  }
 
   openFileManager(): void {
     this.dialogTitle = this.translate.instant('FILE_DIALOG.TITLE_PASSPORT');

@@ -63,7 +63,7 @@
                 {{ 'COMMON.SELECT_NATIONALITY' | translate }}
               </option>
               @for (country of countries(); track country.id) {
-              <option [value]="country.id" [textContent]="country.name"></option>
+              <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
               }
             </select>
             @if (personalDetails.get('nationalityId')?.hasError('required') &&
@@ -687,7 +687,7 @@
                       {{ 'COMMON.SELECT_COUNTRY' | translate }}
                     </option>
                     @for (country of countries(); track country.id) {
-                    <option [value]="country.id" [textContent]="country.name"></option>
+                    <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
                     }
                   </select>
                   @if (undergraduates.at(ugIndex).get('countryId')?.hasError('required') &&
@@ -804,7 +804,7 @@
                       {{ 'COMMON.SELECT_LANGUAGE' | translate }}
                     </option>
                     @for (lang of languages(); track lang.id) {
-                    <option [value]="lang.id">{{ lang.name }}</option>
+                    <option [value]="lang.id">{{ isLangVi ? lang.name : lang.name_EN }}</option>
                     }
                   </select>
                   @if (undergraduates.at(ugIndex).get('languageId')?.hasError('required') &&
@@ -915,7 +915,7 @@
                       {{ 'COMMON.SELECT_COUNTRY' | translate }}
                     </option>
                     @for (country of countries(); track country.id) {
-                    <option [value]="country.id" [textContent]="country.name"></option>
+                    <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
                     }
                   </select>
                 </div>
@@ -973,7 +973,7 @@
                       {{ 'COMMON.SELECT_LANGUAGE' | translate }}
                     </option>
                     @for (language of languages(); track language.id) {
-                    <option [value]="language.id" [textContent]="language.name"></option>
+                    <option [value]="language.id">{{ isLangVi ? language.name : language.name_EN }}</option>
                     }
                   </select>
                 </div>

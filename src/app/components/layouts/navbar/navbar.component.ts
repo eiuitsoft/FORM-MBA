@@ -32,6 +32,17 @@ export class NavbarComponent {
 
   constructor() {
     this.translate.use(this.currentLang);
+    this.checkTokenExpiration();
+  }
+
+  /**
+   * Check token expiration on navbar init
+   * Auto logout if token is expired
+   */
+  private checkTokenExpiration(): void {
+    if (this.tokenService.token() && this.tokenService.isTokenExpired()) {
+      this.logout();
+    }
   }
 
   // Close dropdown when clicking outside

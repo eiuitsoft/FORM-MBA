@@ -42,6 +42,7 @@
                   ? ('LOGIN.ENTER_PROFILE_CODE' | translate)
                   : ('LOGIN.ENTER_PHONE' | translate)"
                 class="form-control"
+                (keydown.enter)="openModalChooseSendType()"
                 [class.is-invalid]="loginForm.get('value')?.invalid && loginForm.get('value')?.touched" />
               @if (loginForm.get('value')?.invalid && loginForm.get('value')?.touched) {
                 <small class="text-danger">{{ getFieldError('value') }}</small>
@@ -86,6 +87,7 @@
                 [placeholder]="'LOGIN.ENTER_OTP' | translate"
                 maxlength="6"
                 (input)="isErrorOTP.set(false)"
+                (keydown.enter)="onLogin()"
                 class="form-control otp-input"
                 [class.is-invalid]="isErrorOTP()" />
               @if (loginForm.get('otp')?.errors?.['maxlength']) {
@@ -160,7 +162,7 @@
 
 <!-- Modal Choose OTP Type -->
 @if (showModalChooseOTP()) {
-  <div class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-backdrop" (click)="closeModal()" (keydown.enter)="sendOTP()">
     <div class="modal-content-wrapper" (click)="$event.stopPropagation()">
 
       <!-- Modal Header -->
@@ -178,7 +180,7 @@
         <div class="radio-group">
           @for (item of sendOtpTypeList; track item.value) {
             <label class="radio-label" [class.active]="loginForm.value.sendType === item.value">
-              <input type="radio" formControlName="sendType" [value]="item.value">
+              <input type="radio" formControlName="sendType" [value]="item.value" (keydown.enter)="sendOTP()">
               <span>{{ item.nameKey | translate }}</span>
             </label>
           }

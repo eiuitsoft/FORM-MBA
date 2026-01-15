@@ -282,5 +282,9 @@
     "MY_APPLICATION": "Đơn Của Tôi",
     "LOGIN": "Đăng Nhập",
     "LOGOUT": "Đăng Xuất"
+  },
+  "AUTH": {
+    "SESSION_EXPIRED": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    "TOKEN_INVALID": "Token xác thực không hợp lệ. Vui lòng đăng nhập lại."
   }
 }

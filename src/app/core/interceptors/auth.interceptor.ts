@@ -8,10 +8,19 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenService);
   const router = inject(Router);
 
-  // Clone request and add Authorization header if token exists
   const token = tokenService.token();
-  let authReq = req;
 
+  // Proactive check: if token exists but is expired → logout immediately
+  if (token && tokenService.isTokenExpired()) {
+    tokenService.clearAll();
+    router.navigate(['/login'], {
+      queryParams: { reason: 'session_expired' }
+    });
+    return throwError(() => new Error('Session expired'));
+  }
+
+  // Clone request and add Authorization header if token exists and valid
+  let authReq = req;
   if (token) {
     authReq = req.clone({
       setHeaders: {
@@ -32,7 +41,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = 'Unable to connect to server. Please check your network connection.';
       } else if (error.status === 401) {
         // Unauthorized - redirect to login
-        router.navigate(['/login']);
+        tokenService.clearAll();
+        router.navigate(['/login'], {
+          queryParams: { reason: 'session_expired' }
+        });
         errorMessage = 'Session expired. Please login again.';
       } else {
         // Server-side error - prioritize backend message

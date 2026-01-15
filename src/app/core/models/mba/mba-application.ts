@@ -22,7 +22,7 @@ export interface PersonalDetails {
   fullName: string;
   nationalityId?: string;
   nationalityName?: string;
-  gender: number; // 0: Female, 1: Male
+  gender: number; // 1: Male, 2: Female
   dateOfBirth: string;
   placeOfBirth: string;
   passportNo: string;

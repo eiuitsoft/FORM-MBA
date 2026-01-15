@@ -31,7 +31,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               >{{ 'PERSONAL_DETAILS.NATIONALITY' | translate }} <span class="text-red-500">*</span></label
             >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.nationalityName || '--' }}
+              {{ getNationalityName() }}
             </div>
           </div>
 
@@ -40,7 +40,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               >{{ 'PERSONAL_DETAILS.GENDER' | translate }} <span class="text-red-500">*</span></label
             >
             <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-              {{ data?.gender === 1 ? ('PERSONAL_DETAILS.MALE' | translate) : ('PERSONAL_DETAILS.FEMALE' | translate) }}
+              {{ data?.gender === 1 ? ('PERSONAL_DETAILS.MALE' | translate) : data?.gender === 2 ? ('PERSONAL_DETAILS.FEMALE' | translate) : '--' }}
             </div>
           </div>
 
@@ -245,12 +245,26 @@ export class PersonalDetailsViewComponent {
   private readonly translate = inject(TranslateService);
 
   @Input() data: any;
+  @Input() countries: any[] = [];
   @Input() uploadedFiles: any[] = [];
   @Output() uploadedFilesChange = new EventEmitter<any[]>();
   @Output() onFilesUpdate = new EventEmitter<any[]>();
 
   isFileManagerOpen = false;
   dialogTitle = '';
+
+  get isLangVi(): boolean {
+    return (localStorage.getItem('lang') || 'vi') === 'vi';
+  }
+
+  getNationalityName(): string {
+    if (!this.data?.nationalityId) return '--';
+    const country = this.countries.find((c) => c.id === this.data.nationalityId);
+    if (country) {
+      return this.isLangVi ? country.name : country.name_EN;
+    }
+    return this.data?.nationalityName || '--';
+  }
 
   openFileManager(): void {
     this.dialogTitle = this.translate.instant('FILE_DIALOG.TITLE_PASSPORT');

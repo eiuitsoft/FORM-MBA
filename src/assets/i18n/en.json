@@ -282,5 +282,9 @@
     "MY_APPLICATION": "My Application",
     "LOGIN": "Login",
     "LOGOUT": "Logout"
+  },
+  "AUTH": {
+    "SESSION_EXPIRED": "Your session has expired. Please login again.",
+    "TOKEN_INVALID": "Invalid authentication token. Please login again."
   }
 }

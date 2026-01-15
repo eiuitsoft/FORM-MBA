@@ -26,6 +26,7 @@ import { EnglishQualificationsEditComponent } from './sections/english-qualifica
 import { EnglishQualificationsViewComponent } from './sections/english-qualifications-view.component';
 import { PersonalDetailsEditComponent } from './sections/personal-details-edit.component';
 import { PersonalDetailsViewComponent } from './sections/personal-details-view.component';
+import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
 
 @Component({
   selector: 'app-application-detail',
@@ -420,8 +421,6 @@ export class ApplicationDetailComponent implements OnInit {
               university: [pg.university || ''],
               countryId: [pg.countryId || ''],
               major: [pg.major || ''],
-              gpa: [pg.gpa || ''],
-              graduationRank: [pg.graduationRank || ''],
               graduationYear: [pg.graduationYear || '', validators],
               languageId: [pg.languageId || ''],
               thesisTitle: [pg.thesisTitle || '']
@@ -595,8 +594,6 @@ export class ApplicationDetailComponent implements OnInit {
             countryName: this.countries().find((c) => c.id === pg.countryId)?.name || '',
             major: pg.major,
             graduationYear: pg.graduationYear,
-            gpa: pg.gpa,
-            graduationRank: pg.graduationRank,
             languageId: pg.languageId,
             languageName: this.languages().find((l) => l.id === pg.languageId)?.name || '',
             sortOrder: index,
@@ -878,7 +875,7 @@ export class ApplicationDetailComponent implements OnInit {
           });
 
           if (newFiles.length === files.length || i === files.length - 1) {
-            if (type === 'undergraduate') {
+            if (type === EDUCATION_LEVELS.UNDERGRADUATE) {
               this.undergraduateFiles.update((current) => {
                 const updated = [...current];
                 if (!updated[index]) updated[index] = [];
@@ -901,7 +898,7 @@ export class ApplicationDetailComponent implements OnInit {
   }
 
   removeDegreeFile(type: string, degreeIndex: number, fileIndex: number): void {
-    if (type === 'undergraduate') {
+    if (type === EDUCATION_LEVELS.UNDERGRADUATE) {
       this.undergraduateFiles.update((files) => {
         const updated = [...files];
         if (updated[degreeIndex]) {
@@ -970,9 +967,8 @@ export class ApplicationDetailComponent implements OnInit {
   }
 
   onEducationFilesUpdate(event: { type: string; index: number; files: any[] }): void {
-    if (event.type === 'undergraduate') {
+    if (event.type === EDUCATION_LEVELS.UNDERGRADUATE) {
       this.undergraduateFiles.update((current) => {
-        debugger;
         const updated = [...current];
         updated[event.index] = event.files;
         return updated;

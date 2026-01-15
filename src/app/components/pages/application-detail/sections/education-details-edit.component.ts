@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core
 import { FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-dialog.component';
+import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
 
 @Component({
   selector: 'app-education-details-edit',
@@ -65,7 +66,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm">
                   <option value="">{{ 'COMMON.SELECT_DEFAULT' | translate }}</option>
                   @for (country of countries; track country.id) {
-                  <option [value]="country.id">{{ country.name }}</option>
+                  <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
                   }
                 </select>
                 @if (i === 0 && degree.get('countryId')?.hasError('required') && degree.get('countryId')?.touched) {
@@ -149,7 +150,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm">
                   <option value="">{{ 'COMMON.SELECT_DEFAULT' | translate }}</option>
                   @for (lang of languages; track lang.id) {
-                  <option [value]="lang.id">{{ lang.name }}</option>
+                  <option [value]="lang.id">{{ isLangVi ? lang.name : lang.name_EN }}</option>
                   }
                 </select>
                 @if (i === 0 && degree.get('languageId')?.hasError('required') && degree.get('languageId')?.touched) {
@@ -259,7 +260,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm">
                   <option value="">{{ 'COMMON.SELECT_DEFAULT' | translate }}</option>
                   @for (country of countries; track country.id) {
-                  <option [value]="country.id">{{ country.name }}</option>
+                  <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
                   }
                 </select>
               </div>
@@ -288,38 +289,6 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
               <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1"
-                  >{{ 'EDUCATION_DETAILS.GPA' | translate }} @if (i === 0) {
-                  <span class="text-red-600">*</span> }</label
-                >
-                <input
-                  type="text"
-                  formControlName="gpa"
-                  class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-                @if (i === 0 && degree.get('gpa')?.hasError('required') && degree.get('gpa')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'EDUCATION_DETAILS.GPA' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
-                </p>
-                }
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1"
-                  >{{ 'EDUCATION_DETAILS.GRADUATION_CLASSIFICATION' | translate }} @if (i === 0) {
-                  <span class="text-red-600">*</span> }</label
-                >
-                <input
-                  type="text"
-                  formControlName="graduationRank"
-                  class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-                @if (i === 0 && degree.get('graduationRank')?.hasError('required') &&
-                degree.get('graduationRank')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'EDUCATION_DETAILS.GRADUATION_CLASSIFICATION' | translate }}
-                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
-                </p>
-                }
-              </div>
-              <div>
                 <label class="block text-xs font-medium text-gray-600 mb-1">{{
                   'EDUCATION_DETAILS.LANGUAGE' | translate
                 }}</label>
@@ -328,7 +297,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm">
                   <option value="">{{ 'COMMON.SELECT_DEFAULT' | translate }}</option>
                   @for (lang of languages; track lang.id) {
-                  <option [value]="lang.id">{{ lang.name }}</option>
+                  <option [value]="lang.id">{{ isLangVi ? lang.name : lang.name_EN }}</option>
                   }
                 </select>
               </div>
@@ -438,6 +407,10 @@ export class EducationDetailsEditComponent {
   currentCategoryId = 2;
   currentEntityId?: string;
 
+  get isLangVi(): boolean {
+    return (localStorage.getItem('lang') || 'vi') === 'vi';
+  }
+
   get undergraduates(): FormArray {
     return this.formGroup.get('undergraduates') as FormArray;
   }
@@ -450,7 +423,7 @@ export class EducationDetailsEditComponent {
     this.currentType = type;
     this.currentIndex = index;
 
-    if (type === 'undergraduate') {
+    if (type === EDUCATION_LEVELS.UNDERGRADUATE) {
       this.currentDialogTitle = this.translate.instant('FILE_DIALOG.TITLE_UNDERGRAD');
       this.currentFiles = this.undergraduateFiles[index] || [];
       this.currentCategoryId = 2;
@@ -468,7 +441,7 @@ export class EducationDetailsEditComponent {
   }
 
   onFilesSaved(files: any[]): void {
-    if (this.currentType === 'undergraduate') {
+    if (this.currentType === EDUCATION_LEVELS.UNDERGRADUATE) {
       if (!this.undergraduateFiles[this.currentIndex]) {
         this.undergraduateFiles[this.currentIndex] = [];
       }

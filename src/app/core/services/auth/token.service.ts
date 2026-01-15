@@ -1,4 +1,11 @@
 import { Injectable, signal, effect } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
+
+interface JwtPayload {
+  exp: number;
+  iat?: number;
+  sub?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -75,5 +82,36 @@ export class TokenService {
     localStorage.removeItem('mba_studentId');
     localStorage.removeItem('mba_fullName');
     localStorage.removeItem('mba_profileCode');
+  }
+
+  /**
+   * Check if the JWT token is expired
+   * @param bufferSeconds Thời gian trừ hao (mặc định 10s) để tránh lệch giờ hoặc lag mạng
+   * @returns true if token is expired or invalid, false if still valid
+   */
+  isTokenExpired(bufferSeconds: number = 10): boolean {
+    const token = this.token();
+    if (!token) return true;
+
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      // Nếu token không có trường exp thì coi như không bao giờ hết hạn (hoặc hết hạn luôn tùy logic dự án)
+      if (!decoded.exp) return true;
+      const currentTime = Date.now() / 1000;
+      // So sánh: Thời gian hết hạn < Thời gian hiện tại + buffer
+      // Ví dụ: Còn 5s nữa hết hạn, nhưng buffer là 10s -> Coi như đã hết hạn để trigger refresh token sớm.
+      return decoded.exp < (currentTime + bufferSeconds);
+    } catch {
+      // Invalid token format = treat as expired
+      return true;
+    }
+  }
+
+  /**
+   * Check if token exists and is still valid (not expired)
+   * @returns true if token exists and is valid, false otherwise
+   */
+  isTokenValid(): boolean {
+    return !!this.token() && !this.isTokenExpired();
   }
 }
