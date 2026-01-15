@@ -144,7 +144,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{
-                'PERSONAL_DETAILS.CORR_DISTRICT' | translate
+                'PERSONAL_DETAILS.CORR_WARD' | translate
               }}</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
                 {{ data?.correspondenceDistrictName || '--' }}
@@ -174,7 +174,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{
-                'PERSONAL_DETAILS.PERM_DISTRICT' | translate
+                'PERSONAL_DETAILS.PERM_WARD' | translate
               }}</label>
               <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
                 {{ data?.permanentDistrictName || '--' }}

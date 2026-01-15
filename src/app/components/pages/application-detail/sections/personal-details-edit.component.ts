@@ -332,13 +332,13 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">{{
-                'PERSONAL_DETAILS.CORR_DISTRICT' | translate
+                'PERSONAL_DETAILS.CORR_WARD' | translate
               }}</label>
               <select
                 formControlName="correspondenceDistrictId"
                 (change)="correspondenceWardChange.emit($event)"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">{{ 'COMMON.SELECT_DISTRICT' | translate }}</option>
+                <option value="">{{ 'COMMON.SELECT_WARD' | translate }}</option>
                 @for (ward of correspondenceWards; track ward.wardCode) {
                 <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                 }
@@ -383,13 +383,13 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">{{
-                'PERSONAL_DETAILS.PERM_DISTRICT' | translate
+                'PERSONAL_DETAILS.PERM_WARD' | translate
               }}</label>
               <select
                 formControlName="permanentDistrictId"
                 (change)="permanentWardChange.emit($event)"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">{{ 'COMMON.SELECT_DISTRICT' | translate }}</option>
+                <option value="">{{ 'COMMON.SELECT_WARD' | translate }}</option>
                 @for (ward of permanentWards; track ward.wardCode) {
                 <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                 }
