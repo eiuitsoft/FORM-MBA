@@ -50,7 +50,7 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   type="text"
                   formControlName="university"
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-                @if (i === 0 && degree.get('university')?.hasError('required') && degree.get('university')?.touched) {
+                @if ((degree.get('university')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('university')?.value)) && degree.get('university')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'EDUCATION_DETAILS.UNIVERSITY' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
                 </p>
@@ -69,7 +69,7 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
                   }
                 </select>
-                @if (i === 0 && degree.get('countryId')?.hasError('required') && degree.get('countryId')?.touched) {
+                @if ((degree.get('countryId')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('countryId')?.value)) && degree.get('countryId')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'EDUCATION_DETAILS.COUNTRY' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
                 </p>
@@ -84,7 +84,7 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   type="text"
                   formControlName="major"
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-                @if (i === 0 && degree.get('major')?.hasError('required') && degree.get('major')?.touched) {
+                @if ((degree.get('major')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('major')?.value)) && degree.get('major')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'EDUCATION_DETAILS.MAJOR' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
                 </p>
@@ -99,13 +99,14 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   type="number"
                   formControlName="graduationYear"
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-                @if (i === 0 && degree.get('graduationYear')?.hasError('required') &&
-                degree.get('graduationYear')?.touched) {
+                @if ((degree.get('graduationYear')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('graduationYear')?.value)) && degree.get('graduationYear')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'EDUCATION_DETAILS.GRAD_YEAR' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
                 </p>
                 } @if (degree.get('graduationYear')?.hasError('minYear') && degree.get('graduationYear')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'EDUCATION_DETAILS.GRAD_YEAR_MIN' | translate }}</p>
+                } @if (degree.get('graduationYear')?.hasError('maxYear') && degree.get('graduationYear')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'EDUCATION_DETAILS.GRAD_YEAR_FUTURE' | translate }}</p>
                 }
               </div>
               <div>
@@ -117,7 +118,7 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   type="text"
                   formControlName="gpa"
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-                @if (i === 0 && degree.get('gpa')?.hasError('required') && degree.get('gpa')?.touched) {
+                @if ((degree.get('gpa')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('gpa')?.value)) && degree.get('gpa')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'EDUCATION_DETAILS.GPA' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
                 </p>
@@ -132,7 +133,7 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   type="text"
                   formControlName="graduationRank"
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-                @if (i === 0 && degree.get('graduationRank')?.hasError('required') &&
+                @if ((degree.get('graduationRank')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('graduationRank')?.value)) &&
                 degree.get('graduationRank')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'EDUCATION_DETAILS.GRADUATION_CLASSIFICATION' | translate }}
@@ -153,7 +154,7 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   <option [value]="lang.id">{{ isLangVi ? lang.name : lang.name_EN }}</option>
                   }
                 </select>
-                @if (i === 0 && degree.get('languageId')?.hasError('required') && degree.get('languageId')?.touched) {
+                @if ((degree.get('languageId')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('languageId')?.value)) && degree.get('languageId')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'EDUCATION_DETAILS.LANGUAGE' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
                 </p>
@@ -206,6 +207,12 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
               </button>
               <p class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</p>
             </div>
+            
+            @if (degree.hasError('incompleteRecord') && degree.touched) {
+              <p class="text-red-600 text-xs mt-3 font-semibold">
+                {{ 'EDUCATION_DETAILS.FIELDS_REQUIRED' | translate }}
+              </p>
+            }
           </div>
           }
           <button
@@ -250,6 +257,11 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   type="text"
                   formControlName="university"
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                @if ((degree.get('university')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('university')?.value)) && degree.get('university')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ 'EDUCATION_DETAILS.UNIVERSITY' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-600 mb-1">{{
@@ -263,6 +275,11 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
                   }
                 </select>
+                @if ((degree.get('countryId')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('countryId')?.value)) && degree.get('countryId')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ 'EDUCATION_DETAILS.COUNTRY' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-600 mb-1">{{
@@ -272,6 +289,11 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   type="text"
                   formControlName="major"
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                @if ((degree.get('major')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('major')?.value)) && degree.get('major')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ 'EDUCATION_DETAILS.MAJOR' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-600 mb-1">{{
@@ -281,8 +303,14 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   type="number"
                   formControlName="graduationYear"
                   class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-                @if (degree.get('graduationYear')?.hasError('minYear') && degree.get('graduationYear')?.touched) {
+                @if ((degree.get('graduationYear')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('graduationYear')?.value)) && degree.get('graduationYear')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ 'EDUCATION_DETAILS.GRAD_YEAR' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                } @if (degree.get('graduationYear')?.hasError('minYear') && degree.get('graduationYear')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'EDUCATION_DETAILS.GRAD_YEAR_MIN' | translate }}</p>
+                } @if (degree.get('graduationYear')?.hasError('maxYear') && degree.get('graduationYear')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'EDUCATION_DETAILS.GRAD_YEAR_FUTURE' | translate }}</p>
                 }
               </div>
             </div>
@@ -300,6 +328,12 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                   <option [value]="lang.id">{{ isLangVi ? lang.name : lang.name_EN }}</option>
                   }
                 </select>
+                @if ((degree.get('languageId')?.hasError('required') || (degree.hasError('incompleteRecord') && !degree.get('languageId')?.value)) && degree.get('languageId')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ 'EDUCATION_DETAILS.LANGUAGE' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
+
               </div>
               <div class="md:col-span-3">
                 <label class="block text-xs font-medium text-gray-600 mb-1">{{
@@ -357,6 +391,12 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
               </button>
               <p class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</p>
             </div>
+            
+            @if (degree.hasError('incompleteRecord') && degree.touched) {
+              <p class="text-red-600 text-xs mt-3 font-semibold">
+                {{ 'EDUCATION_DETAILS.FIELDS_REQUIRED' | translate }}
+              </p>
+            }
           </div>
           }
           <button

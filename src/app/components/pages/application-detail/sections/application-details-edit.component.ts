@@ -32,8 +32,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'APPLICATION_DETAILS.TRACK' | translate }}</label>
-            <div class="bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm text-gray-500 truncate cursor-not-allowed" title="{{ getTrackLabel() }}">
-              {{ getTrackLabel() }}
+            <div class="bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm text-gray-500 truncate cursor-not-allowed" title="{{ getTrackLabel() | translate }}">
+              {{ getTrackLabel() | translate }}
             </div>
           </div> 
 
@@ -70,8 +70,8 @@ export class ApplicationDetailsEditComponent {
 
   getTrackLabel(): string {
     const track = this.data?.track;
-    if (track === 0 || track === '0' || track?.toLowerCase() === 'application') return 'Application';
-    if (track === 1 || track === '1' || track?.toLowerCase() === 'research') return 'Research';
+    if (track === 0 || track === '0' || track?.toLowerCase() === 'application') return 'APPLICATION_DETAILS.APPLICATION';
+    if (track === 1 || track === '1' || track?.toLowerCase() === 'research') return 'APPLICATION_DETAILS.RESEARCH';
     return track || '--';
   }
 }

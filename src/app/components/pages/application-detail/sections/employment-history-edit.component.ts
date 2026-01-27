@@ -68,6 +68,10 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="text"
                 formControlName="organizationName"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position1.organizationName')?.hasError('maxlength') &&
+              formGroup.get('position1.organizationName')?.touched) {
+              <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.ORGANIZATION_MAX' | translate }}</p>
+              }
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.TITLE' | translate }}</label>
@@ -75,6 +79,10 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="text"
                 formControlName="jobTitle"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position1.jobTitle')?.hasError('maxlength') &&
+              formGroup.get('position1.jobTitle')?.touched) {
+              <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.JOB_TITLE_MAX' | translate }}</p>
+              }
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.FROM' | translate }}</label>
@@ -82,6 +90,9 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="month"
                 formControlName="fromDate"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position1.fromDate')?.hasError('minYear') && formGroup.get('position1.fromDate')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
+              }
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.TO' | translate }}</label>
@@ -89,6 +100,12 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="month"
                 formControlName="toDate"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position1.toDate')?.hasError('minYear') && formGroup.get('position1.toDate')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
+              }
+              @if (formGroup.get('position1')?.hasError('dateRange') && formGroup.get('position1.toDate')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'EMPLOYMENT.DATE_RANGE_ERROR' | translate }}</p>
+              }
             </div>
             <div class="md:col-span-4">
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.ADDRESS' | translate }}</label>
@@ -96,7 +113,19 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="text"
                 formControlName="address"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position1.address')?.hasError('maxlength') &&
+              formGroup.get('position1.address')?.touched) {
+              <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.ADDRESS_MAX' | translate }}</p>
+              }
             </div>
+            @if (formGroup.get('position1')?.hasError('incompleteRecord') &&
+            (formGroup.get('position1.organizationName')?.touched || formGroup.get('position1.jobTitle')?.touched ||
+            formGroup.get('position1.fromDate')?.touched || formGroup.get('position1.toDate')?.touched ||
+            formGroup.get('position1.address')?.touched)) {
+            <div class="col-span-1 md:col-span-4">
+              <p class="text-red-600 text-xs mt-1">{{ 'EMPLOYMENT.FIELDS_REQUIRED' | translate }}</p>
+            </div>
+            }
           </div>
         </div>
 
@@ -112,6 +141,10 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="text"
                 formControlName="organizationName"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position2.organizationName')?.hasError('maxlength') &&
+              formGroup.get('position2.organizationName')?.touched) {
+              <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.ORGANIZATION_MAX' | translate }}</p>
+              }
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.TITLE' | translate }}</label>
@@ -119,6 +152,10 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="text"
                 formControlName="jobTitle"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position2.jobTitle')?.hasError('maxlength') &&
+              formGroup.get('position2.jobTitle')?.touched) {
+              <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.JOB_TITLE_MAX' | translate }}</p>
+              }
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.FROM' | translate }}</label>
@@ -126,6 +163,9 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="month"
                 formControlName="fromDate"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position2.fromDate')?.hasError('minYear') && formGroup.get('position2.fromDate')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
+              }
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.TO' | translate }}</label>
@@ -133,6 +173,12 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="month"
                 formControlName="toDate"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position2.toDate')?.hasError('minYear') && formGroup.get('position2.toDate')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
+              }
+              @if (formGroup.get('position2')?.hasError('dateRange') && formGroup.get('position2.toDate')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'EMPLOYMENT.DATE_RANGE_ERROR' | translate }}</p>
+              }
             </div>
             <div class="md:col-span-4">
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.ADDRESS' | translate }}</label>
@@ -140,7 +186,19 @@ import { TranslatePipe } from '@ngx-translate/core';
                 type="text"
                 formControlName="address"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('position2.address')?.hasError('maxlength') &&
+              formGroup.get('position2.address')?.touched) {
+              <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.ADDRESS_MAX' | translate }}</p>
+              }
             </div>
+            @if (formGroup.get('position2')?.hasError('incompleteRecord') &&
+            (formGroup.get('position2.organizationName')?.touched || formGroup.get('position2.jobTitle')?.touched ||
+            formGroup.get('position2.fromDate')?.touched || formGroup.get('position2.toDate')?.touched ||
+            formGroup.get('position2.address')?.touched)) {
+            <div class="col-span-1 md:col-span-4">
+              <p class="text-red-600 text-xs mt-1">{{ 'EMPLOYMENT.FIELDS_REQUIRED' | translate }}</p>
+            </div>
+            }
           </div>
         </div>
       </div>

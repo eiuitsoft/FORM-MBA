@@ -31,6 +31,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           </p>
           } @if (formGroup.get('fullName')?.hasError('minlength') && formGroup.get('fullName')?.touched) {
           <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.FULL_NAME_MIN' | translate }}</p>
+          } @if (formGroup.get('fullName')?.hasError('maxlength') && formGroup.get('fullName')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.FULL_NAME_MAX' | translate }}</p>
           }
         </div>
 
@@ -82,6 +84,10 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           </p>
           } @if (formGroup.get('dateOfBirth')?.hasError('minAge') && formGroup.get('dateOfBirth')?.touched) {
           <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.MIN_AGE' | translate }}</p>
+          } @if (formGroup.get('dateOfBirth')?.hasError('maxDate') && formGroup.get('dateOfBirth')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.DOB_FUTURE' | translate }}</p>
+          } @if (formGroup.get('dateOfBirth')?.hasError('minYear') && formGroup.get('dateOfBirth')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
           }
         </div>
 
@@ -166,6 +172,10 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <p class="text-red-600 text-sm mt-1">
             {{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
           </p>
+          } @if (formGroup.get('dateIssued')?.hasError('maxDate') && formGroup.get('dateIssued')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'COMMON.DATE_FUTURE' | translate }}</p>
+          } @if (formGroup.get('dateIssued')?.hasError('minYear') && formGroup.get('dateIssued')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
           }
         </div>
 
@@ -183,6 +193,9 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <p class="text-red-600 text-sm mt-1">
             {{ 'PERSONAL_DETAILS.PLACE_OF_ISSUE' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
           </p>
+          } @if (formGroup.get('passportPlaceIssued')?.hasError('maxlength') &&
+          formGroup.get('passportPlaceIssued')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.PLACE_OF_ISSUE_MAX' | translate }}</p>
           }
         </div>
 
@@ -294,6 +307,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <p class="text-red-600 text-sm mt-1">
             {{ 'PERSONAL_DETAILS.JOB_TITLE' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
           </p>
+          } @if (formGroup.get('jobTitle')?.hasError('maxlength') && formGroup.get('jobTitle')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.JOB_TITLE_MAX' | translate }}</p>
           }
         </div>
 
@@ -310,6 +325,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <p class="text-red-600 text-sm mt-1">
             {{ 'PERSONAL_DETAILS.ORGANIZATION' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
           </p>
+          } @if (formGroup.get('organization')?.hasError('maxlength') && formGroup.get('organization')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.ORGANIZATION_MAX' | translate }}</p>
           }
         </div>
 
@@ -361,6 +378,9 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <p class="text-red-600 text-sm mt-1">
             {{ 'PERSONAL_DETAILS.CORR_ADDRESS' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
           </p>
+          } @if (formGroup.get('correspondenceAddress')?.hasError('maxlength') &&
+          formGroup.get('correspondenceAddress')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.ADDRESS_MAX' | translate }}</p>
           }
         </div>
 
@@ -411,6 +431,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <p class="text-red-600 text-sm mt-1">
             {{ 'PERSONAL_DETAILS.PERM_ADDRESS' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
           </p>
+          } @if (formGroup.get('permanentAddress')?.hasError('maxlength') && formGroup.get('permanentAddress')?.touched) {
+          <p class="text-red-600 text-sm mt-1">{{ 'PERSONAL_DETAILS.ADDRESS_MAX' | translate }}</p>
           }
         </div>
 

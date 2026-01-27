@@ -3,18 +3,19 @@ import { AlertService } from '@/src/app/core/services/alert/alert.service';
 import { TokenService } from '@/src/app/core/services/auth/token.service';
 import { MbaService } from '@/src/app/core/services/mba/mba.service';
 import { minAgeValidator } from '@/src/validators/age.validator';
-import { scoreRangeValidator } from '@/src/validators/conditional.validator';
-import { dateRangeValidator, maxDateValidator } from '@/src/validators/date.validator';
+import { completeRecordValidator } from '@/src/validators/complete-record.validator';
+import { conditionalRequiredValidator, scoreRangeValidator } from '@/src/validators/conditional.validator';
+import { dateRangeValidator, maxDateValidator, minDateYearValidator } from '@/src/validators/date.validator';
 import { emailFormatValidator } from '@/src/validators/email-format.validator';
-import { atLeastOneEnglishQualificationValidator } from '@/src/validators/english-qualification.validator';
+import { atLeastOneEnglishQualificationValidator, completeQualificationValidator } from '@/src/validators/english-qualification.validator';
 import { passportFormatValidator } from '@/src/validators/passport-format.validator';
 import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
-import { minYearValidator } from '@/src/validators/year.validator';
+import { maxYearValidator, minYearValidator } from '@/src/validators/year.validator';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { ApplicationDetailsEditComponent } from './sections/application-details-edit.component';
 import { ApplicationDetailsViewComponent } from './sections/application-details-view.component';
@@ -56,8 +57,10 @@ export class ApplicationDetailComponent implements OnInit {
   private readonly _router = inject(Router);
   private readonly _fb = inject(FormBuilder);
   private readonly tokenService = inject(TokenService);
+  private readonly _translate = inject(TranslateService);
 
   applicationId = signal<string>('');
+  currentYear = new Date().getFullYear();
   loading = signal(false);
   saving = signal(false);
   exporting = signal(false);
@@ -338,12 +341,12 @@ export class ApplicationDetailComponent implements OnInit {
 
     this.editForm = this._fb.group({
       personalDetails: this._fb.group({
-        fullName: [data.personalDetails.fullName, [Validators.required, Validators.minLength(2)]],
+        fullName: [data.personalDetails.fullName, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
         nationalityId: [data.personalDetails.nationalityId, Validators.required],
         gender: [data.personalDetails.gender, Validators.required],
         dateOfBirth: [
           this.formatDateForInput(data.personalDetails.dateOfBirth),
-          [Validators.required, minAgeValidator(18)]
+          [Validators.required, minAgeValidator(18), maxDateValidator(), minDateYearValidator(1900)]
         ],
         placeOfBirth: [data.personalDetails.placeOfBirth, Validators.required],
         passportNo: [
@@ -357,8 +360,8 @@ export class ApplicationDetailComponent implements OnInit {
             }, 'passportExists')
           ]
         ],
-        dateIssued: [this.formatDateForInput(data.personalDetails.dateIssued), Validators.required],
-        passportPlaceIssued: [data.personalDetails.passportPlaceIssued, Validators.required],
+        dateIssued: [this.formatDateForInput(data.personalDetails.dateIssued), [Validators.required, maxDateValidator(), minDateYearValidator(1900)]],
+        passportPlaceIssued: [data.personalDetails.passportPlaceIssued, [Validators.required, Validators.maxLength(50)]],
         email: [data.personalDetails.email, [Validators.required, Validators.email, emailFormatValidator()]],
         mobile: [
           data.personalDetails.mobile,
@@ -374,18 +377,18 @@ export class ApplicationDetailComponent implements OnInit {
             }, 'mobileExists')
           ]
         ],
-        jobTitle: [data.personalDetails.jobTitle, Validators.required],
-        organization: [data.personalDetails.organization, Validators.required],
+        jobTitle: [data.personalDetails.jobTitle, [Validators.required, Validators.maxLength(50)]],
+        organization: [data.personalDetails.organization, [Validators.required, Validators.maxLength(50)]],
         correspondenceCityId: [data.personalDetails.correspondenceCityId || ''],
         correspondenceCityName: [data.personalDetails.correspondenceCityName || ''],
         correspondenceDistrictId: [data.personalDetails.correspondenceDistrictId || ''],
         correspondenceDistrictName: [data.personalDetails.correspondenceDistrictName || ''],
-        correspondenceAddress: [data.personalDetails.correspondenceAddress, Validators.required],
+        correspondenceAddress: [data.personalDetails.correspondenceAddress, [Validators.required, Validators.maxLength(50)]],
         permanentCityId: [data.personalDetails.permanentCityId || ''],
         permanentCityName: [data.personalDetails.permanentCityName || ''],
         permanentDistrictId: [data.personalDetails.permanentDistrictId || ''],
         permanentDistrictName: [data.personalDetails.permanentDistrictName || ''],
-        permanentAddress: [data.personalDetails.permanentAddress, Validators.required]
+        permanentAddress: [data.personalDetails.permanentAddress, [Validators.required, Validators.maxLength(50)]]
       }),
       applicationDetails: this._fb.group({
         admissionYear: [
@@ -396,56 +399,75 @@ export class ApplicationDetailComponent implements OnInit {
       educationDetails: this._fb.group({
         undergraduates: this._fb.array(
           (data?.educationDetails?.undergraduates ?? []).map((ug: EducationRecord, index: number) => {
-            const graduationYearValidators = ug.graduationYear ? [minYearValidator(1950)] : [];
-            const validators = index === 0 ? [Validators.required, minYearValidator(1950)] : graduationYearValidators;
+            const validators = [minYearValidator(1950), maxYearValidator(this.currentYear)];
+            if (index === 0) {
+              validators.push(Validators.required);
+            }
 
-            return this._fb.group({
-              id: [ug.id],
-              university: [ug.university, index === 0 ? Validators.required : null],
-              countryId: [ug.countryId, index === 0 ? Validators.required : null],
-              major: [ug.major, index === 0 ? Validators.required : null],
-              graduationYear: [ug.graduationYear || '', validators],
-              gpa: [ug.gpa || ''],
-              graduationRank: [ug.graduationRank || ''],
-              languageId: [ug.languageId, index === 0 ? Validators.required : null],
-              thesisTitle: [ug.thesisTitle || '']
-            });
+            const fieldsToValidate = ['university', 'countryId', 'major', 'graduationYear', 'gpa', 'graduationRank', 'languageId'];
+            return this._fb.group(
+              {
+                id: [ug.id],
+                university: [ug.university, index === 0 ? Validators.required : null],
+                countryId: [ug.countryId, index === 0 ? Validators.required : null],
+                major: [ug.major, index === 0 ? Validators.required : null],
+                graduationYear: [ug.graduationYear || '', validators],
+                gpa: [ug.gpa || '', index === 0 ? Validators.required : null],
+                graduationRank: [ug.graduationRank || '', index === 0 ? Validators.required : null],
+                languageId: [ug.languageId, index === 0 ? Validators.required : null],
+                thesisTitle: [ug.thesisTitle || '']
+              },
+              { validators: index === 0 ? null : completeRecordValidator(fieldsToValidate) }
+            );
           })
         ),
         postgraduates: this._fb.array(
           (data?.educationDetails?.postgraduates ?? []).map((pg: EducationRecord) => {
-            const validators = pg.graduationYear ? [minYearValidator(1950)] : [];
+            const validators = [minYearValidator(1950), maxYearValidator(this.currentYear)];
 
-            return this._fb.group({
-              id: [pg.id],
-              university: [pg.university || ''],
-              countryId: [pg.countryId || ''],
-              major: [pg.major || ''],
-              graduationYear: [pg.graduationYear || '', validators],
-              languageId: [pg.languageId || ''],
-              thesisTitle: [pg.thesisTitle || '']
-            });
+            const fieldsToValidate = ['university', 'countryId', 'major', 'graduationYear', 'languageId'];
+            return this._fb.group(
+              {
+                id: [pg.id],
+                university: [pg.university || ''],
+                countryId: [pg.countryId || ''],
+                major: [pg.major || ''],
+                graduationYear: [pg.graduationYear || '', validators],
+                languageId: [pg.languageId || ''],
+                thesisTitle: [pg.thesisTitle || '']
+              },
+              { validators: completeRecordValidator(fieldsToValidate) }
+            );
           })
         )
       }),
       englishQualifications: this._fb.group(
         {
-          ielts: this._fb.group({
-            id: [data.englishQualifications.ielts?.id],
-            score: [data.englishQualifications.ielts?.score || '', scoreRangeValidator(0, 9)],
-            date: [this.formatDateForInput(data.englishQualifications.ielts?.date), maxDateValidator()]
-          }),
-          toefl: this._fb.group({
-            id: [data.englishQualifications.toefl?.id],
-            score: [data.englishQualifications.toefl?.score || '', scoreRangeValidator(0, 120)],
-            date: [this.formatDateForInput(data.englishQualifications.toefl?.date), maxDateValidator()]
-          }),
-          other: this._fb.group({
-            id: [data.englishQualifications.other?.id],
-            name: [data.englishQualifications.other?.name || ''],
-            score: [data.englishQualifications.other?.score || ''],
-            date: [this.formatDateForInput(data.englishQualifications.other?.date), maxDateValidator()]
-          })
+          ielts: this._fb.group(
+            {
+              id: [data.englishQualifications.ielts?.id],
+              score: [data.englishQualifications.ielts?.score || '', scoreRangeValidator(0, 9)],
+              date: [this.formatDateForInput(data.englishQualifications.ielts?.date), [maxDateValidator(), minDateYearValidator(1900)]]
+            },
+            { validators: completeQualificationValidator(['score', 'date']) }
+          ),
+          toefl: this._fb.group(
+            {
+              id: [data.englishQualifications.toefl?.id],
+              score: [data.englishQualifications.toefl?.score || '', scoreRangeValidator(0, 120)],
+              date: [this.formatDateForInput(data.englishQualifications.toefl?.date), [maxDateValidator(), minDateYearValidator(1900)]]
+            },
+            { validators: completeQualificationValidator(['score', 'date']) }
+          ),
+          other: this._fb.group(
+            {
+              id: [data.englishQualifications.other?.id],
+              name: [data.englishQualifications.other?.name || ''],
+              score: [data.englishQualifications.other?.score || ''],
+              date: [this.formatDateForInput(data.englishQualifications.other?.date), [maxDateValidator(), minDateYearValidator(1900)]]
+            },
+            { validators: completeQualificationValidator(['name', 'score', 'date']) }
+          )
         },
         { validators: atLeastOneEnglishQualificationValidator() }
       ),
@@ -458,24 +480,24 @@ export class ApplicationDetailComponent implements OnInit {
         position1: this._fb.group(
           {
             id: [data.employmentHistory.position1?.id],
-            organizationName: [data.employmentHistory.position1?.organizationName || ''],
-            jobTitle: [data.employmentHistory.position1?.jobTitle || ''],
-            fromDate: [this.formatMonthForInput(data.employmentHistory.position1?.fromDate)],
-            toDate: [this.formatMonthForInput(data.employmentHistory.position1?.toDate)],
-            address: [data.employmentHistory.position1?.address || '']
+            organizationName: [data.employmentHistory.position1?.organizationName || '', Validators.maxLength(50)],
+            jobTitle: [data.employmentHistory.position1?.jobTitle || '', Validators.maxLength(50)],
+            fromDate: [this.formatMonthForInput(data.employmentHistory.position1?.fromDate), [minDateYearValidator(1900)]],
+            toDate: [this.formatMonthForInput(data.employmentHistory.position1?.toDate), [minDateYearValidator(1900)]],
+            address: [data.employmentHistory.position1?.address || '', Validators.maxLength(50)]
           },
-          { validators: dateRangeValidator('fromDate', 'toDate') }
+          { validators: [dateRangeValidator('fromDate', 'toDate'), completeRecordValidator(['organizationName', 'jobTitle', 'fromDate', 'toDate', 'address'])] }
         ),
         position2: this._fb.group(
           {
             id: [data.employmentHistory.position2?.id],
-            organizationName: [data.employmentHistory.position2?.organizationName || ''],
-            jobTitle: [data.employmentHistory.position2?.jobTitle || ''],
-            fromDate: [this.formatMonthForInput(data.employmentHistory.position2?.fromDate)],
-            toDate: [this.formatMonthForInput(data.employmentHistory.position2?.toDate)],
-            address: [data.employmentHistory.position2?.address || '']
+            organizationName: [data.employmentHistory.position2?.organizationName || '', Validators.maxLength(50)],
+            jobTitle: [data.employmentHistory.position2?.jobTitle || '', Validators.maxLength(50)],
+            fromDate: [this.formatMonthForInput(data.employmentHistory.position2?.fromDate), [minDateYearValidator(1900)]],
+            toDate: [this.formatMonthForInput(data.employmentHistory.position2?.toDate), [minDateYearValidator(1900)]],
+            address: [data.employmentHistory.position2?.address || '', Validators.maxLength(50)]
           },
-          { validators: dateRangeValidator('fromDate', 'toDate') }
+          { validators: [dateRangeValidator('fromDate', 'toDate'), completeRecordValidator(['organizationName', 'jobTitle', 'fromDate', 'toDate', 'address'])] }
         )
       })
     });
@@ -493,7 +515,10 @@ export class ApplicationDetailComponent implements OnInit {
     if (this.editForm.invalid) {
       // Log all validation errors for debugging
       this.logValidationErrors();
-      this._alertService.error('Error', 'Please fill in all required fields');
+      this._alertService.error(
+        this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+        this._translate.instant('COMMON.ERROR_REVIEW')
+      );
       this.editForm.markAllAsTouched();
       return;
     }
@@ -504,17 +529,23 @@ export class ApplicationDetailComponent implements OnInit {
     this._mbaService.update(this.applicationId(), formData).subscribe({
       next: (res) => {
         if (res.success) {
-          this._alertService.success('Success!', 'Application updated successfully!');
+          this._alertService.success(
+            this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'),
+            this._translate.instant('SUBMIT_RESULT.SUCCESS_MESSAGE')
+          );
           this.isEditMode.set(false);
           this.loadApplicationData(this.applicationId());
         } else {
-          this._alertService.error('Error', res.message || 'Failed to update application');
+          this._alertService.error(this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'), res.message || this._translate.instant('SUBMIT_RESULT.ERROR_MESSAGE'));
         }
         this.saving.set(false);
       },
       error: (err) => {
         console.error('Update error:', err);
-        this._alertService.error('Error', err.message || 'An error occurred while updating the application');
+        this._alertService.error(
+          this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+          err.message || this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR')
+        );
         this.saving.set(false);
       }
     });
@@ -668,15 +699,20 @@ export class ApplicationDetailComponent implements OnInit {
 
   addUndergraduate(): void {
     this.undergraduatesArray.push(
-      this._fb.group({
-        id: [null],
-        university: [''],
-        countryId: [''],
-        major: [''],
-        graduationYear: ['', minYearValidator(1950)],
-        languageId: [''],
-        thesisTitle: ['']
-      })
+      this._fb.group(
+        {
+          id: [null],
+          university: [''],
+          countryId: [''],
+          major: [''],
+          graduationYear: ['', [minYearValidator(1950), maxYearValidator(this.currentYear)]],
+          gpa: [''],
+          graduationRank: [''],
+          languageId: [''],
+          thesisTitle: ['']
+        },
+        { validators: completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'gpa', 'graduationRank', 'languageId']) }
+      )
     );
 
     // Add empty file array for new degree
@@ -693,15 +729,18 @@ export class ApplicationDetailComponent implements OnInit {
 
   addPostgraduate(): void {
     this.postgraduatesArray.push(
-      this._fb.group({
-        id: [null],
-        university: [''],
-        countryId: [''],
-        major: [''],
-        graduationYear: ['', minYearValidator(1950)],
-        languageId: [''],
-        thesisTitle: ['']
-      })
+      this._fb.group(
+        {
+          id: [null],
+          university: [''],
+          countryId: [''],
+          major: [''],
+          graduationYear: ['', [minYearValidator(1950), maxYearValidator(this.currentYear)]],
+          languageId: [''],
+          thesisTitle: ['']
+        },
+        { validators: completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'languageId']) }
+      )
     );
 
     // Add empty file array for new degree
@@ -761,11 +800,17 @@ export class ApplicationDetailComponent implements OnInit {
         window.URL.revokeObjectURL(url);
 
         this.exporting.set(false);
-        this._alertService.success('Success!', 'PDF exported successfully!');
+        this._alertService.success(
+          this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'),
+          this._translate.instant('APPLICATION_PAGE.EXPORT_SUCCESS')
+        );
       },
       error: (err) => {
         console.error('Export PDF error:', err);
-        this._alertService.error('Error', 'Failed to export PDF');
+        this._alertService.error(
+          this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+          this._translate.instant('APPLICATION_PAGE.EXPORT_ERROR')
+        );
         this.exporting.set(false);
       }
     });
@@ -806,16 +851,21 @@ export class ApplicationDetailComponent implements OnInit {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
-        // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-          this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`);
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_SIZE_LIMIT')}`
+          );
           continue;
         }
 
         // Validate file type
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
-          this._alertService.error('Error', `File ${file.name} has invalid type. Only PDF, JPG, and PNG are allowed`);
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_INVALID_TYPE')}`
+          );
           continue;
         }
 

@@ -30,9 +30,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 formControlName="score"
                 placeholder="e.g., 7.5"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-              @if (formGroup.get('ielts.score')?.hasError('invalidIeltsScore') && formGroup.get('ielts.score')?.touched)
-              {
-              <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.IELTS_RANGE' | translate }}</p>
+              @if (formGroup.get('ielts.score')?.hasError('scoreRange') && formGroup.get('ielts.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.IELTS_RANGE' | translate }}</p>
               }
             </div>
             <div>
@@ -41,12 +40,16 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 type="date"
                 formControlName="date"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-              @if (formGroup.get('ielts.date')?.hasError('conditionalRequired') && formGroup.get('ielts.date')?.touched)
-              {
-              <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.DATE_REQUIRED' | translate }}</p>
+              @if (formGroup.get('ielts.date')?.hasError('maxDate') && formGroup.get('ielts.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FUTURE_DATE' | translate }}</p>
+              } @if (formGroup.get('ielts.date')?.hasError('minYear') && formGroup.get('ielts.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }
             </div>
           </div>
+          @if (formGroup.get('ielts')?.hasError('incompleteQualification') && (formGroup.get('ielts.score')?.touched || formGroup.get('ielts.date')?.touched)) {
+            <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FIELDS_REQUIRED' | translate }}</p>
+          }
         </div>
 
         <!-- TOEFL -->
@@ -62,9 +65,8 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 formControlName="score"
                 placeholder="e.g., 95"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-              @if (formGroup.get('toefl.score')?.hasError('invalidToeflScore') && formGroup.get('toefl.score')?.touched)
-              {
-              <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.TOEFL_RANGE' | translate }}</p>
+              @if (formGroup.get('toefl.score')?.hasError('scoreRange') && formGroup.get('toefl.score')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.TOEFL_RANGE' | translate }}</p>
               }
             </div>
             <div>
@@ -73,12 +75,16 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 type="date"
                 formControlName="date"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
-              @if (formGroup.get('toefl.date')?.hasError('conditionalRequired') && formGroup.get('toefl.date')?.touched)
-              {
-              <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.DATE_REQUIRED' | translate }}</p>
+              @if (formGroup.get('toefl.date')?.hasError('maxDate') && formGroup.get('toefl.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FUTURE_DATE' | translate }}</p>
+              } @if (formGroup.get('toefl.date')?.hasError('minYear') && formGroup.get('toefl.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }
             </div>
           </div>
+          @if (formGroup.get('toefl')?.hasError('incompleteQualification') && (formGroup.get('toefl.score')?.touched || formGroup.get('toefl.date')?.touched)) {
+            <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FIELDS_REQUIRED' | translate }}</p>
+          }
         </div>
 
         <!-- Other -->
@@ -109,8 +115,16 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 type="date"
                 formControlName="date"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+              @if (formGroup.get('other.date')?.hasError('maxDate') && formGroup.get('other.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FUTURE_DATE' | translate }}</p>
+              } @if (formGroup.get('other.date')?.hasError('minYear') && formGroup.get('other.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
+              }
             </div>
           </div>
+          @if (formGroup.get('other')?.hasError('incompleteQualification') && (formGroup.get('other.name')?.touched || formGroup.get('other.score')?.touched || formGroup.get('other.date')?.touched)) {
+            <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FIELDS_REQUIRED' | translate }}</p>
+          }
         </div>
 
         <!-- Upload English Certificates -->

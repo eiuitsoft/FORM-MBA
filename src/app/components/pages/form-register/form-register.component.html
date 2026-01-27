@@ -48,6 +48,10 @@
             <p class="text-red-600 text-sm mt-1">
               {{ 'PERSONAL_DETAILS.FULL_NAME_MIN' | translate }}
             </p>
+            } @if (personalDetails.get('fullName')?.hasError('maxlength') && personalDetails.get('fullName')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ 'PERSONAL_DETAILS.FULL_NAME_MAX' | translate }}
+            </p>
             }
           </div>
           <div>
@@ -114,6 +118,16 @@
             personalDetails.get('dateOfBirth')?.touched) {
             <p class="text-red-600 text-sm mt-1">
               {{ 'PERSONAL_DETAILS.MIN_AGE' | translate }}
+            </p>
+            } @if (personalDetails.get('dateOfBirth')?.hasError('maxDate') &&
+            (submitted() || personalDetails.get('dateOfBirth')?.touched)) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ 'PERSONAL_DETAILS.DOB_FUTURE' | translate }}
+            </p>
+            } @if (personalDetails.get('dateOfBirth')?.hasError('minYear') &&
+            personalDetails.get('dateOfBirth')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}
             </p>
             }
           </div>
@@ -252,6 +266,10 @@
               {{ 'PERSONAL_DETAILS.JOB_TITLE' | translate }}
               {{ 'COMMON.REQUIRED_FIELD' | translate }}
             </p>
+            } @if (personalDetails.get('jobTitle')?.hasError('maxlength') && personalDetails.get('jobTitle')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ 'PERSONAL_DETAILS.JOB_TITLE_MAX' | translate }}
+            </p>
             }
           </div>
           <div>
@@ -269,6 +287,11 @@
             <p class="text-red-600 text-sm mt-1">
               {{ 'PERSONAL_DETAILS.ORGANIZATION' | translate }}
               {{ 'COMMON.REQUIRED_FIELD' | translate }}
+            </p>
+            } @if (personalDetails.get('organization')?.hasError('maxlength') &&
+            personalDetails.get('organization')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ 'PERSONAL_DETAILS.ORGANIZATION_MAX' | translate }}
             </p>
             }
           </div>
@@ -348,6 +371,16 @@
                   {{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }}
                   {{ 'COMMON.REQUIRED_FIELD' | translate }}
                 </p>
+                } @if (personalDetails.get('dateIssued')?.hasError('maxDate') &&
+                (submitted() || personalDetails.get('dateIssued')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'COMMON.DATE_FUTURE' | translate }}
+                </p>
+                } @if (personalDetails.get('dateIssued')?.hasError('minYear') &&
+                (submitted() || personalDetails.get('dateIssued')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}
+                </p>
                 }
               </div>
             </div>
@@ -367,6 +400,11 @@
             <p class="text-red-600 text-sm mt-1">
               {{ 'PERSONAL_DETAILS.PLACE_OF_ISSUE' | translate }}
               {{ 'COMMON.REQUIRED_FIELD' | translate }}
+            </p>
+            } @if (personalDetails.get('passportPlaceIssued')?.hasError('maxlength') &&
+            personalDetails.get('passportPlaceIssued')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ 'PERSONAL_DETAILS.PLACE_OF_ISSUE_MAX' | translate }}
             </p>
             }
           </div>
@@ -426,6 +464,11 @@
               {{ 'PERSONAL_DETAILS.CORR_ADDRESS' | translate }}
               {{ 'COMMON.REQUIRED_FIELD' | translate }}
             </p>
+            } @if (personalDetails.get('correspondenceAddress')?.hasError('maxlength') &&
+            personalDetails.get('correspondenceAddress')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ 'PERSONAL_DETAILS.ADDRESS_MAX' | translate }}
+            </p>
             }
           </div>
 
@@ -484,6 +527,11 @@
             <p class="text-red-600 text-sm mt-1">
               {{ 'PERSONAL_DETAILS.PERM_ADDRESS' | translate }}
               {{ 'COMMON.REQUIRED_FIELD' | translate }}
+            </p>
+            } @if (personalDetails.get('permanentAddress')?.hasError('maxlength') &&
+            personalDetails.get('permanentAddress')?.touched) {
+            <p class="text-red-600 text-sm mt-1">
+              {{ 'PERSONAL_DETAILS.ADDRESS_MAX' | translate }}
             </p>
             }
           </div>
@@ -851,6 +899,11 @@
                   }
                 </div>
               </div>
+              @if (undergraduates.at(ugIndex).hasError('incompleteRecord') && (submitted() || undergraduates.at(ugIndex).touched)) {
+              <p class="text-red-600 text-sm mt-3 font-semibold">
+                {{ 'EDUCATION_DETAILS.FIELDS_REQUIRED' | translate }}
+              </p>
+              }
             </div>
             }
           </div>
@@ -938,13 +991,21 @@
                     placeholder="YYYY"
                     formControlName="graduationYear"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if ((postgraduates.at(pgIndex).get('graduationYear')?.hasError('required') || 
+                        (postgraduates.at(pgIndex).hasError('incompleteRecord') && !postgraduates.at(pgIndex).get('graduationYear')?.value)) && 
+                       (submitted() || postgraduates.at(pgIndex).get('graduationYear')?.touched)) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.GRAD_YEAR' | translate }}
+                    {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                  </p>
+                  }
                   @if (postgraduates.at(pgIndex).get('graduationYear')?.hasError('minYear') &&
-                  postgraduates.at(pgIndex).get('graduationYear')?.touched) {
+                  (submitted() || postgraduates.at(pgIndex).get('graduationYear')?.touched)) {
                   <p class="text-red-600 text-sm mt-1">
                     {{ 'EDUCATION_DETAILS.GRAD_YEAR_MIN' | translate }}
                   </p>
                   } @if (postgraduates.at(pgIndex).get('graduationYear')?.hasError('maxYear') &&
-                  postgraduates.at(pgIndex).get('graduationYear')?.touched) {
+                  (submitted() || postgraduates.at(pgIndex).get('graduationYear')?.touched)) {
                   <p class="text-red-600 text-sm mt-1">
                     {{ 'EDUCATION_DETAILS.GRAD_YEAR_FUTURE' | translate }}
                   </p>
@@ -1012,6 +1073,11 @@
                   }
                 </div>
               </div>
+              @if (postgraduates.at(pgIndex).hasError('incompleteRecord') && (submitted() || postgraduates.at(pgIndex).touched)) {
+              <p class="text-red-600 text-sm mt-3 font-semibold">
+                {{ 'EDUCATION_DETAILS.FIELDS_REQUIRED' | translate }}
+              </p>
+              }
             </div>
             }
             <!-- Add More Button -->
@@ -1041,20 +1107,10 @@
                   formControlName="score"
                   [placeholder]="'ENGLISH.SCORE_HINT' | translate"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-                @if (englishQualifications.get('ielts.score')?.hasError('required') &&
-                englishQualifications.get('ielts.score')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'ENGLISH.SCORE_REQUIRED' | translate }}
-                </p>
-                } @if (englishQualifications.get('ielts.score')?.hasError('scoreRange') &&
+                @if (englishQualifications.get('ielts.score')?.hasError('scoreRange') &&
                 englishQualifications.get('ielts.score')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'ENGLISH.IELTS_RANGE' | translate }}
-                </p>
-                } @if (englishQualifications.get('ielts.score')?.hasError('invalidScore') &&
-                englishQualifications.get('ielts.score')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'ENGLISH.INVALID_NUMBER' | translate }}
                 </p>
                 }
               </div>
@@ -1064,19 +1120,25 @@
                   formControlName="date"
                   [placeholder]="'ENGLISH.DATE_HINT' | translate"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-                @if (englishQualifications.get('ielts.date')?.hasError('required') &&
-                englishQualifications.get('ielts.date')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'ENGLISH.DATE_REQUIRED' | translate }}
-                </p>
-                } @if (englishQualifications.get('ielts.date')?.hasError('maxDate') &&
+                @if (englishQualifications.get('ielts.date')?.hasError('maxDate') &&
                 englishQualifications.get('ielts.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'ENGLISH.DATE_FUTURE' | translate }}
                 </p>
+                } @if (englishQualifications.get('ielts.date')?.hasError('minYear') &&
+                englishQualifications.get('ielts.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}
+                </p>
                 }
               </div>
             </div>
+            @if (englishQualifications.get('ielts')?.hasError('incompleteQualification') &&
+            (englishQualifications.get('ielts.score')?.touched || englishQualifications.get('ielts.date')?.touched)) {
+            <p class="text-red-600 text-xs mt-1">
+              {{ 'ENGLISH.FIELDS_REQUIRED' | translate }}
+            </p>
+            }
           </div>
 
           <!-- TOEFL -->
@@ -1089,20 +1151,10 @@
                   formControlName="score"
                   [placeholder]="'ENGLISH.SCORE_HINT' | translate"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-                @if (englishQualifications.get('toefl.score')?.hasError('required') &&
-                englishQualifications.get('toefl.score')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'ENGLISH.SCORE_REQUIRED' | translate }}
-                </p>
-                } @if (englishQualifications.get('toefl.score')?.hasError('scoreRange') &&
+                @if (englishQualifications.get('toefl.score')?.hasError('scoreRange') &&
                 englishQualifications.get('toefl.score')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'ENGLISH.TOEFL_RANGE' | translate }}
-                </p>
-                } @if (englishQualifications.get('toefl.score')?.hasError('invalidScore') &&
-                englishQualifications.get('toefl.score')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'ENGLISH.INVALID_NUMBER' | translate }}
                 </p>
                 }
               </div>
@@ -1112,19 +1164,25 @@
                   formControlName="date"
                   [placeholder]="'ENGLISH.DATE_HINT' | translate"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-                @if (englishQualifications.get('toefl.date')?.hasError('required') &&
-                englishQualifications.get('toefl.date')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'ENGLISH.DATE_REQUIRED' | translate }}
-                </p>
-                } @if (englishQualifications.get('toefl.date')?.hasError('maxDate') &&
+                @if (englishQualifications.get('toefl.date')?.hasError('maxDate') &&
                 englishQualifications.get('toefl.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'ENGLISH.DATE_FUTURE' | translate }}
                 </p>
+                } @if (englishQualifications.get('toefl.date')?.hasError('minYear') &&
+                englishQualifications.get('toefl.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}
+                </p>
                 }
               </div>
             </div>
+            @if (englishQualifications.get('toefl')?.hasError('incompleteQualification') &&
+            (englishQualifications.get('toefl.score')?.touched || englishQualifications.get('toefl.date')?.touched)) {
+            <p class="text-red-600 text-xs mt-1">
+              {{ 'ENGLISH.FIELDS_REQUIRED' | translate }}
+            </p>
+            }
           </div>
 
           <!-- Other Test -->
@@ -1143,12 +1201,6 @@
                   formControlName="score"
                   [placeholder]="'ENGLISH.SCORE_HINT' | translate"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-                @if (englishQualifications.get('other.score')?.hasError('required') &&
-                englishQualifications.get('other.score')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'ENGLISH.SCORE_REQUIRED' | translate }}
-                </p>
-                }
               </div>
               <div class="col-span-2">
                 <input
@@ -1156,19 +1208,27 @@
                   formControlName="date"
                   [placeholder]="'ENGLISH.DATE_HINT' | translate"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-                @if (englishQualifications.get('other.date')?.hasError('required') &&
-                englishQualifications.get('other.date')?.touched) {
-                <p class="text-red-600 text-xs mt-1">
-                  {{ 'ENGLISH.DATE_REQUIRED' | translate }}
-                </p>
-                } @if (englishQualifications.get('other.date')?.hasError('maxDate') &&
+                @if (englishQualifications.get('other.date')?.hasError('maxDate') &&
                 englishQualifications.get('other.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">
                   {{ 'ENGLISH.DATE_FUTURE' | translate }}
                 </p>
+                } @if (englishQualifications.get('other.date')?.hasError('minYear') &&
+                englishQualifications.get('other.date')?.touched) {
+                <p class="text-red-600 text-xs mt-1">
+                  {{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}
+                </p>
                 }
               </div>
             </div>
+            @if (englishQualifications.get('other')?.hasError('incompleteQualification') &&
+            (englishQualifications.get('other.name')?.touched ||
+            englishQualifications.get('other.score')?.touched ||
+            englishQualifications.get('other.date')?.touched)) {
+            <p class="text-red-600 text-xs mt-1">
+              {{ 'ENGLISH.FIELDS_REQUIRED' | translate }}
+            </p>
+            }
           </div>
 
           <!-- English Certificate Upload -->
@@ -1286,6 +1346,12 @@
                   formControlName="organization"
                   placeholder="{{ 'EMPLOYMENT.ENTER_ORGANIZATION' | translate }}"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (employmentHistory.get('position1.organization')?.hasError('maxlength') &&
+                employmentHistory.get('position1.organization')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.ORGANIZATION_MAX' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TITLE' | translate }}</label
@@ -1294,6 +1360,12 @@
                   formControlName="title"
                   placeholder="{{ 'EMPLOYMENT.ENTER_TITLE' | translate }}"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (employmentHistory.get('position1.title')?.hasError('maxlength') &&
+                employmentHistory.get('position1.title')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.JOB_TITLE_MAX' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.FROM' | translate }}</label
@@ -1313,6 +1385,12 @@
                 <p class="text-red-600 text-sm mt-1">
                   {{ 'EMPLOYMENT.DATE_RANGE_ERROR' | translate }}
                 </p>
+                } @if ((employmentHistory.get('position1.from')?.hasError('minYear') &&
+                employmentHistory.get('position1.from')?.touched) || (employmentHistory.get('position1.to')?.hasError('minYear') &&
+                employmentHistory.get('position1.to')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}
+                </p>
                 }
               </div>
               <div class="md:col-span-2">
@@ -1322,8 +1400,22 @@
                   rows="2"
                   placeholder="{{ 'EMPLOYMENT.ENTER_ADDRESS' | translate }}"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+                @if (employmentHistory.get('position1.address')?.hasError('maxlength') &&
+                employmentHistory.get('position1.address')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.ADDRESS_MAX' | translate }}
+                </p>
+                }
               </div>
             </div>
+            @if (employmentHistory.get('position1')?.hasError('incompleteRecord') &&
+            (employmentHistory.get('position1.organization')?.touched || employmentHistory.get('position1.title')?.touched ||
+            employmentHistory.get('position1.from')?.touched || employmentHistory.get('position1.to')?.touched ||
+            employmentHistory.get('position1.address')?.touched)) {
+            <p class="text-red-600 text-sm mt-2">
+              {{ 'EMPLOYMENT.FIELDS_REQUIRED' | translate }}
+            </p>
+            }
           </div>
           <div class="border border-gray-200 rounded-md p-4" formGroupName="position2">
             <h4 class="font-semibold text-lg text-[#153a5e] mb-2">
@@ -1337,6 +1429,12 @@
                   formControlName="organization"
                   placeholder="{{ 'EMPLOYMENT.ENTER_ORGANIZATION' | translate }}"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (employmentHistory.get('position2.organization')?.hasError('maxlength') &&
+                employmentHistory.get('position2.organization')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.ORGANIZATION_MAX' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TITLE' | translate }}</label
@@ -1345,6 +1443,12 @@
                   formControlName="title"
                   placeholder="{{ 'EMPLOYMENT.ENTER_TITLE' | translate }}"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                @if (employmentHistory.get('position2.title')?.hasError('maxlength') &&
+                employmentHistory.get('position2.title')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.JOB_TITLE_MAX' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.FROM' | translate }}</label
@@ -1364,6 +1468,12 @@
                 <p class="text-red-600 text-sm mt-1">
                   {{ 'EMPLOYMENT.DATE_RANGE_ERROR' | translate }}
                 </p>
+                } @if ((employmentHistory.get('position2.from')?.hasError('minYear') &&
+                employmentHistory.get('position2.from')?.touched) || (employmentHistory.get('position2.to')?.hasError('minYear') &&
+                employmentHistory.get('position2.to')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}
+                </p>
                 }
               </div>
               <div class="md:col-span-2">
@@ -1373,8 +1483,22 @@
                   rows="2"
                   placeholder="{{ 'EMPLOYMENT.ENTER_ADDRESS' | translate }}"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+                @if (employmentHistory.get('position2.address')?.hasError('maxlength') &&
+                employmentHistory.get('position2.address')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.ADDRESS_MAX' | translate }}
+                </p>
+                }
               </div>
             </div>
+            @if (employmentHistory.get('position2')?.hasError('incompleteRecord') &&
+            (employmentHistory.get('position2.organization')?.touched || employmentHistory.get('position2.title')?.touched ||
+            employmentHistory.get('position2.from')?.touched || employmentHistory.get('position2.to')?.touched ||
+            employmentHistory.get('position2.address')?.touched)) {
+            <p class="text-red-600 text-sm mt-2">
+              {{ 'EMPLOYMENT.FIELDS_REQUIRED' | translate }}
+            </p>
+            }
           </div>
         </div>
       </section>

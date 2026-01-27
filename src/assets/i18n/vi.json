@@ -10,6 +10,7 @@
     "SELECT_PROGRAM": "-- Chọn chương trình --",
     "SELECT_LANGUAGE": "-- Chọn ngôn ngữ --",
     "REQUIRED_FIELD": "là bắt buộc",
+    "DATE_FUTURE": "Ngày không thể ở tương lai",
     "OPTIONAL": "(tùy chọn)",
     "REMOVE": "Xóa",
     "ADD_MORE": "Thêm mới",
@@ -37,12 +38,15 @@
     "FULL_NAME": "Họ và tên",
     "FULL_NAME_PLACEHOLDER": "Nhập họ và tên của bạn",
     "FULL_NAME_MIN": "Họ tên phải có ít nhất 2 ký tự",
+    "FULL_NAME_MAX": "Họ và tên không được vượt quá 50 ký tự",
     "NATIONALITY": "Quốc tịch",
     "GENDER": "Giới tính",
     "MALE": "Nam",
     "FEMALE": "Nữ",
     "DOB": "Ngày sinh",
     "MIN_AGE": "Bạn phải ít nhất 18 tuổi",
+    "DOB_FUTURE": "Ngày sinh không thể ở tương lai",
+    "INVALID_YEAR": "Năm sinh không hợp lệ (phải từ 1900)",
     "POB": "Nơi sinh",
     "POB_PLACEHOLDER": "Nhập nơi sinh",
     "PASSPORT": "Số CCCD/số CC/Hộ chiếu",
@@ -52,6 +56,7 @@
     "PASSPORT_EXISTS": "Số định danh này đã được đăng ký",
     "DATE_ISSUED": "Ngày cấp",
     "PLACE_OF_ISSUE": "Nơi cấp",
+    "PLACE_OF_ISSUE_MAX": "Nơi cấp không được vượt quá 50 ký tự",
     "PLACE_OF_ISSUE_PLACEHOLDER": "Nhập nơi cấp",
     "EMAIL": "Email",
     "EMAIL_INVALID": "Vui lòng nhập email hợp lệ",
@@ -61,12 +66,15 @@
     "MOBILE_INVALID": "Vui lòng nhập số điện thoại hợp lệ",
     "MOBILE_EXISTS": "Số điện thoại này đã được đăng ký",
     "JOB_TITLE": "Chức vụ, nghề nghiệp",
+    "JOB_TITLE_MAX": "Chức vụ không được vượt quá 50 ký tự",
     "ENTER_JOB_TITLE": "Nhập chức vụ, nghề nghiệp",
     "ORGANIZATION": "Đơn vị công tác",
+    "ORGANIZATION_MAX": "Đơn vị công tác không được vượt quá 50 ký tự",
     "ENTER_ORGANIZATION": "Nhập tên đơn vị công tác",
     "CORR_CITY": "Tỉnh/Thành phố liên lạc",
     "CORR_WARD": "Phường/xã liên lạc",
     "CORR_ADDRESS": "Địa chỉ liên lạc",
+    "ADDRESS_MAX": "Địa chỉ không được vượt quá 50 ký tự",
     "ENTER_CORR_ADDRESS": "Nhập địa chỉ liên lạc",
     "PERM_CITY": "Tỉnh/Thành phố thường trú",
     "PERM_WARD": "Phường/xã thường trú",
@@ -108,6 +116,7 @@
     "ENTER_MAJOR": "Nhập chuyên ngành",
     "GRAD_YEAR": "Năm tốt nghiệp",
     "GRAD_YEAR_MIN": "Năm tốt nghiệp phải từ 1950",
+    "FIELDS_REQUIRED": "Vui lòng nhập đầy đủ thông tin của văn bằng này",
     "GRAD_YEAR_FUTURE": "Năm tốt nghiệp không thể ở tương lai",
     "GPA": "Điểm trung bình",
     "GPA_PLACEHOLDER": "Nhập điểm trung bình",
@@ -137,7 +146,8 @@
     "UPLOAD_CERT": "Tải lên chứng chỉ tiếng Anh (tất cả các loại)",
     "AT_LEAST_ONE": "Vui lòng cung cấp ít nhất một chứng chỉ tiếng Anh (IELTS, TOEFL hoặc khác)",
     "NO_QUALIFICATIONS": "Chưa có chứng chỉ tiếng Anh nào được ghi nhận",
-    "FILE_HINT": "Tải lên một hoặc nhiều tệp chứa tất cả các chứng chỉ tiếng Anh của bạn (PDF, JPG hoặc PNG, tối đa 5MB mỗi tệp)"
+    "FILE_HINT": "Tải lên một hoặc nhiều tệp chứa tất cả các chứng chỉ tiếng Anh của bạn (PDF, JPG hoặc PNG, tối đa 5MB mỗi tệp)",
+    "FIELDS_REQUIRED": "Vui lòng nhập đầy đủ các thông tin của chứng chỉ này"
   },
   "EMPLOYMENT": {
     "TOTAL_EXPERIENCE": "Tổng số năm kinh nghiệm",
@@ -162,7 +172,8 @@
     "DATE_RANGE_ERROR": "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu",
     "ADDRESS": "Địa chỉ tổ chức",
     "ENTER_ADDRESS": "Nhập địa chỉ tổ chức",
-    "NO_HISTORY": "Chưa có kinh nghiệm làm việc nào được ghi nhận"
+    "NO_HISTORY": "Chưa có kinh nghiệm làm việc nào được ghi nhận",
+    "FIELDS_REQUIRED": "Vui lòng nhập đầy đủ thông tin cho vị trí công tác này"
   },
   "DECLARATION": {
     "P1": "Đăng ký dự tuyển trình độ thạc sĩ tại Trường Đại học Quốc tế Miền Đông, tôi xin cam kết thực hiện các nghĩa vụ học tập, nghiên cứu và chế độ tài chính sau khi trúng tuyển như sau:",
@@ -193,7 +204,9 @@
     "EDIT_APPLICATION": "Chỉnh Sửa Đơn",
     "SAVE_CHANGES": "Lưu Thay Đổi",
     "SAVING": "Đang lưu...",
-    "LOADING": "Đang tải dữ liệu đơn đăng ký..."
+    "LOADING": "Đang tải dữ liệu đơn đăng ký...",
+    "EXPORT_SUCCESS": "Xuất PDF thành công!",
+    "EXPORT_ERROR": "Xuất PDF thất bại"
   },
   "FILE_DIALOG": {
     "LOADING": "Đang tải tệp...",

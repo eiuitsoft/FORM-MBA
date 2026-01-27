@@ -63,3 +63,37 @@ export function dateRangeValidator(startDateField: string, endDateField: string)
     return null;
   };
 }
+
+/**
+ * Validator to check that date includes a year greater than or equal to minYear
+ * @param minYear Minimum year allowed (e.g. 1900)
+ * @returns ValidatorFn
+ */
+export function minDateYearValidator(minYear: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) {
+      return null;
+    }
+
+    const inputDate = new Date(control.value);
+    
+    // Check if date is valid
+    if (isNaN(inputDate.getTime())) {
+       return { invalidDate: true };
+    }
+
+    // Get year from the input date
+    const year = inputDate.getFullYear();
+
+    if (year < minYear) {
+      return {
+        minYear: {
+          requiredYear: minYear,
+          actualYear: year
+        }
+      };
+    }
+
+    return null;
+  };
+}

@@ -1,8 +1,9 @@
 import { minAgeValidator } from '@/src/validators/age.validator';
+import { completeRecordValidator } from '@/src/validators/complete-record.validator';
 import { scoreRangeValidator } from '@/src/validators/conditional.validator';
-import { dateRangeValidator, maxDateValidator } from '@/src/validators/date.validator';
+import { dateRangeValidator, maxDateValidator, minDateYearValidator } from '@/src/validators/date.validator';
 import { emailFormatValidator } from '@/src/validators/email-format.validator';
-import { atLeastOneEnglishQualificationValidator } from '@/src/validators/english-qualification.validator';
+import { atLeastOneEnglishQualificationValidator, completeQualificationValidator } from '@/src/validators/english-qualification.validator';
 import { passportFormatValidator } from '@/src/validators/passport-format.validator';
 import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
 import { maxYearValidator, minYearValidator } from '@/src/validators/year.validator';
@@ -119,19 +120,19 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
 
   applicationForm: FormGroup = this.fb.group({
     personalDetails: this.fb.group({
-      fullName: ['', [Validators.required, Validators.minLength(2)]],
+      fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       nationalityId: ['', Validators.required],
       nationality: [''],
       gender: ['Male', Validators.required],
-      dateOfBirth: ['', [Validators.required, minAgeValidator(18)]],
+      dateOfBirth: ['', [Validators.required, minAgeValidator(18), maxDateValidator(), minDateYearValidator(1900)]],
       placeOfBirth: ['', Validators.required],
       passportNo: [
         '',
         [Validators.required, Validators.minLength(6), Validators.maxLength(12), passportFormatValidator()],
         [uniqueFieldValidator((val) => this._mbaService.checkPassportExists(val), 'passportExists')]
       ],
-      dateIssued: ['', Validators.required],
-      passportPlaceIssued: ['', Validators.required],
+      dateIssued: ['', [Validators.required, maxDateValidator(), minDateYearValidator(1900)]],
+      passportPlaceIssued: ['', [Validators.required, Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email, emailFormatValidator()]],
       mobile: [
         undefined,
@@ -145,18 +146,18 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
           }, 'mobileExists')
         ]
       ],
-      jobTitle: ['', Validators.required],
-      organization: ['', Validators.required],
+      jobTitle: ['', [Validators.required, Validators.maxLength(50)]],
+      organization: ['', [Validators.required, Validators.maxLength(50)]],
       correspondenceCityId: [''],
       correspondenceCityName: [''],
       correspondenceDistrictId: [{ value: '', disabled: true }],
       correspondenceDistrictName: [''],
-      correspondenceAddress: ['', Validators.required],
+      correspondenceAddress: ['', [Validators.required, Validators.maxLength(50)]],
       permanentCityId: [''],
       permanentCityName: [''],
       permanentDistrictId: [{ value: '', disabled: true }],
       permanentDistrictName: [''],
-      permanentAddress: ['', Validators.required],
+      permanentAddress: ['', [Validators.required, Validators.maxLength(50)]],
       passportFile: [null]
     }),
     applicationDetails: this.fb.group({
@@ -176,19 +177,28 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     }),
     englishQualifications: this.fb.group(
       {
-        ielts: this.fb.group({
-          score: ['', [scoreRangeValidator(0, 9)]],
-          date: ['', [maxDateValidator()]]
-        }),
-        toefl: this.fb.group({
-          score: ['', [scoreRangeValidator(0, 120)]],
-          date: ['', [maxDateValidator()]]
-        }),
-        other: this.fb.group({
-          name: [''],
-          score: [''],
-          date: ['', [maxDateValidator()]]
-        }),
+        ielts: this.fb.group(
+          {
+            score: ['', [scoreRangeValidator(0, 9)]],
+            date: ['', [maxDateValidator(), minDateYearValidator(1900)]]
+          },
+          { validators: completeQualificationValidator(['score', 'date']) }
+        ),
+        toefl: this.fb.group(
+          {
+            score: ['', [scoreRangeValidator(0, 120)]],
+            date: ['', [maxDateValidator(), minDateYearValidator(1900)]]
+          },
+          { validators: completeQualificationValidator(['score', 'date']) }
+        ),
+        other: this.fb.group(
+          {
+            name: [''],
+            score: [''],
+            date: ['', [maxDateValidator(), minDateYearValidator(1900)]]
+          },
+          { validators: completeQualificationValidator(['name', 'score', 'date']) }
+        ),
         certificateFile: [null] // File upload for all English qualifications
       },
       { validators: atLeastOneEnglishQualificationValidator() }
@@ -198,23 +208,23 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
       totalExpMonths: ['', Validators.required],
       position1: this.fb.group(
         {
-          organization: [''],
-          title: [''],
-          from: [''],
-          to: [''],
-          address: ['']
+          organization: ['', Validators.maxLength(50)],
+          title: ['', Validators.maxLength(50)],
+          from: ['', [minDateYearValidator(1900)]],
+          to: ['', [minDateYearValidator(1900)]],
+          address: ['', Validators.maxLength(50)]
         },
-        { validators: dateRangeValidator('from', 'to') }
+        { validators: [dateRangeValidator('from', 'to'), completeRecordValidator(['organization', 'title', 'from', 'to', 'address'])] }
       ),
       position2: this.fb.group(
         {
-          organization: [''],
-          title: [''],
-          from: [''],
-          to: [''],
-          address: ['']
+          organization: ['', Validators.maxLength(50)],
+          title: ['', Validators.maxLength(50)],
+          from: ['', [minDateYearValidator(1900)]],
+          to: ['', [minDateYearValidator(1900)]],
+          address: ['', Validators.maxLength(50)]
         },
-        { validators: dateRangeValidator('from', 'to') }
+        { validators: [dateRangeValidator('from', 'to'), completeRecordValidator(['organization', 'title', 'from', 'to', 'address'])] }
       )
     }),
     declaration: this.fb.group({
@@ -947,35 +957,53 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
    * Create optional undergraduate form group (no required fields)
    */
   private createOptionalUndergraduateGroup(): FormGroup {
-    return this.fb.group({
-      university: [''],
-      countryId: [''],
-      country: [''],
-      major: [''],
-      graduationYear: ['', [minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
-      gpa: [''],
-      graduationRank: [''],
-      languageId: [''],
-      language: [''],
-      file: [null]
-    });
+    return this.fb.group(
+      {
+        university: [''],
+        countryId: [''],
+        country: [''],
+        major: [''],
+        graduationYear: ['', [minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
+        gpa: [''],
+        graduationRank: [''],
+        languageId: [''],
+        language: [''],
+        file: [null]
+      },
+      {
+        validators: completeRecordValidator([
+          'university',
+          'countryId',
+          'major',
+          'graduationYear',
+          'gpa',
+          'graduationRank',
+          'languageId'
+        ])
+      }
+    );
   }
 
   /**
    * Create postgraduate form group
    */
   private createPostgraduateGroup(): FormGroup {
-    return this.fb.group({
-      university: [''],
-      countryId: [''],
-      country: [''],
-      major: [''],
-      graduationYear: ['', [minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
-      thesisTitle: [''],
-      languageId: [''],
-      language: [''],
-      file: [null]
-    });
+    return this.fb.group(
+      {
+        university: [''],
+        countryId: [''],
+        country: [''],
+        major: [''],
+        graduationYear: ['', [minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
+        thesisTitle: [''],
+        languageId: [''],
+        language: [''],
+        file: [null]
+      },
+      {
+        validators: completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'languageId'])
+      }
+    );
   }
 
   /**
@@ -1024,32 +1052,6 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Validate uploaded files and return valid files and errors
-   */
-  private validateEducationFiles(files: File[]): { validFiles: File[]; errors: string[] } {
-    const validFiles: File[] = [];
-    const errors: string[] = [];
-
-    for (const file of files) {
-      // Validate file size (max 5MB per file)
-      if (file.size > 5 * 1024 * 1024) {
-        errors.push(`${file.name}: File size must be less than 5MB`);
-        continue;
-      }
-
-      // Validate file type
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-      if (!allowedTypes.includes(file.type)) {
-        errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
-        continue;
-      }
-
-      validFiles.push(file);
-    }
-
-    return { validFiles, errors };
-  }
 
   /**
    * Handle education file upload - Multiple files
@@ -1058,14 +1060,28 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const files = Array.from(input.files);
-      const { validFiles, errors } = this.validateEducationFiles(files);
 
-      if (errors.length > 0) {
-        alert('Some files were rejected:\n\n' + errors.join('\n'));
-      }
+      for (const file of files) {
+        // Validate file size (max 5MB per file)
+        if (file.size > 5 * 1024 * 1024) {
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_SIZE_LIMIT')}`
+          );
+          continue;
+        }
 
-      if (validFiles.length > 0) {
-        this.updateEducationFiles(section, index, validFiles);
+        // Validate file type
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_INVALID_TYPE')}`
+          );
+          continue;
+        }
+
+        this.updateEducationFiles(section, index, [file]);
       }
 
       // Reset input to allow selecting the same file again
@@ -1116,34 +1132,30 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const files = Array.from(input.files);
-      const validFiles: File[] = [];
-      const errors: string[] = [];
 
       for (const file of files) {
         // Validate file size (max 5MB per file)
         if (file.size > 5 * 1024 * 1024) {
-          errors.push(`${file.name}: File size must be less than 5MB`);
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_SIZE_LIMIT')}`
+          );
           continue;
         }
 
         // Validate file type
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
-          errors.push(`${file.name}: Only PDF, JPG, and PNG files are allowed`);
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_INVALID_TYPE')}`
+          );
           continue;
         }
 
-        validFiles.push(file);
-      }
-
-      if (errors.length > 0) {
-        alert('Some files were rejected:\n\n' + errors.join('\n'));
-      }
-
-      if (validFiles.length > 0) {
         // Merge with existing files
         const existingFiles = this.englishQualifications.get('certificateFile')?.value || [];
-        const allFiles = [...existingFiles, ...validFiles];
+        const allFiles = [...existingFiles, file];
         this.englishQualifications.patchValue({ certificateFile: allFiles });
       }
 
