@@ -6,7 +6,7 @@
     "SELECT_COUNTRY": "-- Chọn quốc gia --",
     "SELECT_NATIONALITY": "-- Chọn quốc tịch --",
     "SELECT_CITY": "-- Chọn tỉnh/thành phố --",
-    "SELECT_WARD": "-- Chọn quận/huyện --",
+    "SELECT_WARD": "-- Chọn phường/xã --",
     "SELECT_PROGRAM": "-- Chọn chương trình --",
     "SELECT_LANGUAGE": "-- Chọn ngôn ngữ --",
     "REQUIRED_FIELD": "là bắt buộc",

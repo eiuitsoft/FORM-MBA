@@ -6,5 +6,6 @@ services:
       - "1122:80"
     restart: always
     container_name: form-mba-web
-    image: itsofteiu/form-mba-web:1.0.1_uat
+    # image: itsofteiu/form-mba-web:1.0.1_uat
+    image: itsofteiu/form-mba-web:1.0.0_prod
     platform: linux/amd64
