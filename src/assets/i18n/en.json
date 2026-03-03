@@ -24,7 +24,8 @@
     "CANCEL": "Cancel",
     "CONFIRM": "Confirm",
     "CHOOSE_FILE_BUTTON_TEXT": "Choose file",
-    "ERROR_REVIEW": "Please review the form and fill in all required fields marked with an asterisk or highlighted in red."
+    "ERROR_REVIEW": "Please review the form and fill in all required fields marked with an asterisk or highlighted in red.",
+    "CLOSE": "Close"
   },
   "SECTIONS": {
     "PERSONAL": "SECTION A - PERSONAL DETAILS",
@@ -136,7 +137,7 @@
     "DATE_HINT": "Date of Test",
     "SCORE_REQUIRED": "Score is required when date is provided",
     "DATE_REQUIRED": "Date is required when score is provided",
-    "FUTURE_DATE": "Date cannot be in the future",
+    "DATE_FUTURE": "Date cannot be in the future",
     "IELTS_RANGE": "IELTS score must be between 0 and 9",
     "TOEFL_RANGE": "TOEFL score must be between 0 and 120",
     "INVALID_NUMBER": "Please enter a valid number",
@@ -233,7 +234,7 @@
     "UPLOAD_SUCCESS": "Successfully uploaded",
     "UPLOAD_FAILED": "Upload failed - no data returned",
     "UPLOAD_ERROR": "An error occurred while uploading files",
-    "CONFIRM_DELETE": "Confirm Delete",
+    "CONFIRM_DELETE": "Xác nhận xóa",
     "CONFIRM_DELETE_MSG": "Are you sure you want to delete",
     "FILE_DELETED": "File deleted",
     "DELETE_FAILED": "Failed to delete file",
@@ -294,6 +295,14 @@
     "MY_APPLICATION": "My Application",
     "LOGIN": "Login",
     "LOGOUT": "Logout"
+  },
+  "DATE_PICKER": {
+    "DAY": "Day",
+    "MONTH": "Month",
+    "YEAR": "Year",
+    "CLEAR": "Clear",
+    "SELECT_DATE": "Select date",
+    "SELECT_MONTH": "Select month"
   },
   "AUTH": {
     "SESSION_EXPIRED": "Your session has expired. Please login again.",

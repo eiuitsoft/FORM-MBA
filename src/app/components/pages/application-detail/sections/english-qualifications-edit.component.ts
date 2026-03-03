@@ -41,7 +41,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 formControlName="date"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
               @if (formGroup.get('ielts.date')?.hasError('maxDate') && formGroup.get('ielts.date')?.touched) {
-                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FUTURE_DATE' | translate }}</p>
+                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.DATE_FUTURE' | translate }}</p>
               } @if (formGroup.get('ielts.date')?.hasError('minYear') && formGroup.get('ielts.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }
@@ -76,7 +76,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 formControlName="date"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
               @if (formGroup.get('toefl.date')?.hasError('maxDate') && formGroup.get('toefl.date')?.touched) {
-                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FUTURE_DATE' | translate }}</p>
+                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.DATE_FUTURE' | translate }}</p>
               } @if (formGroup.get('toefl.date')?.hasError('minYear') && formGroup.get('toefl.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }
@@ -116,7 +116,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
                 formControlName="date"
                 class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
               @if (formGroup.get('other.date')?.hasError('maxDate') && formGroup.get('other.date')?.touched) {
-                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.FUTURE_DATE' | translate }}</p>
+                <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.DATE_FUTURE' | translate }}</p>
               } @if (formGroup.get('other.date')?.hasError('minYear') && formGroup.get('other.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }

@@ -24,7 +24,8 @@
     "CANCEL": "Hủy",
     "CONFIRM": "Xác nhận",
     "CHOOSE_FILE_BUTTON_TEXT": "Chọn tệp",
-    "ERROR_REVIEW": "Vui lòng kiểm tra lại biểu mẫu và điền đầy đủ các thông tin bắt buộc được đánh dấu sao hoặc có màu đỏ."
+    "ERROR_REVIEW": "Vui lòng xem lại biểu mẫu và điền đầy đủ các thông tin bắt buộc được đánh dấu sao hoặc có màu đỏ.",
+    "CLOSE": "Đóng"
   },
   "SECTIONS": {
     "PERSONAL": "PHẦN A - THÔNG TIN CÁ NHÂN",
@@ -137,7 +138,7 @@
     "DATE_HINT": "Ngày thi",
     "SCORE_REQUIRED": "Điểm là bắt buộc nếu có ngày thi",
     "DATE_REQUIRED": "Ngày thi là bắt buộc nếu có điểm",
-    "FUTURE_DATE": "Ngày thi không thể ở tương lai",
+    "DATE_FUTURE": "Ngày thi không thể ở tương lai",
     "IELTS_RANGE": "Điểm IELTS phải từ 0 đến 9",
     "TOEFL_RANGE": "Điểm TOEFL phải từ 0 đến 120",
     "INVALID_NUMBER": "Vui lòng nhập số hợp lệ",
@@ -295,6 +296,14 @@
     "MY_APPLICATION": "Đơn Của Tôi",
     "LOGIN": "Đăng Nhập",
     "LOGOUT": "Đăng Xuất"
+  },
+  "DATE_PICKER": {
+    "DAY": "Ngày",
+    "MONTH": "Tháng",
+    "YEAR": "Năm",
+    "CLEAR": "Xóa",
+    "SELECT_DATE": "Chọn ngày",
+    "SELECT_MONTH": "Chọn tháng"
   },
   "AUTH": {
     "SESSION_EXPIRED": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",

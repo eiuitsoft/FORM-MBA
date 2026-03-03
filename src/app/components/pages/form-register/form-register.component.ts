@@ -16,13 +16,15 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { of, Subscription } from 'rxjs';
 import { AlertService } from '../../../core/services/alert/alert.service';
 import { MbaService } from '../../../core/services/mba/mba.service';
+import { CustomDatePickerComponent } from '../../shared/custom-date-picker/custom-date-picker.component';
+import { CustomMonthPickerComponent } from '../../shared/custom-month-picker/custom-month-picker.component';
 
 @Component({
   selector: 'app-form-register',
   templateUrl: './form-register.component.html',
   styleUrls: ['./form-register.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, TranslatePipe]
+  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, TranslatePipe, CustomDatePickerComponent, CustomMonthPickerComponent]
 })
 export class FormRegisterComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);

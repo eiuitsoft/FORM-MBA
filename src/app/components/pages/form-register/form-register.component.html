@@ -103,12 +103,11 @@
             <label for="dateOfBirth" class="block text-sm font-medium text-gray-700"
               >{{ 'PERSONAL_DETAILS.DOB' | translate }}<span class="text-red-600">*</span></label
             >
-            <input
-              type="date"
-              placeholder="{{ 'PERSONAL_DETAILS.DOB' | translate }}"
+            <app-custom-date-picker
               id="dateOfBirth"
               formControlName="dateOfBirth"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+              [maxYear]="currentYear">
+            </app-custom-date-picker>
             @if (personalDetails.get('dateOfBirth')?.hasError('required') &&
             personalDetails.get('dateOfBirth')?.touched) {
             <p class="text-red-600 text-sm mt-1">
@@ -361,11 +360,11 @@
                 <label for="dateIssued" class="block text-sm font-medium text-gray-700"
                   >{{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }}<span class="text-red-600">*</span></label
                 >
-                <input
-                  type="date"
+                <app-custom-date-picker
                   id="dateIssued"
                   formControlName="dateIssued"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  [maxYear]="currentYear">
+                </app-custom-date-picker>
                 @if (personalDetails.get('dateIssued')?.hasError('required') &&
                 personalDetails.get('dateIssued')?.touched) {
                 <p class="text-red-600 text-sm mt-1">
@@ -1117,11 +1116,10 @@
                   }
                 </div>
                 <div class="col-span-2">
-                  <input
-                    type="date"
+                  <app-custom-date-picker
                     formControlName="date"
-                    [placeholder]="'ENGLISH.DATE_HINT' | translate"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                    [maxYear]="currentYear">
+                  </app-custom-date-picker>
                   @if (englishQualifications.get('ielts.date')?.hasError('maxDate') &&
                   englishQualifications.get('ielts.date')?.touched) {
                   <p class="text-red-600 text-xs mt-1">
@@ -1163,11 +1161,10 @@
                   }
                 </div>
                 <div class="col-span-2">
-                  <input
-                    type="date"
+                  <app-custom-date-picker
                     formControlName="date"
-                    [placeholder]="'ENGLISH.DATE_HINT' | translate"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                    [maxYear]="currentYear">
+                  </app-custom-date-picker>
                   @if (englishQualifications.get('toefl.date')?.hasError('maxDate') &&
                   englishQualifications.get('toefl.date')?.touched) {
                   <p class="text-red-600 text-xs mt-1">
@@ -1209,11 +1206,10 @@
                     class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
                 </div>
                 <div class="col-span-2">
-                  <input
-                    type="date"
+                  <app-custom-date-picker
                     formControlName="date"
-                    [placeholder]="'ENGLISH.DATE_HINT' | translate"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                    [maxYear]="currentYear">
+                  </app-custom-date-picker>
                   @if (englishQualifications.get('other.date')?.hasError('maxDate') &&
                   englishQualifications.get('other.date')?.touched) {
                   <p class="text-red-600 text-xs mt-1">
@@ -1376,17 +1372,15 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.FROM' | translate }}</label
-                ><input
-                  type="month"
-                  formControlName="from"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                ><app-custom-month-picker
+                  formControlName="from">
+                </app-custom-month-picker>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TO' | translate }}</label>
-                <input
-                  type="month"
-                  formControlName="to"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                <app-custom-month-picker
+                  formControlName="to">
+                </app-custom-month-picker>
                 @if (employmentHistory.get('position1')?.hasError('dateRange') &&
                 employmentHistory.get('position1.to')?.touched) {
                 <p class="text-red-600 text-sm mt-1">
@@ -1459,17 +1453,15 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.FROM' | translate }}</label
-                ><input
-                  type="month"
-                  formControlName="from"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                ><app-custom-month-picker
+                  formControlName="from">
+                </app-custom-month-picker>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TO' | translate }}</label>
-                <input
-                  type="month"
-                  formControlName="to"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                <app-custom-month-picker
+                  formControlName="to">
+                </app-custom-month-picker>
                 @if (employmentHistory.get('position2')?.hasError('dateRange') &&
                 employmentHistory.get('position2.to')?.touched) {
                 <p class="text-red-600 text-sm mt-1">
