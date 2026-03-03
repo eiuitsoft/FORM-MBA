@@ -10,7 +10,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   encapsulation: ViewEncapsulation.None,
   template: `
     <div class="cdp-wrapper">
-      <button type="button" class="cdp-trigger mt-1 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2" (click)="toggleCalendar()" [class.cdp-has-value]="!!value">
+      <button type="button" class="cdp-trigger block w-full rounded-md border-gray-300 shadow-sm px-3 py-2" (click)="toggleCalendar()" [class.cdp-has-value]="!!value">
         <span class="cdp-value text-left flex-grow">{{ displayValue || (placeholder || ('DATE_PICKER.SELECT_DATE' | translate)) }}</span>
         <svg class="cdp-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -84,7 +84,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     .cdp-trigger {
       display: flex; align-items: center; justify-content: space-between;
       cursor: pointer;
-      font-size: 0.875rem; line-height: 1.25rem; color: #9ca3af;
+      line-height: 1.5rem; color: #9ca3af;
       background: #fff;
       transition: border-color 0.15s, box-shadow 0.15s;
     }

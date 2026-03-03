@@ -106,6 +106,7 @@
             <app-custom-date-picker
               id="dateOfBirth"
               formControlName="dateOfBirth"
+              class="mt-1 block"
               [maxYear]="currentYear">
             </app-custom-date-picker>
             @if (personalDetails.get('dateOfBirth')?.hasError('required') &&
@@ -363,6 +364,7 @@
                 <app-custom-date-picker
                   id="dateIssued"
                   formControlName="dateIssued"
+                  class="mt-1 block"
                   [maxYear]="currentYear">
                 </app-custom-date-picker>
                 @if (personalDetails.get('dateIssued')?.hasError('required') &&
@@ -1373,12 +1375,14 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.FROM' | translate }}</label
                 ><app-custom-month-picker
+                  class="mt-1 block"
                   formControlName="from">
                 </app-custom-month-picker>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TO' | translate }}</label>
                 <app-custom-month-picker
+                  class="mt-1 block"
                   formControlName="to">
                 </app-custom-month-picker>
                 @if (employmentHistory.get('position1')?.hasError('dateRange') &&
@@ -1454,12 +1458,14 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.FROM' | translate }}</label
                 ><app-custom-month-picker
+                  class="mt-1 block"
                   formControlName="from">
                 </app-custom-month-picker>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TO' | translate }}</label>
                 <app-custom-month-picker
+                  class="mt-1 block"
                   formControlName="to">
                 </app-custom-month-picker>
                 @if (employmentHistory.get('position2')?.hasError('dateRange') &&
