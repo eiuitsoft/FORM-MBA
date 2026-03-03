@@ -131,27 +131,25 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           </div>
         </div>
 
-        <!-- Row 4 - Correspondence City & District -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">{{
-                'PERSONAL_DETAILS.CORR_CITY' | translate
-              }}</label>
-              <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data?.correspondenceCityName || '--' }}
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">{{
-                'PERSONAL_DETAILS.CORR_WARD' | translate
-              }}</label>
-              <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data?.correspondenceDistrictName || '--' }}
-              </div>
+        <!-- Row 4 - Correspondence Address -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{
+              'PERSONAL_DETAILS.CORR_CITY' | translate
+            }}</label>
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+              {{ data?.correspondenceCityName || '--' }}
             </div>
           </div>
           <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{
+              'PERSONAL_DETAILS.CORR_WARD' | translate
+            }}</label>
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+              {{ data?.correspondenceDistrictName || '--' }}
+            </div>
+          </div>
+          <div class="md:col-span-2">
             <label class="block text-xs font-medium text-gray-600 mb-1"
               >{{ 'PERSONAL_DETAILS.CORR_ADDRESS' | translate }} <span class="text-red-500">*</span></label
             >
@@ -161,27 +159,25 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           </div>
         </div>
 
-        <!-- Row 5 - Permanent City & District -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">{{
-                'PERSONAL_DETAILS.PERM_CITY' | translate
-              }}</label>
-              <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data?.permanentCityName || '--' }}
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-600 mb-1">{{
-                'PERSONAL_DETAILS.PERM_WARD' | translate
-              }}</label>
-              <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
-                {{ data?.permanentDistrictName || '--' }}
-              </div>
+        <!-- Row 5 - Permanent Address -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{
+              'PERSONAL_DETAILS.PERM_CITY' | translate
+            }}</label>
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+              {{ data?.permanentCityName || '--' }}
             </div>
           </div>
           <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{
+              'PERSONAL_DETAILS.PERM_WARD' | translate
+            }}</label>
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900">
+              {{ data?.permanentDistrictName || '--' }}
+            </div>
+          </div>
+          <div class="md:col-span-2">
             <label class="block text-xs font-medium text-gray-600 mb-1"
               >{{ 'PERSONAL_DETAILS.PERM_ADDRESS' | translate }} <span class="text-red-500">*</span></label
             >

@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
+import { CustomMonthPickerComponent } from '../../../shared/custom-month-picker/custom-month-picker.component';
 
 @Component({
   selector: 'app-employment-history-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, CustomMonthPickerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="bg-white rounded-lg shadow-md overflow-hidden" [formGroup]="formGroup">
@@ -86,20 +87,18 @@ import { TranslatePipe } from '@ngx-translate/core';
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.FROM' | translate }}</label>
-              <input
-                type="month"
+              <app-custom-month-picker
                 formControlName="fromDate"
-                class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                [placeholder]="'EMPLOYMENT.FROM' | translate"></app-custom-month-picker>
               @if (formGroup.get('position1.fromDate')?.hasError('minYear') && formGroup.get('position1.fromDate')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.TO' | translate }}</label>
-              <input
-                type="month"
+              <app-custom-month-picker
                 formControlName="toDate"
-                class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                [placeholder]="'EMPLOYMENT.TO' | translate"></app-custom-month-picker>
               @if (formGroup.get('position1.toDate')?.hasError('minYear') && formGroup.get('position1.toDate')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }
@@ -159,20 +158,18 @@ import { TranslatePipe } from '@ngx-translate/core';
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.FROM' | translate }}</label>
-              <input
-                type="month"
+              <app-custom-month-picker
                 formControlName="fromDate"
-                class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                [placeholder]="'EMPLOYMENT.FROM' | translate"></app-custom-month-picker>
               @if (formGroup.get('position2.fromDate')?.hasError('minYear') && formGroup.get('position2.fromDate')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'EMPLOYMENT.TO' | translate }}</label>
-              <input
-                type="month"
+              <app-custom-month-picker
                 formControlName="toDate"
-                class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                [placeholder]="'EMPLOYMENT.TO' | translate"></app-custom-month-picker>
               @if (formGroup.get('position2.toDate')?.hasError('minYear') && formGroup.get('position2.toDate')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'PERSONAL_DETAILS.INVALID_YEAR' | translate }}</p>
               }
@@ -208,8 +205,5 @@ import { TranslatePipe } from '@ngx-translate/core';
 export class EmploymentHistoryEditComponent implements OnInit {
   @Input() formGroup!: FormGroup;
 
-  ngOnInit(): void {
-    // logs form group for debugging
-    console.log('🚀 ~ EmploymentHistoryEditComponent ~ ngOnInit ~ formGroup:', this.formGroup.get('totalExpYears'));
-  }
+  ngOnInit(): void {}
 }

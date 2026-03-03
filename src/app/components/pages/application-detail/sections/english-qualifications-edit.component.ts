@@ -3,11 +3,12 @@ import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-dialog.component';
+import { CustomDatePickerComponent } from '../../../shared/custom-date-picker/custom-date-picker.component';
 
 @Component({
   selector: 'app-english-qualifications-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FileManagerDialogComponent, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, FileManagerDialogComponent, TranslatePipe, CustomDatePickerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="bg-white rounded-lg shadow-md overflow-hidden" [formGroup]="formGroup">
@@ -36,10 +37,10 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'ENGLISH.DATE_HINT' | translate }}</label>
-              <input
-                type="date"
+              <app-custom-date-picker
                 formControlName="date"
-                class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                [maxYear]="maxYear"
+                [placeholder]="'ENGLISH.DATE_HINT' | translate"></app-custom-date-picker>
               @if (formGroup.get('ielts.date')?.hasError('maxDate') && formGroup.get('ielts.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.DATE_FUTURE' | translate }}</p>
               } @if (formGroup.get('ielts.date')?.hasError('minYear') && formGroup.get('ielts.date')?.touched) {
@@ -71,10 +72,10 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'ENGLISH.DATE_HINT' | translate }}</label>
-              <input
-                type="date"
+              <app-custom-date-picker
                 formControlName="date"
-                class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                [maxYear]="maxYear"
+                [placeholder]="'ENGLISH.DATE_HINT' | translate"></app-custom-date-picker>
               @if (formGroup.get('toefl.date')?.hasError('maxDate') && formGroup.get('toefl.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.DATE_FUTURE' | translate }}</p>
               } @if (formGroup.get('toefl.date')?.hasError('minYear') && formGroup.get('toefl.date')?.touched) {
@@ -111,10 +112,10 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'ENGLISH.DATE_HINT' | translate }}</label>
-              <input
-                type="date"
+              <app-custom-date-picker
                 formControlName="date"
-                class="block w-full rounded border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 text-sm" />
+                [maxYear]="maxYear"
+                [placeholder]="'ENGLISH.DATE_HINT' | translate"></app-custom-date-picker>
               @if (formGroup.get('other.date')?.hasError('maxDate') && formGroup.get('other.date')?.touched) {
                 <p class="text-red-600 text-xs mt-1">{{ 'ENGLISH.DATE_FUTURE' | translate }}</p>
               } @if (formGroup.get('other.date')?.hasError('minYear') && formGroup.get('other.date')?.touched) {
@@ -185,6 +186,7 @@ export class EnglishQualificationsEditComponent {
 
   isFileManagerOpen = false;
   dialogTitle = '';
+  maxYear = new Date().getFullYear();
 
   openFileManager(): void {
     this.dialogTitle = this.translate.instant('FILE_DIALOG.TITLE_ENGLISH');

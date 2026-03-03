@@ -4,11 +4,12 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-dialog.component';
+import { CustomDatePickerComponent } from '../../../shared/custom-date-picker/custom-date-picker.component';
 
 @Component({
   selector: 'app-personal-details-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgxIntlTelInputModule, FileManagerDialogComponent, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, NgxIntlTelInputModule, FileManagerDialogComponent, TranslatePipe, CustomDatePickerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="bg-white rounded-lg shadow-md overflow-hidden" [formGroup]="formGroup">
@@ -74,10 +75,10 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <label class="block text-sm font-medium text-gray-700"
             >{{ 'PERSONAL_DETAILS.DOB' | translate }} <span class="text-red-600">*</span></label
           >
-          <input
-            type="date"
+          <app-custom-date-picker
             formControlName="dateOfBirth"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            [maxYear]="maxYear"
+            [placeholder]="'PERSONAL_DETAILS.DOB' | translate"></app-custom-date-picker>
           @if (formGroup.get('dateOfBirth')?.hasError('required') && formGroup.get('dateOfBirth')?.touched) {
           <p class="text-red-600 text-sm mt-1">
             {{ 'PERSONAL_DETAILS.DOB' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
@@ -164,10 +165,10 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <label class="block text-sm font-medium text-gray-700"
             >{{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }} <span class="text-red-600">*</span></label
           >
-          <input
-            type="date"
+          <app-custom-date-picker
             formControlName="dateIssued"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+            [maxYear]="maxYear"
+            [placeholder]="'PERSONAL_DETAILS.DATE_ISSUED' | translate"></app-custom-date-picker>
           @if (formGroup.get('dateIssued')?.hasError('required') && formGroup.get('dateIssued')?.touched) {
           <p class="text-red-600 text-sm mt-1">
             {{ 'PERSONAL_DETAILS.DATE_ISSUED' | translate }} {{ 'COMMON.REQUIRED_FIELD' | translate }}
@@ -330,38 +331,36 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           }
         </div>
 
-        <!-- Correspondence City & District -->
-        <div class="md:col-span-2">
-          <div class="grid grid-cols-2 gap-x-3">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">{{
-                'PERSONAL_DETAILS.CORR_CITY' | translate
-              }}</label>
-              <select
-                formControlName="correspondenceCityId"
-                (change)="correspondenceProvinceChange.emit($event)"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">{{ 'COMMON.SELECT_CITY' | translate }}</option>
-                @for (province of provinces; track province.provinceCode) {
-                <option [value]="province.provinceCode">{{ province.provinceName }}</option>
-                }
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">{{
-                'PERSONAL_DETAILS.CORR_WARD' | translate
-              }}</label>
-              <select
-                formControlName="correspondenceDistrictId"
-                (change)="correspondenceWardChange.emit($event)"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">{{ 'COMMON.SELECT_WARD' | translate }}</option>
-                @for (ward of correspondenceWards; track ward.wardCode) {
-                <option [value]="ward.wardCode">{{ ward.wardName }}</option>
-                }
-              </select>
-            </div>
-          </div>
+        <!-- Correspondence City -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">{{
+            'PERSONAL_DETAILS.CORR_CITY' | translate
+          }}</label>
+          <select
+            formControlName="correspondenceCityId"
+            (change)="correspondenceProvinceChange.emit($event)"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <option value="">{{ 'COMMON.SELECT_CITY' | translate }}</option>
+            @for (province of provinces; track province.provinceCode) {
+            <option [value]="province.provinceCode">{{ province.provinceName }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Correspondence District -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">{{
+            'PERSONAL_DETAILS.CORR_WARD' | translate
+          }}</label>
+          <select
+            formControlName="correspondenceDistrictId"
+            (change)="correspondenceWardChange.emit($event)"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <option value="">{{ 'COMMON.SELECT_WARD' | translate }}</option>
+            @for (ward of correspondenceWards; track ward.wardCode) {
+            <option [value]="ward.wardCode">{{ ward.wardName }}</option>
+            }
+          </select>
         </div>
 
         <!-- Correspondence Address -->
@@ -384,38 +383,36 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           }
         </div>
 
-        <!-- Permanent City & District -->
-        <div class="md:col-span-2">
-          <div class="grid grid-cols-2 gap-x-3">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">{{
-                'PERSONAL_DETAILS.PERM_CITY' | translate
-              }}</label>
-              <select
-                formControlName="permanentCityId"
-                (change)="permanentProvinceChange.emit($event)"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">{{ 'COMMON.SELECT_CITY' | translate }}</option>
-                @for (province of provinces; track province.provinceCode) {
-                <option [value]="province.provinceCode">{{ province.provinceName }}</option>
-                }
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">{{
-                'PERSONAL_DETAILS.PERM_WARD' | translate
-              }}</label>
-              <select
-                formControlName="permanentDistrictId"
-                (change)="permanentWardChange.emit($event)"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
-                <option value="">{{ 'COMMON.SELECT_WARD' | translate }}</option>
-                @for (ward of permanentWards; track ward.wardCode) {
-                <option [value]="ward.wardCode">{{ ward.wardName }}</option>
-                }
-              </select>
-            </div>
-          </div>
+        <!-- Permanent City -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">{{
+            'PERSONAL_DETAILS.PERM_CITY' | translate
+          }}</label>
+          <select
+            formControlName="permanentCityId"
+            (change)="permanentProvinceChange.emit($event)"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <option value="">{{ 'COMMON.SELECT_CITY' | translate }}</option>
+            @for (province of provinces; track province.provinceCode) {
+            <option [value]="province.provinceCode">{{ province.provinceName }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Permanent District -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">{{
+            'PERSONAL_DETAILS.PERM_WARD' | translate
+          }}</label>
+          <select
+            formControlName="permanentDistrictId"
+            (change)="permanentWardChange.emit($event)"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+            <option value="">{{ 'COMMON.SELECT_WARD' | translate }}</option>
+            @for (ward of permanentWards; track ward.wardCode) {
+            <option [value]="ward.wardCode">{{ ward.wardName }}</option>
+            }
+          </select>
         </div>
 
         <!-- Permanent Address -->
@@ -505,6 +502,7 @@ export class PersonalDetailsEditComponent {
 
   isFileManagerOpen = false;
   dialogTitle = '';
+  maxYear = new Date().getFullYear();
 
   get isLangVi(): boolean {
     return (localStorage.getItem('lang') || 'vi') === 'vi';
