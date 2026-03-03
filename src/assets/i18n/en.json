@@ -46,6 +46,7 @@
     "FEMALE": "Female",
     "DOB": "Date of birth",
     "MIN_AGE": "You must be at least 18 years old",
+    "DOB_FUTURE": "Date of birth cannot be in the future",
     "INVALID_YEAR": "Invalid year (must be from 1900)",
     "POB": "Place of Birth",
     "POB_PLACEHOLDER": "Enter place of birth",
@@ -203,7 +204,8 @@
     "SUCCESS_TITLE": "Update Success!",
     "SUCCESS_MESSAGE": "Application information has been updated.",
     "ERROR_TITLE": "Update Error",
-    "ERROR_MESSAGE": "Failed to update application"
+    "ERROR_MESSAGE": "Failed to update application",
+    "SYSTEM_ERROR": "An error occurred while updating the application"
   },
   "APPLICATION_PAGE": {
     "TITLE": "MBA Application",

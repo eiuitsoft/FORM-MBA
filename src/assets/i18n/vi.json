@@ -204,7 +204,8 @@
     "SUCCESS_TITLE": "Cập nhật thành công!",
     "SUCCESS_MESSAGE": "Thông tin đơn đăng ký đã được cập nhật.",
     "ERROR_TITLE": "Lỗi cập nhật",
-    "ERROR_MESSAGE": "Cập nhật đơn đăng ký thất bại"
+    "ERROR_MESSAGE": "Cập nhật đơn đăng ký thất bại",
+    "SYSTEM_ERROR": "Đã xảy ra lỗi khi cập nhật đơn đăng ký"
   },
   "APPLICATION_PAGE": {
     "TITLE": "Đơn Đăng Ký MBA",

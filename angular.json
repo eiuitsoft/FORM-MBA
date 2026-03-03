@@ -29,6 +29,10 @@
                 "input": "./",
                 "output": "/"
               }
+            ],
+            "allowedCommonJsDependencies": [
+              "sweetalert2",
+              "google-libphonenumber"
             ]
           },
           "configurations": {
