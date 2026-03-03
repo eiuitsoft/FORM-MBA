@@ -256,8 +256,9 @@ export class PersonalDetailsViewComponent {
   getNationalityName(): string {
     if (!this.data?.nationalityId) return '--';
     const country = this.countries.find((c) => c.id === this.data.nationalityId);
+    const lang = this.translate.currentLang;
     if (country) {
-      return this.isLangVi ? country.name : country.name_EN;
+      return lang === 'vi' ? country.name : country.name_EN;
     }
     return this.data?.nationalityName || '--';
   }
@@ -276,7 +277,8 @@ export class PersonalDetailsViewComponent {
   formatDate(dateString: string | null): string {
     if (!dateString) return '--';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    const lang = this.translate.currentLang === 'vi' ? 'vi-VN' : 'en-US';
+    return date.toLocaleDateString(lang, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'

@@ -65,6 +65,7 @@ export class ApplicationDetailComponent implements OnInit {
   saving = signal(false);
   exporting = signal(false);
   isEditMode = signal(false);
+  showConfirmDialog = signal(false);
   applicationData = signal<MBAApplicationDetail>(null);
   uploadedFiles = signal<any[]>([]);
   undergraduateFiles = signal<any[][]>([]);
@@ -102,7 +103,10 @@ export class ApplicationDetailComponent implements OnInit {
       this.loadApplicationData(id);
       this.loadDropdownData();
     } else {
-      this._alertService.error('Error', 'Invalid application ID');
+      this._alertService.error(
+        this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+        this._translate.instant('AUTH.SESSION_EXPIRED')
+      );
       this._router.navigate(['/login']);
     }
   }
@@ -163,7 +167,10 @@ export class ApplicationDetailComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading application:', err);
-        this._alertService.error('Error', 'Failed to load application data');
+        this._alertService.error(
+          this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+          this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR')
+        );
         this.loading.set(false);
         this._router.navigate(['/login']);
       }
@@ -513,16 +520,18 @@ export class ApplicationDetailComponent implements OnInit {
 
   saveChanges(): void {
     if (this.editForm.invalid) {
-      // Log all validation errors for debugging
       this.logValidationErrors();
       this._alertService.error(
         this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
         this._translate.instant('COMMON.ERROR_REVIEW')
       );
-      this.editForm.markAllAsTouched();
       return;
     }
+    this.showConfirmDialog.set(true);
+  }
 
+  confirmSave(): void {
+    this.showConfirmDialog.set(false);
     this.saving.set(true);
     const formData = this.transformFormData();
 
@@ -530,25 +539,32 @@ export class ApplicationDetailComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this._alertService.success(
-            this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'),
-            this._translate.instant('SUBMIT_RESULT.SUCCESS_MESSAGE')
+            this._translate.instant('UPDATE_RESULT.SUCCESS_TITLE'),
+            this._translate.instant('UPDATE_RESULT.SUCCESS_MESSAGE')
           );
           this.isEditMode.set(false);
           this.loadApplicationData(this.applicationId());
         } else {
-          this._alertService.error(this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'), res.message || this._translate.instant('SUBMIT_RESULT.ERROR_MESSAGE'));
+          this._alertService.error(
+            this._translate.instant('UPDATE_RESULT.ERROR_TITLE'),
+            res.message || this._translate.instant('UPDATE_RESULT.ERROR_MESSAGE')
+          );
         }
         this.saving.set(false);
       },
       error: (err) => {
         console.error('Update error:', err);
         this._alertService.error(
-          this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
-          err.message || this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR')
+          this._translate.instant('UPDATE_RESULT.ERROR_TITLE'),
+          err.message || this._translate.instant('UPDATE_RESULT.SYSTEM_ERROR')
         );
         this.saving.set(false);
       }
     });
+  }
+
+  cancelSave(): void {
+    this.showConfirmDialog.set(false);
   }
 
   private transformFormData(): any {
@@ -819,7 +835,8 @@ export class ApplicationDetailComponent implements OnInit {
   formatDateTime(dateString: string | null): string {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
+    const lang = this._translate.currentLang === 'vi' ? 'vi-VN' : 'en-US';
+    return date.toLocaleString(lang, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -904,13 +921,19 @@ export class ApplicationDetailComponent implements OnInit {
         const file = files[i];
 
         if (file.size > 5 * 1024 * 1024) {
-          this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`);
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_SIZE_LIMIT')}`
+          );
           continue;
         }
 
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
-          this._alertService.error('Error', `File ${file.name} has invalid type`);
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_INVALID_TYPE')}`
+          );
           continue;
         }
 
@@ -977,13 +1000,19 @@ export class ApplicationDetailComponent implements OnInit {
         const file = files[i];
 
         if (file.size > 5 * 1024 * 1024) {
-          this._alertService.error('Error', `File ${file.name} exceeds 5MB limit`);
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_SIZE_LIMIT')}`
+          );
           continue;
         }
 
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
-          this._alertService.error('Error', `File ${file.name} has invalid type`);
+          this._alertService.error(
+            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
+            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_INVALID_TYPE')}`
+          );
           continue;
         }
 

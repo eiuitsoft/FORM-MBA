@@ -37,7 +37,7 @@
                 formControlName="value"
                 type="text"
                 [placeholder]="loginForm.value.method == LoginMethodEnum.CCCD
-                  ? '284501234114'
+                  ? ('LOGIN.CITIZEN_ID_PLACEHOLDER' | translate)
                   : loginForm.value.method == LoginMethodEnum.CODE
                   ? ('LOGIN.ENTER_PROFILE_CODE' | translate)
                   : ('LOGIN.ENTER_PHONE' | translate)"

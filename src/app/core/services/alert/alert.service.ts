@@ -1,10 +1,13 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AlertService {
+  private readonly _translate = inject(TranslateService);
+
   constructor() {}
 
   /**
@@ -93,8 +96,8 @@ export class AlertService {
       text: text,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: this._translate.instant('COMMON.CONFIRM') || 'OK',
+      cancelButtonText: this._translate.instant('COMMON.CANCEL') || 'Cancel',
     }).then((result) => {
       if (result.value) {
         okCallback();
@@ -112,8 +115,8 @@ export class AlertService {
         text: text,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: this._translate.instant('COMMON.CONFIRM') || 'OK',
+        cancelButtonText: this._translate.instant('COMMON.CANCEL') || 'Cancel',
       }).then((result) => {
         if (result.value) {
           resolve(true);
@@ -142,8 +145,8 @@ export class AlertService {
         text: text,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: this._translate.instant('COMMON.CONFIRM') || 'OK',
+        cancelButtonText: this._translate.instant('COMMON.CANCEL') || 'Cancel',
         reverseButtons: true,
       })
       .then((result) => {

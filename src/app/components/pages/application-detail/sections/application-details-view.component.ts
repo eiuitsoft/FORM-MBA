@@ -45,8 +45,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'APPLICATION_DETAILS.ADMISSION_INTAKE' | translate }}</label>
-            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ data?.admissionIntake || data?.intake || '--' }}">
-              {{ data?.admissionIntake || data?.intake || '--' }}
+            <div class="bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 truncate" title="{{ getIntakeLabel() | translate }}">
+              {{ getIntakeLabel() | translate }}
             </div>
           </div>
         </div>
@@ -62,5 +62,12 @@ export class ApplicationDetailsViewComponent {
     if (track === 0 || track === '0' || track?.toLowerCase() === 'application') return 'APPLICATION_DETAILS.APPLICATION';
     if (track === 1 || track === '1' || track?.toLowerCase() === 'research') return 'APPLICATION_DETAILS.RESEARCH';
     return track || '--';
+  }
+
+  getIntakeLabel(): string {
+    const intake = this.data?.admissionIntake || this.data?.intake;
+    if (intake === 1 || intake === '1') return 'APPLICATION_DETAILS.ADMISSION_INTAKE_1';
+    if (intake === 2 || intake === '2') return 'APPLICATION_DETAILS.ADMISSION_INTAKE_2';
+    return intake || '--';
   }
 }

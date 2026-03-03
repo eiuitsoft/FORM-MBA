@@ -105,7 +105,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.loginForm.get('value')?.valid) {
       this.showModalChooseOTP.set(true);
     } else {
-      this.errorMessage.set('Please enter valid information!');
+      this.errorMessage.set(this.translate.instant('LOGIN.ERR_INVALID_INFO'));
       setTimeout(() => this.errorMessage.set(''), 3000);
     }
   }
@@ -122,7 +122,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   sendOTP(): void {
     if (!this.loginForm.valid) {
-      this.errorMessage.set('Invalid information!');
+      this.errorMessage.set(this.translate.instant('LOGIN.ERR_INVALID_INFO'));
       setTimeout(() => this.errorMessage.set(''), 3000);
       return;
     }
@@ -145,20 +145,20 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.profileCode.set(res.data?.profileCode || null);
           this.showFormSendOTP.set(false);
           this.setIntervalTimer();
-          this.successMessage.set('OTP code has been sent!');
-          this.alertService.successMin('OTP code has been sent!');
+          this.successMessage.set(this.translate.instant('LOGIN.OTP_SENT'));
+          this.alertService.successMin(this.translate.instant('LOGIN.OTP_SENT'));
           setTimeout(() => this.successMessage.set(''), 3000);
         } else {
-          this.errorMessage.set(res.message || 'Unable to send OTP. Please try again.');
-          this.alertService.error('Error', res.message || 'Unable to send OTP. Please try again.');
+          this.errorMessage.set(res.message || this.translate.instant('LOGIN.OTP_SEND_FAILED'));
+          this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), res.message || this.translate.instant('LOGIN.OTP_SEND_FAILED'));
         }
       },
       error: (err) => {
         this.isSendingOTP.set(false);
         this.closeModal();
-        const errorMsg = err.message || 'A system error has occurred!';
+        const errorMsg = err.message || this.translate.instant('LOGIN.SYSTEM_ERROR');
         this.errorMessage.set(errorMsg);
-        this.alertService.error('Error', errorMsg);
+        this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
       }
     });
   }
@@ -222,8 +222,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.tokenService.fullName.set(res.data?.fullName || '');
           this.tokenService.profileCode.set(res.data?.profileCode || '');
 
-          this.successMessage.set('Login successful! Redirecting...');
-          this.alertService.success('Success!', 'Login successful! Redirecting...', 1500);
+          this.successMessage.set(this.translate.instant('LOGIN.LOGIN_SUCCESS'));
+          this.alertService.success(this.translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'), this.translate.instant('LOGIN.LOGIN_SUCCESS'), 1500);
 
           // Navigate to application detail page with studentId
           const studentId = res.data?.mbaStudentId;
@@ -237,17 +237,17 @@ export class LoginComponent implements OnInit, OnDestroy {
           }, 1500);
         } else {
           this.isErrorOTP.set(true);
-          const errorMsg = res.message || 'OTP code is incorrect or has expired.';
+          const errorMsg = res.message || this.translate.instant('LOGIN.OTP_INVALID');
           this.errorMessage.set(errorMsg);
-          this.alertService.error('Error', errorMsg);
+          this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
         }
       },
       error: (err) => {
         this.isSendingOTP.set(false);
         this.isErrorOTP.set(true);
-        const errorMsg = err.message || 'A system error has occurred!';
+        const errorMsg = err.message || this.translate.instant('LOGIN.SYSTEM_ERROR');
         this.errorMessage.set(errorMsg);
-        this.alertService.error('Error', errorMsg);
+        this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
       }
     });
   }

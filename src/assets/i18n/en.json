@@ -188,12 +188,22 @@
     "TITLE": "Confirm Submission",
     "MESSAGE": "Are you sure you want to submit this application?"
   },
+  "CONFIRM_SAVE_DIALOG": {
+    "TITLE": "Confirm Save",
+    "MESSAGE": "Are you sure you want to save these changes?"
+  },
   "SUBMIT_RESULT": {
     "SUCCESS_TITLE": "Success!",
     "SUCCESS_MESSAGE": "Application submitted successfully! Redirecting to login...",
     "ERROR_TITLE": "Error",
     "ERROR_MESSAGE": "Failed to submit application",
     "SYSTEM_ERROR": "An error occurred while submitting the application"
+  },
+  "UPDATE_RESULT": {
+    "SUCCESS_TITLE": "Update Success!",
+    "SUCCESS_MESSAGE": "Application information has been updated.",
+    "ERROR_TITLE": "Update Error",
+    "ERROR_MESSAGE": "Failed to update application"
   },
   "APPLICATION_PAGE": {
     "TITLE": "MBA Application",
@@ -246,6 +256,7 @@
   },
   "LOGIN": {
     "CITIZEN_ID": "Citizen ID",
+    "CITIZEN_ID_PLACEHOLDER": "Example: 027401234567",
     "PROFILE_CODE": "Profile Code",
     "PHONE_NUMBER": "Registered Phone Number",
     "ENTER_CITIZEN_ID": "Enter Citizen ID",

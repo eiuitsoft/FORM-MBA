@@ -22,7 +22,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <h4 class="text-base font-bold text-[#1e3a5f] mb-4 uppercase tracking-wide border-b-2 border-[#a68557] pb-2">
             {{ 'EDUCATION_DETAILS.UNDERGRAD_TITLE' | translate }}
           </h4>
-          @if (data?.undergraduates && data.undergraduates.length > 0) { @for (degree of data.undergraduates; track
+          @if (data?.undergraduates; as undergraduates) { @if (undergraduates.length > 0) { @for (degree of undergraduates; track
           $index; let i = $index) {
           <div class="mb-4 pb-4 border-b border-gray-300 last:border-b-0">
             <p class="text-sm font-bold text-[#a68557] mb-3 uppercase">
@@ -144,7 +144,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               </span>
             </button>
           </div>
-          } } @else {
+          } } } @else {
           <p class="text-sm text-gray-500 italic">{{ 'EDUCATION_DETAILS.NO_UNDERGRAD' | translate }}</p>
           }
         </div>
@@ -154,7 +154,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
           <h4 class="text-base font-bold text-[#1e3a5f] mb-4 uppercase tracking-wide border-b-2 border-[#a68557] pb-2">
             {{ 'EDUCATION_DETAILS.POSTGRADUATE_TITLE' | translate }}
           </h4>
-          @if (data?.postgraduates && data.postgraduates.length > 0) { @for (degree of data.postgraduates; track $index;
+          @if (data?.postgraduates; as postgraduates) { @if (postgraduates.length > 0) { @for (degree of postgraduates; track $index;
           let i = $index) {
           <div class="mb-4 pb-4 border-b border-gray-300 last:border-b-0">
             <p class="text-sm font-bold text-[#a68557] mb-3 uppercase">
@@ -268,7 +268,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
               </span>
             </button>
           </div>
-          } } @else {
+          } } } @else {
           <p class="text-sm text-gray-500 italic">{{ 'EDUCATION_DETAILS.NO_POSTGRAD' | translate }}</p>
           }
         </div>
@@ -315,17 +315,19 @@ export class EducationDetailsViewComponent {
   getCountryName(countryId: string, fallbackName: string): string {
     if (!countryId) return '--';
     const country = this.countries.find((c) => c.id === countryId);
+    const lang = this.translate.currentLang;
     if (country) {
-      return this.isLangVi ? country.name : country.name_EN;
+      return lang === 'vi' ? country.name : country.name_EN;
     }
     return fallbackName || '--';
   }
 
   getLanguageName(languageId: string, fallbackName: string): string {
     if (!languageId) return '--';
-    const lang = this.languages.find((l) => l.id === languageId);
-    if (lang) {
-      return this.isLangVi ? lang.name : lang.name_EN;
+    const langObj = this.languages.find((l) => l.id === languageId);
+    const lang = this.translate.currentLang;
+    if (langObj) {
+      return lang === 'vi' ? langObj.name : langObj.name_EN;
     }
     return fallbackName || '--';
   }

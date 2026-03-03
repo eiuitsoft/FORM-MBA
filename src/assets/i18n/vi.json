@@ -189,12 +189,22 @@
     "TITLE": "Xác Nhận Gửi",
     "MESSAGE": "Bạn có chắc chắn muốn gửi đơn đăng ký này không?"
   },
+  "CONFIRM_SAVE_DIALOG": {
+    "TITLE": "Xác Nhận Lưu",
+    "MESSAGE": "Bạn có chắc chắn muốn lưu các thay đổi này không?"
+  },
   "SUBMIT_RESULT": {
     "SUCCESS_TITLE": "Thành công!",
     "SUCCESS_MESSAGE": "Đơn đăng ký đã được gửi thành công! Đang chuyển hướng đến trang đăng nhập...",
     "ERROR_TITLE": "Lỗi",
     "ERROR_MESSAGE": "Gửi đơn đăng ký thất bại",
     "SYSTEM_ERROR": "Đã xảy ra lỗi khi gửi đơn đăng ký"
+  },
+  "UPDATE_RESULT": {
+    "SUCCESS_TITLE": "Cập nhật thành công!",
+    "SUCCESS_MESSAGE": "Thông tin đơn đăng ký đã được cập nhật.",
+    "ERROR_TITLE": "Lỗi cập nhật",
+    "ERROR_MESSAGE": "Cập nhật đơn đăng ký thất bại"
   },
   "APPLICATION_PAGE": {
     "TITLE": "Đơn Đăng Ký MBA",
@@ -247,6 +257,7 @@
   },
   "LOGIN": {
     "CITIZEN_ID": "Số CCCD",
+    "CITIZEN_ID_PLACEHOLDER": "Ví dụ: 027401234567",
     "PROFILE_CODE": "Mã hồ sơ",
     "PHONE_NUMBER": "Số điện thoại đã đăng ký",
     "ENTER_CITIZEN_ID": "Nhập số CCCD",
