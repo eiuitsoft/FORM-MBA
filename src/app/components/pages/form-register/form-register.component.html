@@ -413,14 +413,15 @@
           <div class="md:col-span-1">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-4">
               <div>
-                <label for="correspondenceCityId" class="block text-sm font-medium text-gray-700">{{
-                  'PERSONAL_DETAILS.CORR_CITY' | translate
-                }}</label>
+                <label for="correspondenceCityId" class="block text-sm font-medium text-gray-700">
+                  {{ 'PERSONAL_DETAILS.CORR_CITY' | translate }}
+                  <span class="text-red-600">*</span>
+                </label>
                 <select
                   id="correspondenceCityId"
                   formControlName="correspondenceCityId"
                   (change)="onCorrespondenceCityChange($event)"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  [class]="getFieldClasses('personalDetails.correspondenceCityId', 'mt-1 block w-full rounded-md shadow-sm px-3 py-2')">
                   <option value="">
                     {{ 'COMMON.SELECT_CITY' | translate }}
                   </option>
@@ -430,16 +431,23 @@
                   </option>
                   }
                 </select>
+                @if (personalDetails.get('correspondenceCityId')?.hasError('required') && personalDetails.get('correspondenceCityId')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.CORR_CITY' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
               <div>
-                <label for="correspondenceDistrictId" class="block text-sm font-medium text-gray-700">{{
-                  'PERSONAL_DETAILS.CORR_WARD' | translate
-                }}</label>
+                <label for="correspondenceDistrictId" class="block text-sm font-medium text-gray-700">
+                  {{ 'PERSONAL_DETAILS.CORR_WARD' | translate }}
+                  <span class="text-red-600">*</span>
+                </label>
                 <select
                   id="correspondenceDistrictId"
                   formControlName="correspondenceDistrictId"
                   (change)="onCorrespondenceDistrictChange($event)"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                  [class]="getFieldClasses('personalDetails.correspondenceDistrictId', 'mt-1 block w-full rounded-md shadow-sm px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed')">
                   <option value="">
                     {{ 'COMMON.SELECT_WARD' | translate }}
                   </option>
@@ -447,6 +455,12 @@
                   <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                   }
                 </select>
+                @if (personalDetails.get('correspondenceDistrictId')?.hasError('required') && personalDetails.get('correspondenceDistrictId')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.CORR_WARD' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
             </div>
           </div>
@@ -477,14 +491,15 @@
           <div class="md:col-span-1">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-4">
               <div>
-                <label for="permanentCityId" class="block text-sm font-medium text-gray-700">{{
-                  'PERSONAL_DETAILS.PERM_CITY' | translate
-                }}</label>
+                <label for="permanentCityId" class="block text-sm font-medium text-gray-700">
+                  {{ 'PERSONAL_DETAILS.PERM_CITY' | translate }}
+                  <span class="text-red-600">*</span>
+                </label>
                 <select
                   id="permanentCityId"
                   formControlName="permanentCityId"
                   (change)="onPermanentCityChange($event)"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2">
+                  [class]="getFieldClasses('personalDetails.permanentCityId', 'mt-1 block w-full rounded-md shadow-sm px-3 py-2')">
                   <option value="">
                     {{ 'COMMON.SELECT_CITY' | translate }}
                   </option>
@@ -494,16 +509,23 @@
                   </option>
                   }
                 </select>
+                @if (personalDetails.get('permanentCityId')?.hasError('required') && personalDetails.get('permanentCityId')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.PERM_CITY' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
               <div>
-                <label for="permanentDistrictId" class="block text-sm font-medium text-gray-700">{{
-                  'PERSONAL_DETAILS.PERM_WARD' | translate
-                }}</label>
+                <label for="permanentDistrictId" class="block text-sm font-medium text-gray-700">
+                  {{ 'PERSONAL_DETAILS.PERM_WARD' | translate }}
+                  <span class="text-red-600">*</span>
+                </label>
                 <select
                   id="permanentDistrictId"
                   formControlName="permanentDistrictId"
                   (change)="onPermanentDistrictChange($event)"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                  [class]="getFieldClasses('personalDetails.permanentDistrictId', 'mt-1 block w-full rounded-md shadow-sm px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed')">
                   <option value="">
                     {{ 'COMMON.SELECT_WARD' | translate }}
                   </option>
@@ -511,6 +533,12 @@
                   <option [value]="ward.wardCode">{{ ward.wardName }}</option>
                   }
                 </select>
+                @if (personalDetails.get('permanentDistrictId')?.hasError('required') && personalDetails.get('permanentDistrictId')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'PERSONAL_DETAILS.PERM_WARD' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
             </div>
           </div>
@@ -714,8 +742,8 @@
                     formControlName="university"
                     placeholder="{{ 'EDUCATION_DETAILS.ENTER_UNIVERSITY' | translate }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-                  @if (undergraduates.at(ugIndex).get('university')?.hasError('required') &&
-                  undergraduates.at(ugIndex).get('university')?.touched) {
+                  @if ((undergraduates.at(ugIndex).get('university')?.hasError('required') || (undergraduates.at(ugIndex).hasError('incompleteRecord') && !undergraduates.at(ugIndex).get('university')?.value)) &&
+                  (submitted() || undergraduates.at(ugIndex).get('university')?.touched)) {
                   <p class="text-red-600 text-sm mt-1">
                     {{ 'EDUCATION_DETAILS.UNIVERSITY' | translate }}
                     {{ 'COMMON.REQUIRED_FIELD' | translate }}
@@ -740,8 +768,8 @@
                     <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
                     }
                   </select>
-                  @if (undergraduates.at(ugIndex).get('countryId')?.hasError('required') &&
-                  undergraduates.at(ugIndex).get('countryId')?.touched) {
+                  @if ((undergraduates.at(ugIndex).get('countryId')?.hasError('required') || (undergraduates.at(ugIndex).hasError('incompleteRecord') && !undergraduates.at(ugIndex).get('countryId')?.value)) &&
+                  (submitted() || undergraduates.at(ugIndex).get('countryId')?.touched)) {
                   <p class="text-red-600 text-sm mt-1">
                     {{ 'EDUCATION_DETAILS.COUNTRY' | translate }}
                     {{ 'COMMON.REQUIRED_FIELD' | translate }}
@@ -760,8 +788,8 @@
                     formControlName="major"
                     placeholder="{{ 'EDUCATION_DETAILS.ENTER_MAJOR' | translate }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
-                  @if (undergraduates.at(ugIndex).get('major')?.hasError('required') &&
-                  undergraduates.at(ugIndex).get('major')?.touched) {
+                  @if ((undergraduates.at(ugIndex).get('major')?.hasError('required') || (undergraduates.at(ugIndex).hasError('incompleteRecord') && !undergraduates.at(ugIndex).get('major')?.value)) &&
+                  (submitted() || undergraduates.at(ugIndex).get('major')?.touched)) {
                   <p class="text-red-600 text-sm mt-1">
                     {{ 'EDUCATION_DETAILS.MAJOR' | translate }}
                     {{ 'COMMON.REQUIRED_FIELD' | translate }}
@@ -949,19 +977,31 @@
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">{{
-                    'EDUCATION_DETAILS.UNIVERSITY' | translate
-                  }}</label
-                  ><input
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ 'EDUCATION_DETAILS.UNIVERSITY' | translate }}
+                    @if (postgraduates.at(pgIndex).hasError('incompleteRecord')) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <input
                     type="text"
                     formControlName="university"
                     placeholder="{{ 'EDUCATION_DETAILS.ENTER_UNIVERSITY' | translate }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if (postgraduates.at(pgIndex).hasError('incompleteRecord') && !postgraduates.at(pgIndex).get('university')?.value && (submitted() || postgraduates.at(pgIndex).get('university')?.touched)) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.UNIVERSITY' | translate }}
+                    {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                  </p>
+                  }
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">{{
-                    'EDUCATION_DETAILS.COUNTRY' | translate
-                  }}</label>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ 'EDUCATION_DETAILS.COUNTRY' | translate }}
+                    @if (postgraduates.at(pgIndex).hasError('incompleteRecord')) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
                   <select
                     formControlName="countryId"
                     (change)="onCountryChange($event, 'postgraduates', pgIndex)"
@@ -973,21 +1013,39 @@
                     <option [value]="country.id">{{ isLangVi ? country.name : country.name_EN }}</option>
                     }
                   </select>
+                  @if (postgraduates.at(pgIndex).hasError('incompleteRecord') && !postgraduates.at(pgIndex).get('countryId')?.value && (submitted() || postgraduates.at(pgIndex).get('countryId')?.touched)) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.COUNTRY' | translate }}
+                    {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                  </p>
+                  }
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">{{
-                    'EDUCATION_DETAILS.MAJOR' | translate
-                  }}</label
-                  ><input
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ 'EDUCATION_DETAILS.MAJOR' | translate }}
+                    @if (postgraduates.at(pgIndex).hasError('incompleteRecord')) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <input
                     type="text"
                     formControlName="major"
                     placeholder="{{ 'EDUCATION_DETAILS.ENTER_MAJOR' | translate }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if (postgraduates.at(pgIndex).hasError('incompleteRecord') && !postgraduates.at(pgIndex).get('major')?.value && (submitted() || postgraduates.at(pgIndex).get('major')?.touched)) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.MAJOR' | translate }}
+                    {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                  </p>
+                  }
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">{{
-                    'EDUCATION_DETAILS.GRAD_YEAR' | translate
-                  }}</label>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ 'EDUCATION_DETAILS.GRAD_YEAR' | translate }}
+                    @if (postgraduates.at(pgIndex).hasError('incompleteRecord')) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
                   <input
                     type="number"
                     placeholder="YYYY"
@@ -1014,20 +1072,32 @@
                   }
                 </div>
                 <div class="md:col-span-2">
-                  <label class="block text-sm font-medium text-gray-700">{{
-                    'EDUCATION_DETAILS.THESIS' | translate
-                  }}</label
-                  ><input
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ 'EDUCATION_DETAILS.THESIS' | translate }}
+                    @if (postgraduates.at(pgIndex).hasError('incompleteRecord')) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
+                  <input
                     type="text"
                     formControlName="thesisTitle"
                     placeholder="{{ 'EDUCATION_DETAILS.ENTER_THESIS' | translate }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  @if (postgraduates.at(pgIndex).hasError('incompleteRecord') && !postgraduates.at(pgIndex).get('thesisTitle')?.value && (submitted() || postgraduates.at(pgIndex).get('thesisTitle')?.touched)) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.THESIS' | translate }}
+                    {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                  </p>
+                  }
                 </div>
                 <!-- Language & File Upload - Same Row -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">{{
-                    'EDUCATION_DETAILS.LANGUAGE' | translate
-                  }}</label>
+                  <label class="block text-sm font-medium text-gray-700">
+                    {{ 'EDUCATION_DETAILS.LANGUAGE' | translate }}
+                    @if (postgraduates.at(pgIndex).hasError('incompleteRecord')) {
+                    <span class="text-red-600">*</span>
+                    }
+                  </label>
                   <select
                     formControlName="languageId"
                     (change)="onLanguageChange($event, 'postgraduates', pgIndex)"
@@ -1039,6 +1109,12 @@
                     <option [value]="language.id">{{ isLangVi ? language.name : language.name_EN }}</option>
                     }
                   </select>
+                  @if (postgraduates.at(pgIndex).hasError('incompleteRecord') && !postgraduates.at(pgIndex).get('languageId')?.value && (submitted() || postgraduates.at(pgIndex).get('languageId')?.touched)) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.LANGUAGE' | translate }}
+                    {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                  </p>
+                  }
                 </div>
                 <div>
                   <label [attr.for]="'postgraduateFile_' + pgIndex" class="block text-sm font-medium text-gray-700">{{
@@ -1332,6 +1408,16 @@
                   {{ 'EMPLOYMENT.MONTHS' | translate }}
                   {{ 'COMMON.REQUIRED_FIELD' | translate }}
                 </p>
+                } @if (employmentHistory.get('totalExpMonths')?.hasError('min') &&
+                employmentHistory.get('totalExpMonths')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.MONTHS_MIN' | translate }}
+                </p>
+                } @if (employmentHistory.get('totalExpMonths')?.hasError('max') &&
+                employmentHistory.get('totalExpMonths')?.touched) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.MONTHS_MAX' | translate }}
+                </p>
                 }
               </div>
             </div>
@@ -1356,6 +1442,11 @@
                 <p class="text-red-600 text-sm mt-1">
                   {{ 'PERSONAL_DETAILS.ORGANIZATION_MAX' | translate }}
                 </p>
+                } @if (employmentHistory.get('position1')?.hasError('incompleteRecord') && !employmentHistory.get('position1.organization')?.value && (submitted() || employmentHistory.get('position1.organization')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.ORG' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
                 }
               </div>
               <div>
@@ -1370,6 +1461,11 @@
                 <p class="text-red-600 text-sm mt-1">
                   {{ 'PERSONAL_DETAILS.JOB_TITLE_MAX' | translate }}
                 </p>
+                } @if (employmentHistory.get('position1')?.hasError('incompleteRecord') && !employmentHistory.get('position1.title')?.value && (submitted() || employmentHistory.get('position1.title')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.TITLE' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
                 }
               </div>
               <div>
@@ -1378,6 +1474,12 @@
                   class="mt-1 block"
                   formControlName="from">
                 </app-custom-month-picker>
+                @if (employmentHistory.get('position1')?.hasError('incompleteRecord') && !employmentHistory.get('position1.from')?.value && (submitted() || employmentHistory.get('position1.from')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.FROM' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TO' | translate }}</label>
@@ -1385,6 +1487,12 @@
                   class="mt-1 block"
                   formControlName="to">
                 </app-custom-month-picker>
+                @if (employmentHistory.get('position1')?.hasError('incompleteRecord') && !employmentHistory.get('position1.to')?.value && (submitted() || employmentHistory.get('position1.to')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.TO' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
                 @if (employmentHistory.get('position1')?.hasError('dateRange') &&
                 employmentHistory.get('position1.to')?.touched) {
                 <p class="text-red-600 text-sm mt-1">
@@ -1405,6 +1513,12 @@
                   rows="2"
                   placeholder="{{ 'EMPLOYMENT.ENTER_ADDRESS' | translate }}"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+                @if (employmentHistory.get('position1')?.hasError('incompleteRecord') && !employmentHistory.get('position1.address')?.value && (submitted() || employmentHistory.get('position1.address')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.ADDRESS' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
                 @if (employmentHistory.get('position1.address')?.hasError('maxlength') &&
                 employmentHistory.get('position1.address')?.touched) {
                 <p class="text-red-600 text-sm mt-1">
@@ -1439,6 +1553,11 @@
                 <p class="text-red-600 text-sm mt-1">
                   {{ 'PERSONAL_DETAILS.ORGANIZATION_MAX' | translate }}
                 </p>
+                } @if (employmentHistory.get('position2')?.hasError('incompleteRecord') && !employmentHistory.get('position2.organization')?.value && (submitted() || employmentHistory.get('position2.organization')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.ORG' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
                 }
               </div>
               <div>
@@ -1453,6 +1572,11 @@
                 <p class="text-red-600 text-sm mt-1">
                   {{ 'PERSONAL_DETAILS.JOB_TITLE_MAX' | translate }}
                 </p>
+                } @if (employmentHistory.get('position2')?.hasError('incompleteRecord') && !employmentHistory.get('position2.title')?.value && (submitted() || employmentHistory.get('position2.title')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.TITLE' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
                 }
               </div>
               <div>
@@ -1461,6 +1585,12 @@
                   class="mt-1 block"
                   formControlName="from">
                 </app-custom-month-picker>
+                @if (employmentHistory.get('position2')?.hasError('incompleteRecord') && !employmentHistory.get('position2.from')?.value && (submitted() || employmentHistory.get('position2.from')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.FROM' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">{{ 'EMPLOYMENT.TO' | translate }}</label>
@@ -1468,6 +1598,12 @@
                   class="mt-1 block"
                   formControlName="to">
                 </app-custom-month-picker>
+                @if (employmentHistory.get('position2')?.hasError('incompleteRecord') && !employmentHistory.get('position2.to')?.value && (submitted() || employmentHistory.get('position2.to')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.TO' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
                 @if (employmentHistory.get('position2')?.hasError('dateRange') &&
                 employmentHistory.get('position2.to')?.touched) {
                 <p class="text-red-600 text-sm mt-1">
@@ -1488,6 +1624,12 @@
                   rows="2"
                   placeholder="{{ 'EMPLOYMENT.ENTER_ADDRESS' | translate }}"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2"></textarea>
+                @if (employmentHistory.get('position2')?.hasError('incompleteRecord') && !employmentHistory.get('position2.address')?.value && (submitted() || employmentHistory.get('position2.address')?.touched)) {
+                <p class="text-red-600 text-sm mt-1">
+                  {{ 'EMPLOYMENT.ADDRESS' | translate }}
+                  {{ 'COMMON.REQUIRED_FIELD' | translate }}
+                </p>
+                }
                 @if (employmentHistory.get('position2.address')?.hasError('maxlength') &&
                 employmentHistory.get('position2.address')?.touched) {
                 <p class="text-red-600 text-sm mt-1">

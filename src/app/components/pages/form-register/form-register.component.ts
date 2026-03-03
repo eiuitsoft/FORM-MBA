@@ -150,14 +150,14 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
       ],
       jobTitle: ['', [Validators.required, Validators.maxLength(50)]],
       organization: ['', [Validators.required, Validators.maxLength(50)]],
-      correspondenceCityId: [''],
+      correspondenceCityId: ['', Validators.required],
       correspondenceCityName: [''],
-      correspondenceDistrictId: [{ value: '', disabled: true }],
+      correspondenceDistrictId: [{ value: '', disabled: true }, Validators.required],
       correspondenceDistrictName: [''],
       correspondenceAddress: ['', [Validators.required, Validators.maxLength(50)]],
-      permanentCityId: [''],
+      permanentCityId: ['', Validators.required],
       permanentCityName: [''],
-      permanentDistrictId: [{ value: '', disabled: true }],
+      permanentDistrictId: [{ value: '', disabled: true }, Validators.required],
       permanentDistrictName: [''],
       permanentAddress: ['', [Validators.required, Validators.maxLength(50)]],
       passportFile: [null]
@@ -206,8 +206,8 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
       { validators: atLeastOneEnglishQualificationValidator() }
     ),
     employmentHistory: this.fb.group({
-      totalExpYears: ['', Validators.required],
-      totalExpMonths: ['', Validators.required],
+      totalExpYears: ['', [Validators.required, Validators.min(0)]],
+      totalExpMonths: ['', [Validators.required, Validators.min(0), Validators.max(11)]],
       position1: this.fb.group(
         {
           organization: ['', Validators.maxLength(50)],
@@ -1003,7 +1003,7 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         file: [null]
       },
       {
-        validators: completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'languageId'])
+        validators: completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'thesisTitle', 'languageId'])
       }
     );
   }

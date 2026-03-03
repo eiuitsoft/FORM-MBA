@@ -160,7 +160,7 @@
     "YEARS_MIN": "Years of experience must be greater than or equal to 0",
     "MONTHS_REQUIRED": "Months of experience is required",
     "MONTHS_MIN": "Months of experience must be greater than or equal to 0",
-    "MONTHS_MAX": "Months of experience cannot exceed 12",
+    "MONTHS_MAX": "Months of experience must be between 0 and 11",
     "TOTAL_EXPERIENCE_HINT": "Enter your total work experience. For example: 3 years and 6 months.",
     "POSITION_1": "Position 1 (Most recent)",
     "POSITION_2": "Position 2 (if applicable)",

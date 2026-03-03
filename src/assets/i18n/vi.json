@@ -160,7 +160,7 @@
     "YEARS_MIN": "Số năm kinh nghiệm phải lớn hơn hoặc bằng 0",
     "MONTHS_REQUIRED": "Số tháng kinh nghiệm là bắt buộc",
     "MONTHS_MIN": "Số tháng kinh nghiệm phải lớn hơn hoặc bằng 0",
-    "MONTHS_MAX": "Số tháng kinh nghiệm không được vượt quá 12",
+    "MONTHS_MAX": "Số tháng kinh nghiệm phải từ 0 đến 11",
     "TOTAL_EXPERIENCE_HINT": "Nhập tổng số năm kinh nghiệm làm việc của bạn. Ví dụ: 3 năm và 6 tháng.",
     "POSITION_1": "Vị trí công tác (Gần nhất)",
     "POSITION_2": "Vị trí công tác (nếu có)",
