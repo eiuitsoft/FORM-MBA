@@ -155,25 +155,22 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.profileCode.set(res.data.profileCode);
           }
         } else {
-          // Background error - notify user to resend or check info
+          // OTP send failed - go back to login form so user can correct info
           console.warn('Background OTP send failed:', res.message);
-          this.successMessage.set(''); // Clear "OTP Sent" message
-          this.showResendButton.set(true); // Allow immediate resend
+          this.showFormSendOTP.set(true); // Go back to input form
+          if (this.countdownTimer) clearInterval(this.countdownTimer);
           this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), res.message || this.translate.instant('LOGIN.OTP_SEND_FAILED'));
-          this.errorMessage.set(res.message || this.translate.instant('LOGIN.OTP_SEND_FAILED'));
         }
       },
       error: (err) => {
+        // HTTP error - go back to login form
         console.error('Background OTP system error:', err);
-        this.successMessage.set(''); // Clear "OTP Sent" message
-        this.showResendButton.set(true); // Allow immediate resend
-        // Translate error code from interceptor (e.g. 'AUTH.NETWORK_ERROR') to localized message
-        const rawMsg = err.message || 'LOGIN.SYSTEM_ERROR';
+        this.showFormSendOTP.set(true); // Go back to input form
+        if (this.countdownTimer) clearInterval(this.countdownTimer);
+        const rawMsg = err.message || '';
         const translated = this.translate.instant(rawMsg);
-        // If translate returns the same key, it means no translation found → use fallback
-        const errorMsg = (translated !== rawMsg) ? translated : this.translate.instant('LOGIN.SYSTEM_ERROR');
+        const errorMsg = translated || this.translate.instant('LOGIN.SYSTEM_ERROR');
         this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
-        this.errorMessage.set(errorMsg);
       }
     });
   }
