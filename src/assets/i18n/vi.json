@@ -319,6 +319,8 @@
   },
   "AUTH": {
     "SESSION_EXPIRED": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
-    "TOKEN_INVALID": "Token xác thực không hợp lệ. Vui lòng đăng nhập lại."
+    "TOKEN_INVALID": "Token xác thực không hợp lệ. Vui lòng đăng nhập lại.",
+    "NETWORK_ERROR": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng của bạn.",
+    "GENERAL_ERROR": "Đã xảy ra lỗi hệ thống."
   }
 }

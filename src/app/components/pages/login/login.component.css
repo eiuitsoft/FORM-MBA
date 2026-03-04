@@ -24,6 +24,16 @@ button[disabled]:hover {
   margin: 25px auto 0 auto;
 }
 
+/* OTP hint text */
+.otp-hint-text {
+  text-align: center;
+  color: #a8875b;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin: 15px 0 0 0;
+}
+
+
 .mat-error {
   margin: 5px auto;
 }

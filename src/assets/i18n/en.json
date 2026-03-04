@@ -319,6 +319,8 @@
   },
   "AUTH": {
     "SESSION_EXPIRED": "Your session has expired. Please login again.",
-    "TOKEN_INVALID": "Invalid authentication token. Please login again."
+    "TOKEN_INVALID": "Invalid authentication token. Please login again.",
+    "NETWORK_ERROR": "Unable to connect to server. Please check your network connection.",
+    "GENERAL_ERROR": "A system error has occurred."
   }
 }

@@ -127,38 +127,53 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isSendingOTP.set(true);
-    this.errorMessage.set('');
-
+    // Prepare model
     const model: SendOTP = {
       value: this.loginForm.value.value,
       method: this.loginForm.value.method,
       sendType: this.loginForm.value.sendType
     };
 
+    // IMMEDIATELY proceed to OTP input stage for "instant" feel
+    // This runs even before the API returns
+    this.closeModal();
+    this.errorMessage.set('');
+    this.showFormSendOTP.set(false);
+    this.setIntervalTimer();
+
+    // If method is Profile Code, we can already pre-set the profileCode signal
+    if (model.method === LoginMethodEnum.CODE) {
+      this.profileCode.set(model.value);
+    }
+
+    // Call API in the background
     this.authService.sendOTP(model).subscribe({
       next: (res) => {
-        this.isSendingOTP.set(false);
-        this.closeModal();
-
         if (res.success) {
-          this.profileCode.set(res.data?.profileCode || null);
-          this.showFormSendOTP.set(false);
-          this.setIntervalTimer();
-          this.successMessage.set(this.translate.instant('LOGIN.OTP_SENT'));
-          this.alertService.successMin(this.translate.instant('LOGIN.OTP_SENT'));
-          setTimeout(() => this.successMessage.set(''), 3000);
+          // Update profileCode from response if needed (might be different or confirming)
+          if (res.data?.profileCode) {
+            this.profileCode.set(res.data.profileCode);
+          }
         } else {
-          this.errorMessage.set(res.message || this.translate.instant('LOGIN.OTP_SEND_FAILED'));
+          // Background error - notify user to resend or check info
+          console.warn('Background OTP send failed:', res.message);
+          this.successMessage.set(''); // Clear "OTP Sent" message
+          this.showResendButton.set(true); // Allow immediate resend
           this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), res.message || this.translate.instant('LOGIN.OTP_SEND_FAILED'));
+          this.errorMessage.set(res.message || this.translate.instant('LOGIN.OTP_SEND_FAILED'));
         }
       },
       error: (err) => {
-        this.isSendingOTP.set(false);
-        this.closeModal();
-        const errorMsg = err.message || this.translate.instant('LOGIN.SYSTEM_ERROR');
-        this.errorMessage.set(errorMsg);
+        console.error('Background OTP system error:', err);
+        this.successMessage.set(''); // Clear "OTP Sent" message
+        this.showResendButton.set(true); // Allow immediate resend
+        // Translate error code from interceptor (e.g. 'AUTH.NETWORK_ERROR') to localized message
+        const rawMsg = err.message || 'LOGIN.SYSTEM_ERROR';
+        const translated = this.translate.instant(rawMsg);
+        // If translate returns the same key, it means no translation found → use fallback
+        const errorMsg = (translated !== rawMsg) ? translated : this.translate.instant('LOGIN.SYSTEM_ERROR');
         this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
+        this.errorMessage.set(errorMsg);
       }
     });
   }
@@ -203,6 +218,29 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Defensive check: if background sendOTP hasn't returned yet
+    if (!this.profileCode()) {
+      // If method was CODE, it should have been set. If PHONE, it might still be fetching.
+      this.isSendingOTP.set(true);
+      // Wait a bit or retry
+      setTimeout(() => {
+        if (!this.profileCode()) {
+          this.isSendingOTP.set(false);
+          this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), this.translate.instant('LOGIN.SYSTEM_ERROR'));
+          return;
+        }
+        this.proceedToLoginWithOTP(otpValue);
+      }, 500);
+      return;
+    }
+
+    this.proceedToLoginWithOTP(otpValue);
+  }
+
+  /**
+   * Final login step once profileCode is ready
+   */
+  private proceedToLoginWithOTP(otpValue: string): void {
     this.isErrorOTP.set(false);
     this.isSendingOTP.set(true);
 

@@ -16,7 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     router.navigate(['/login'], {
       queryParams: { reason: 'session_expired' }
     });
-    return throwError(() => new Error('Session expired'));
+    return throwError(() => new Error('AUTH.SESSION_EXPIRED'));
   }
 
   // Clone request and add Authorization header if token exists and valid
@@ -37,19 +37,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         // Client-side error
         errorMessage = error.error.message;
       } else if (error.status === 0) {
-        // Network error
-        errorMessage = 'Unable to connect to server. Please check your network connection.';
+        // Network error - use translation key as error code
+        errorMessage = 'AUTH.NETWORK_ERROR';
       } else if (error.status === 401) {
         // Unauthorized - redirect to login
         tokenService.clearAll();
         router.navigate(['/login'], {
           queryParams: { reason: 'session_expired' }
         });
-        errorMessage = 'Session expired. Please login again.';
+        errorMessage = 'AUTH.SESSION_EXPIRED';
       } else {
         // Server-side error - prioritize backend message
-        // Backend returns: { statusCode, message, success, data }
-        errorMessage = error.error?.message || error.message || 'A system error has occurred.';
+        errorMessage = error.error?.message || 'AUTH.GENERAL_ERROR';
       }
 
       console.error('HTTP Error:', {

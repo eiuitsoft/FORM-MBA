@@ -78,6 +78,9 @@
       <!-- OTP Input Form -->
       @if (!showFormSendOTP()) {
         <div>
+          <p class="otp-hint-text">
+            {{ sendOtpTypeMap[loginForm.value.sendType]?.messageKey | translate }}
+          </p>
           <div class="wrap-input100">
             <div class="form-group">
               <label class="text-muted">{{ 'LOGIN.OTP' | translate }}</label>
