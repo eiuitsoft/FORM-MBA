@@ -25,6 +25,8 @@
     "CONFIRM": "Xác nhận",
     "CHOOSE_FILE_BUTTON_TEXT": "Chọn tệp",
     "ERROR_REVIEW": "Vui lòng xem lại biểu mẫu và điền đầy đủ các thông tin bắt buộc được đánh dấu sao hoặc có màu đỏ.",
+    "NETWORK_ERROR": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng của bạn.",
+    "SYSTEM_ERROR": "Đã xảy ra lỗi hệ thống.",
     "CLOSE": "Đóng"
   },
   "SECTIONS": {
@@ -314,13 +316,11 @@
     "MONTH": "Tháng",
     "YEAR": "Năm",
     "CLEAR": "Xóa",
-    "SELECT_DATE": "Chọn ngày",
-    "SELECT_MONTH": "Chọn tháng"
+    "SELECT_DATE": "dd/mm/yyyy",
+    "SELECT_MONTH": "mm/yyyy"
   },
   "AUTH": {
     "SESSION_EXPIRED": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
-    "TOKEN_INVALID": "Token xác thực không hợp lệ. Vui lòng đăng nhập lại.",
-    "NETWORK_ERROR": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng của bạn.",
-    "GENERAL_ERROR": "Đã xảy ra lỗi hệ thống."
+    "TOKEN_INVALID": "Token xác thực không hợp lệ. Vui lòng đăng nhập lại."
   }
 }

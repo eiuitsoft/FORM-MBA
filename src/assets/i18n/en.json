@@ -25,6 +25,8 @@
     "CONFIRM": "Confirm",
     "CHOOSE_FILE_BUTTON_TEXT": "Choose file",
     "ERROR_REVIEW": "Please review the form and fill in all required fields marked with an asterisk or highlighted in red.",
+    "NETWORK_ERROR": "Unable to connect to server. Please check your network connection.",
+    "SYSTEM_ERROR": "A system error has occurred.",
     "CLOSE": "Close"
   },
   "SECTIONS": {
@@ -314,13 +316,11 @@
     "MONTH": "Month",
     "YEAR": "Year",
     "CLEAR": "Clear",
-    "SELECT_DATE": "Select date",
-    "SELECT_MONTH": "Select month"
+    "SELECT_DATE": "dd/mm/yyyy",
+    "SELECT_MONTH": "mm/yyyy"
   },
   "AUTH": {
     "SESSION_EXPIRED": "Your session has expired. Please login again.",
-    "TOKEN_INVALID": "Invalid authentication token. Please login again.",
-    "NETWORK_ERROR": "Unable to connect to server. Please check your network connection.",
-    "GENERAL_ERROR": "A system error has occurred."
+    "TOKEN_INVALID": "Invalid authentication token. Please login again."
   }
 }

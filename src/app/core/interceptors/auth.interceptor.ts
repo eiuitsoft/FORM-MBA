@@ -38,7 +38,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = error.error.message;
       } else if (error.status === 0) {
         // Network error - use translation key as error code
-        errorMessage = 'AUTH.NETWORK_ERROR';
+        errorMessage = 'COMMON.NETWORK_ERROR';
       } else if (error.status === 401) {
         // Unauthorized - redirect to login
         tokenService.clearAll();
@@ -48,7 +48,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = 'AUTH.SESSION_EXPIRED';
       } else {
         // Server-side error - prioritize backend message
-        errorMessage = error.error?.message || 'AUTH.GENERAL_ERROR';
+        if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.error && error.error.errors) {
+          // ASP.NET Core validation errors (ProblemDetails)
+          const errors = Object.values(error.error.errors).flat();
+          errorMessage = errors.join('. ') || error.error.title || 'COMMON.SYSTEM_ERROR';
+        } else {
+          errorMessage = error.error?.message || error.error?.title || error.error?.Detail || error.message || 'COMMON.SYSTEM_ERROR';
+        }
       }
 
       console.error('HTTP Error:', {

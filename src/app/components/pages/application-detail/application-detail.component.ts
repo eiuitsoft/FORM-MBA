@@ -167,9 +167,10 @@ export class ApplicationDetailComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading application:', err);
+        const errorMsg = err.message ? this._translate.instant(err.message) : this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR');
         this._alertService.error(
           this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
-          this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR')
+          errorMsg
         );
         this.loading.set(false);
         this._router.navigate(['/login']);
@@ -547,7 +548,7 @@ export class ApplicationDetailComponent implements OnInit {
         } else {
           this._alertService.error(
             this._translate.instant('UPDATE_RESULT.ERROR_TITLE'),
-            res.message || this._translate.instant('UPDATE_RESULT.ERROR_MESSAGE')
+            res.message ? this._translate.instant(res.message) : this._translate.instant('UPDATE_RESULT.ERROR_MESSAGE')
           );
         }
         this.saving.set(false);
@@ -556,7 +557,7 @@ export class ApplicationDetailComponent implements OnInit {
         console.error('Update error:', err);
         this._alertService.error(
           this._translate.instant('UPDATE_RESULT.ERROR_TITLE'),
-          err.message || this._translate.instant('UPDATE_RESULT.SYSTEM_ERROR')
+          err.message ? this._translate.instant(err.message) : this._translate.instant('UPDATE_RESULT.SYSTEM_ERROR')
         );
         this.saving.set(false);
       }
@@ -823,9 +824,10 @@ export class ApplicationDetailComponent implements OnInit {
       },
       error: (err) => {
         console.error('Export PDF error:', err);
+        const errorMsg = err.message ? this._translate.instant(err.message) : this._translate.instant('APPLICATION_PAGE.EXPORT_ERROR');
         this._alertService.error(
           this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
-          this._translate.instant('APPLICATION_PAGE.EXPORT_ERROR')
+          errorMsg
         );
         this.exporting.set(false);
       }

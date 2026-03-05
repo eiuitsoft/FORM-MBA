@@ -1700,9 +1700,16 @@
           }
         </button>
         @if (submitted() && applicationForm.invalid) {
-        <p class="mt-4 text-red-600">
-          {{ 'COMMON.ERROR_REVIEW' | translate }}
-        </p>
+        <div id="error-messages-container" class="mt-4 text-red-600">
+          <p>{{ 'COMMON.ERROR_REVIEW' | translate }}</p>
+          @if (invalidFields().length > 0) {
+            <ul class="list-disc pl-5 mt-2 text-sm text-left">
+              @for (field of invalidFields(); track field) {
+                <li>{{ field }}</li>
+              }
+            </ul>
+          }
+        </div>
         }
       </div>
     </form>

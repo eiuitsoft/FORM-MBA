@@ -159,7 +159,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           console.warn('Background OTP send failed:', res.message);
           this.showFormSendOTP.set(true); // Go back to input form
           if (this.countdownTimer) clearInterval(this.countdownTimer);
-          this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), res.message || this.translate.instant('LOGIN.OTP_SEND_FAILED'));
+          const errorMsg = res.message ? this.translate.instant(res.message) : this.translate.instant('LOGIN.OTP_SEND_FAILED');
+          this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
         }
       },
       error: (err) => {
@@ -168,8 +169,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.showFormSendOTP.set(true); // Go back to input form
         if (this.countdownTimer) clearInterval(this.countdownTimer);
         const rawMsg = err.message || '';
-        const translated = this.translate.instant(rawMsg);
-        const errorMsg = translated || this.translate.instant('LOGIN.SYSTEM_ERROR');
+        const errorMsg = rawMsg ? this.translate.instant(rawMsg) : this.translate.instant('LOGIN.SYSTEM_ERROR');
         this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
       }
     });
@@ -272,7 +272,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           }, 1500);
         } else {
           this.isErrorOTP.set(true);
-          const errorMsg = res.message || this.translate.instant('LOGIN.OTP_INVALID');
+          const errorMsg = res.message ? this.translate.instant(res.message) : this.translate.instant('LOGIN.OTP_INVALID');
           this.errorMessage.set(errorMsg);
           this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
         }
@@ -280,7 +280,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.isSendingOTP.set(false);
         this.isErrorOTP.set(true);
-        const errorMsg = err.message || this.translate.instant('LOGIN.SYSTEM_ERROR');
+        const errorMsg = err.message ? this.translate.instant(err.message) : this.translate.instant('LOGIN.SYSTEM_ERROR');
         this.errorMessage.set(errorMsg);
         this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
       }

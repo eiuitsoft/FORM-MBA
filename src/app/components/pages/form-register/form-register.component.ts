@@ -39,6 +39,7 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
 
   submitted = signal(false);
   showConfirmDialog = signal(false);
+  invalidFields = signal<string[]>([]);
   programs = signal<any[]>([]);
   languages = signal<any[]>([]);
   countries = signal<any[]>([]);
@@ -56,6 +57,10 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     this.langChangeSub$ = this._translate.onLangChange.subscribe((event) => {
       this.currentLanguage = event.lang;
       this.isLangVi = this.currentLanguage === 'vi';
+      
+      if (this.submitted() && this.applicationForm.invalid) {
+        this.calculateInvalidFields();
+      }
     });
   }
 
@@ -239,10 +244,20 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
 
     if (this.applicationForm.valid) {
       // Show confirm dialog
+      this.invalidFields.set([]);
       this.showConfirmDialog.set(true);
     } else {
       // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.applicationForm);
+      this.calculateInvalidFields();
+      
+      // Auto-scroll to error message container
+      setTimeout(() => {
+        const errorContainer = document.getElementById('error-messages-container');
+        if (errorContainer) {
+          errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     }
   }
 
@@ -276,16 +291,17 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         } else {
           this._alertService.error(
             this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
-            res.message || this._translate.instant('SUBMIT_RESULT.ERROR_MESSAGE')
+            res.message ? this._translate.instant(res.message) : this._translate.instant('SUBMIT_RESULT.ERROR_MESSAGE')
           );
         }
       },
       error: (err) => {
         this.submitting.set(false);
         console.error('Submit error:', err);
+        const errorMsg = err.message ? this._translate.instant(err.message) : this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR');
         this._alertService.error(
           this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
-          this._translate.instant('SUBMIT_RESULT.SYSTEM_ERROR')
+          errorMsg
         );
       }
     });
@@ -318,6 +334,110 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  /**
+   * Calculate and translate names of invalid fields
+   */
+  private calculateInvalidFields(): void {
+    const invalidList: string[] = [];
+
+    const checkAndAdd = (path: string, translationKey: string, section?: string) => {
+      const control = this.applicationForm.get(path);
+      if (control?.invalid) {
+        let name = this._translate.instant(translationKey);
+        if (section) {
+          name = `${this._translate.instant(section)}: ${name}`;
+        }
+        invalidList.push(name);
+      }
+    };
+
+    const personalSection = 'SECTIONS.PERSONAL';
+    checkAndAdd('personalDetails.fullName', 'PERSONAL_DETAILS.FULL_NAME', personalSection);
+    checkAndAdd('personalDetails.nationalityId', 'PERSONAL_DETAILS.NATIONALITY', personalSection);
+    checkAndAdd('personalDetails.dateOfBirth', 'PERSONAL_DETAILS.DOB', personalSection);
+    checkAndAdd('personalDetails.placeOfBirth', 'PERSONAL_DETAILS.POB', personalSection);
+    const passportControl = this.applicationForm.get('personalDetails.passportNo');
+    if (passportControl?.invalid) {
+      if (passportControl.errors?.['passportExists']) {
+        invalidList.push(`${this._translate.instant(personalSection)}: ${this._translate.instant('PERSONAL_DETAILS.PASSPORT_EXISTS')}`);
+      } else {
+        checkAndAdd('personalDetails.passportNo', 'PERSONAL_DETAILS.PASSPORT', personalSection);
+      }
+    }
+    checkAndAdd('personalDetails.dateIssued', 'PERSONAL_DETAILS.DATE_ISSUED', personalSection);
+    checkAndAdd('personalDetails.passportPlaceIssued', 'PERSONAL_DETAILS.PLACE_OF_ISSUE', personalSection);
+    checkAndAdd('personalDetails.email', 'PERSONAL_DETAILS.EMAIL', personalSection);
+    
+    const mobileControl = this.applicationForm.get('personalDetails.mobile');
+    if (mobileControl?.invalid) {
+      if (mobileControl.errors?.['mobileExists']) {
+        invalidList.push(`${this._translate.instant(personalSection)}: ${this._translate.instant('PERSONAL_DETAILS.MOBILE_EXISTS')}`);
+      } else {
+        checkAndAdd('personalDetails.mobile', 'PERSONAL_DETAILS.MOBILE', personalSection);
+      }
+    }
+    
+    checkAndAdd('personalDetails.jobTitle', 'PERSONAL_DETAILS.JOB_TITLE', personalSection);
+    checkAndAdd('personalDetails.organization', 'PERSONAL_DETAILS.ORGANIZATION', personalSection);
+    checkAndAdd('personalDetails.correspondenceCityId', 'PERSONAL_DETAILS.CORR_CITY', personalSection);
+    checkAndAdd('personalDetails.correspondenceDistrictId', 'PERSONAL_DETAILS.CORR_WARD', personalSection);
+    checkAndAdd('personalDetails.correspondenceAddress', 'PERSONAL_DETAILS.CORR_ADDRESS', personalSection);
+    checkAndAdd('personalDetails.permanentCityId', 'PERSONAL_DETAILS.PERM_CITY', personalSection);
+    checkAndAdd('personalDetails.permanentDistrictId', 'PERSONAL_DETAILS.PERM_WARD', personalSection);
+    checkAndAdd('personalDetails.permanentAddress', 'PERSONAL_DETAILS.PERM_ADDRESS', personalSection);
+
+    const appSection = 'SECTIONS.APPLICATION';
+    checkAndAdd('applicationDetails.admissionYear', 'APPLICATION_DETAILS.ADMISSION_YEAR', appSection);
+
+    const eduSection = 'SECTIONS.EDUCATION';
+    const undergraduates = this.undergraduates.controls;
+    undergraduates.forEach((control, index) => {
+      if (control.invalid) {
+        let degreeName = index === 0 ? 'EDUCATION_DETAILS.UNDERGRAD_TITLE' : 'EDUCATION_DETAILS.SECOND_DEGREE';
+        if (index === 2) degreeName = 'EDUCATION_DETAILS.THIRD_DEGREE';
+        if (index === 3) degreeName = 'EDUCATION_DETAILS.FOURTH_DEGREE';
+        invalidList.push(`${this._translate.instant(eduSection)}: ${this._translate.instant(degreeName)}`);
+      }
+    });
+    const postgraduates = this.postgraduates.controls;
+    postgraduates.forEach((control, index) => {
+      if (control.invalid) {
+        let degreeName = index === 0 ? 'EDUCATION_DETAILS.POSTGRADUATE_TITLE' : 'EDUCATION_DETAILS.SECOND_POSTGRAD';
+        invalidList.push(`${this._translate.instant(eduSection)}: ${this._translate.instant(degreeName)}`);
+      }
+    });
+
+    const engSection = 'SECTIONS.ENGLISH';
+    const englishGroup = this.applicationForm.get('englishQualifications');
+    if (englishGroup?.invalid) {
+      if (englishGroup.errors?.['atLeastOneEnglishQualification']) {
+         invalidList.push(`${this._translate.instant(engSection)}: ${this._translate.instant('ENGLISH.AT_LEAST_ONE')}`);
+      }
+      checkAndAdd('englishQualifications.ielts.date', 'ENGLISH.DATE_HINT', 'IELTS');
+      checkAndAdd('englishQualifications.ielts.score', 'ENGLISH.SCORE_HINT', 'IELTS');
+      checkAndAdd('englishQualifications.toefl.date', 'ENGLISH.DATE_HINT', 'TOEFL');
+      checkAndAdd('englishQualifications.toefl.score', 'ENGLISH.SCORE_HINT', 'TOEFL');
+      checkAndAdd('englishQualifications.other.date', 'ENGLISH.DATE_HINT', 'ENGLISH.OTHER_TEST');
+      checkAndAdd('englishQualifications.other.score', 'ENGLISH.SCORE_HINT', 'ENGLISH.OTHER_TEST');
+      checkAndAdd('englishQualifications.other.name', 'ENGLISH.TEST_NAME', 'ENGLISH.OTHER_TEST');
+    }
+
+    const empSection = 'SECTIONS.EMPLOYMENT';
+    checkAndAdd('employmentHistory.totalExpYears', 'EMPLOYMENT.YEARS', empSection);
+    checkAndAdd('employmentHistory.totalExpMonths', 'EMPLOYMENT.MONTHS', empSection);
+    if (this.applicationForm.get('employmentHistory.position1')?.invalid) {
+      invalidList.push(`${this._translate.instant(empSection)}: ${this._translate.instant('EMPLOYMENT.POSITION_1')}`);
+    }
+    if (this.applicationForm.get('employmentHistory.position2')?.invalid) {
+      invalidList.push(`${this._translate.instant(empSection)}: ${this._translate.instant('EMPLOYMENT.POSITION_2')}`);
+    }
+
+    const decSection = 'SECTIONS.DECLARATION';
+    checkAndAdd('declaration.agreed', 'DECLARATION.AGREE', decSection);
+
+    this.invalidFields.set(invalidList);
   }
 
   /**
