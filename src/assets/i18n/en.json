@@ -296,6 +296,7 @@
     "ERR_INVALID_INFO": "Please enter valid information!",
     "OTP_SENT": "OTP code has been sent!",
     "OTP_SEND_FAILED": "Unable to send OTP. Please try again.",
+    "OTP_LIMIT_EXCEEDED": "You have exceeded the maximum number of OTP requests allowed for today",
     "SYSTEM_ERROR": "A system error has occurred!",
     "LOGIN_SUCCESS": "Login successful! Redirecting...",
     "OTP_VIA_SMS": "Receive OTP code via SMS",

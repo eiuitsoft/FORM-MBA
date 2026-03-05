@@ -640,14 +640,23 @@ small.text-danger {
 /* Error icon */
 .error-icon-wrapper {
   margin-top: -10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .error-icon {
   width: 20px;
   height: 20px;
   display: inline-block;
-  vertical-align: middle;
   color: #dc3545;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.error-icon-wrapper small.text-danger {
+  margin-top: 0;
+  display: inline-block;
 }
 
 /* Modal backdrop */

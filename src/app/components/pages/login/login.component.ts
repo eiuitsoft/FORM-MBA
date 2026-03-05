@@ -159,7 +159,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           console.warn('Background OTP send failed:', res.message);
           this.showFormSendOTP.set(true); // Go back to input form
           if (this.countdownTimer) clearInterval(this.countdownTimer);
-          const errorMsg = res.message ? this.translate.instant(res.message) : this.translate.instant('LOGIN.OTP_SEND_FAILED');
+          const errorMsg = res.message ? this.translate.instant(this.getMappedErrorMessage(res.message)) : this.translate.instant('LOGIN.OTP_SEND_FAILED');
           this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
         }
       },
@@ -169,7 +169,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.showFormSendOTP.set(true); // Go back to input form
         if (this.countdownTimer) clearInterval(this.countdownTimer);
         const rawMsg = err.message || '';
-        const errorMsg = rawMsg ? this.translate.instant(rawMsg) : this.translate.instant('LOGIN.SYSTEM_ERROR');
+        const errorMsg = rawMsg ? this.translate.instant(this.getMappedErrorMessage(rawMsg)) : this.translate.instant('LOGIN.SYSTEM_ERROR');
         this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
       }
     });
@@ -272,7 +272,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           }, 1500);
         } else {
           this.isErrorOTP.set(true);
-          const errorMsg = res.message ? this.translate.instant(res.message) : this.translate.instant('LOGIN.OTP_INVALID');
+          const errorMsg = res.message ? this.translate.instant(this.getMappedErrorMessage(res.message)) : this.translate.instant('LOGIN.OTP_INVALID');
           this.errorMessage.set(errorMsg);
           this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
         }
@@ -280,7 +280,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.isSendingOTP.set(false);
         this.isErrorOTP.set(true);
-        const errorMsg = err.message ? this.translate.instant(err.message) : this.translate.instant('LOGIN.SYSTEM_ERROR');
+        const errorMsg = err.message ? this.translate.instant(this.getMappedErrorMessage(err.message)) : this.translate.instant('LOGIN.SYSTEM_ERROR');
         this.errorMessage.set(errorMsg);
         this.alertService.error(this.translate.instant('FILE_DIALOG.ERROR'), errorMsg);
       }
@@ -348,4 +348,29 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (method === LoginMethodEnum.CODE) return this.translate.instant('LOGIN.PROFILE_CODE');
     return this.translate.instant('LOGIN.PHONE_NUMBER');
   }
+
+  /**
+   * Helper to map raw backend Vietnamese strings to translation keys
+   */
+  private getMappedErrorMessage(msg: string): string {
+    if (!msg) return '';
+    const lowerMsg = msg.toLowerCase();
+    
+    if (lowerMsg.includes('mã otp không đúng') || lowerMsg.includes('otp không hợp lệ')) {
+      return 'LOGIN.OTP_INVALID';
+    }
+    if (lowerMsg.includes('không thể gửi otp')) {
+      return 'LOGIN.OTP_SEND_FAILED';
+    }
+    if (lowerMsg.includes('vượt quá số lần')) {
+      return 'LOGIN.OTP_LIMIT_EXCEEDED';
+    }
+    if (lowerMsg.includes('không tìm thấy') || lowerMsg.includes('không tồn tại')) {
+      return 'LOGIN.ERR_INVALID_INFO';
+    }
+    
+    // Return original if no match, it might already be a translation key
+    return msg;
+  }
 }
+
