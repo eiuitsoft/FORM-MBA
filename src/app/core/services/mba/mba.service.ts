@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ADMINISTRATIVE_API, FILE_API, MAIN_API, MBA_API } from '../../constants/api.const';
 import { Province } from '../../models/administrative/province';
@@ -9,6 +9,7 @@ import { OperationResult } from '../../models/general/operation-result';
 import { City, District } from '../../models/mba/mba-address';
 import { MBAApplication, MBAApplicationDetail } from '../../models/mba/mba-application';
 import { MBACity } from '../../models/mba/mba-city';
+import { MBAFileCategory } from '../../models/mba/mba-file-category';
 import { MBACountry } from '../../models/mba/mba-country';
 import { MBALanguage } from '../../models/mba/mba-language';
 import { MBAProgram } from '../../models/mba/mba-program';
@@ -19,6 +20,7 @@ import { MBAProgram } from '../../models/mba/mba-program';
 export class MbaService {
   // Inject HttpClient
   private readonly _httpClient = inject(HttpClient);
+  private readonly categoryCodeMapCache = new Map<number, Observable<Record<string, MBAFileCategory>>>();
 
   /**
    * Check if passport/ID already exists
@@ -171,6 +173,51 @@ export class MbaService {
    */
   getFilesByCategory(studentId: string, categoryId: number, entityId?: string): Observable<any> {
     return this._httpClient.get<any>(FILE_API.GET_FILES_BY_CATEGORY(studentId, categoryId, entityId));
+  }
+
+  /**
+   * Get file category list by type
+   */
+  getFileCategoriesByType(type: number = 1): Observable<MBAFileCategory[]> {
+    return this._httpClient.get<any>(FILE_API.GET_FILE_CATEGORIES_BY_TYPE(type)).pipe(
+      map((response) => {
+        if (Array.isArray(response)) {
+          return response as MBAFileCategory[];
+        }
+
+        if (Array.isArray(response?.data)) {
+          return response.data as MBAFileCategory[];
+        }
+
+        return [];
+      })
+    );
+  }
+
+  /**
+   * Build and cache category map by code
+   */
+  getFileCategoryCodeMap(type: number = 1): Observable<Record<string, MBAFileCategory>> {
+    const cached = this.categoryCodeMapCache.get(type);
+    if (cached) {
+      return cached;
+    }
+
+    const request$ = this.getFileCategoriesByType(type).pipe(
+      map((categories) => {
+        const mapByCode: Record<string, MBAFileCategory> = {};
+        for (const category of categories) {
+          const key = (category.code || '').toUpperCase().trim();
+          if (!key) continue;
+          mapByCode[key] = category;
+        }
+        return mapByCode;
+      }),
+      shareReplay(1)
+    );
+
+    this.categoryCodeMapCache.set(type, request$);
+    return request$;
   }
 
   /**

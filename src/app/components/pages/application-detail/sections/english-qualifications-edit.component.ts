@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -169,7 +169,7 @@ import { CustomDatePickerComponent } from '../../../shared/custom-date-picker/cu
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
       [title]="dialogTitle"
-      [fileCategoryId]="4"
+      [fileCategoryCode]="'ENG'"
       [entityId]="getEnglishEntityId()"
       [(files)]="englishFiles"
       (onSave)="onFilesSaved($event)">
@@ -206,3 +206,4 @@ export class EnglishQualificationsEditComponent {
     this.englishFiles = files;
   }
 }
+

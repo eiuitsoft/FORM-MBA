@@ -199,81 +199,149 @@ export class ApplicationDetailComponent implements OnInit {
    * Load files for all entities (personal, education, english)
    */
   private loadAllFiles(studentId: string, data: MBAApplicationDetail): void {
-    // Load personal details files (category 1, no entityId)
-    this._mbaService.getFilesByCategory(studentId, 1).subscribe({
-      next: (result) => {
-        if (result.success && result.data?.files) {
-          this.uploadedFiles.set(result.data.files);
-        } else {
+    this._mbaService.getFileCategoryCodeMap(1).subscribe({
+      next: (categoryMap) => {
+        const passportCategoryId = categoryMap['CCCD']?.id;
+        const englishCategoryId = categoryMap['ENG']?.id;
+        const ugDegreeCategoryId = categoryMap['BCDH']?.id;
+        const pgDegreeCategoryId = categoryMap['BCCH']?.id;
+        const transcriptCategoryId = categoryMap['BDDH']?.id;
+        const recognitionCategoryId = categoryMap['CNVB']?.id;
+
+        if (
+          !passportCategoryId ||
+          !englishCategoryId ||
+          !ugDegreeCategoryId ||
+          !pgDegreeCategoryId ||
+          !transcriptCategoryId ||
+          !recognitionCategoryId
+        ) {
+          console.error('Missing required file categories from API.');
           this.uploadedFiles.set([]);
-        }
-      },
-      error: (err) => {
-        console.error('Error loading personal files:', err);
-        this.uploadedFiles.set([]);
-      }
-    });
-
-    // Load undergraduate files for each degree
-    const ugFiles: any[][] = [];
-    data?.educationDetails?.undergraduates?.forEach((ug: EducationRecord, index: number) => {
-      if (ug.id) {
-        this._mbaService.getFilesByCategory(studentId, 2, ug.id).subscribe({
-          next: (result) => {
-            ugFiles[index] = result.success && result.data?.files ? result.data.files : [];
-            this.undergraduateFiles.set([...ugFiles]);
-          },
-          error: (err) => {
-            console.error(`Error loading undergraduate files for degree ${index}:`, err);
-            ugFiles[index] = [];
-            this.undergraduateFiles.set([...ugFiles]);
-          }
-        });
-      } else {
-        ugFiles[index] = [];
-      }
-    });
-    if (ugFiles.length > 0) {
-      this.undergraduateFiles.set(ugFiles);
-    }
-
-    // Load postgraduate files for each degree
-    const pgFiles: any[][] = [];
-    data?.educationDetails?.postgraduates?.forEach((pg: EducationRecord, index: number) => {
-      if (pg.id) {
-        this._mbaService.getFilesByCategory(studentId, 3, pg.id).subscribe({
-          next: (result) => {
-            pgFiles[index] = result.success && result.data?.files ? result.data.files : [];
-            this.postgraduateFiles.set([...pgFiles]);
-          },
-          error: (err) => {
-            console.error(`Error loading postgraduate files for degree ${index}:`, err);
-            pgFiles[index] = [];
-            this.postgraduateFiles.set([...pgFiles]);
-          }
-        });
-      } else {
-        pgFiles[index] = [];
-      }
-    });
-    if (pgFiles.length > 0) {
-      this.postgraduateFiles.set(pgFiles);
-    }
-
-    // Load english qualification files (category 4)
-    this._mbaService.getFilesByCategory(studentId, 4).subscribe({
-      next: (result) => {
-        if (result.success && result.data?.files) {
-          this.englishFiles.set(result.data.files);
-        } else {
           this.englishFiles.set([]);
+          this.undergraduateFiles.set([]);
+          this.postgraduateFiles.set([]);
+          return;
+        }
+
+        this._mbaService.getFilesByCategory(studentId, passportCategoryId).subscribe({
+          next: (result) => {
+            this.uploadedFiles.set(result.success && result.data?.files ? result.data.files : []);
+          },
+          error: (err) => {
+            console.error('Error loading personal files:', err);
+            this.uploadedFiles.set([]);
+          }
+        });
+
+        this._mbaService.getFilesByCategory(studentId, englishCategoryId).subscribe({
+          next: (result) => {
+            this.englishFiles.set(result.success && result.data?.files ? result.data.files : []);
+          },
+          error: (err) => {
+            console.error('Error loading english files:', err);
+            this.englishFiles.set([]);
+          }
+        });
+
+        const ugFiles: any[][] = [];
+        data?.educationDetails?.undergraduates?.forEach((ug: EducationRecord, index: number) => {
+          if (!ug.id) {
+            ugFiles[index] = [];
+            return;
+          }
+
+          this.loadFilesByCategories(
+            studentId,
+            ug.id,
+            [
+              { id: ugDegreeCategoryId, code: 'BCDH' },
+              { id: transcriptCategoryId, code: 'BDDH' },
+              { id: recognitionCategoryId, code: 'CNVB' }
+            ],
+            (files) => {
+              ugFiles[index] = files;
+              this.undergraduateFiles.set([...ugFiles]);
+            }
+          );
+        });
+        if (ugFiles.length > 0) {
+          this.undergraduateFiles.set(ugFiles);
+        }
+
+        const pgFiles: any[][] = [];
+        data?.educationDetails?.postgraduates?.forEach((pg: EducationRecord, index: number) => {
+          if (!pg.id) {
+            pgFiles[index] = [];
+            return;
+          }
+
+          this.loadFilesByCategories(
+            studentId,
+            pg.id,
+            [
+              { id: pgDegreeCategoryId, code: 'BCCH' },
+              { id: transcriptCategoryId, code: 'BDDH' }
+            ],
+            (files) => {
+              pgFiles[index] = files;
+              this.postgraduateFiles.set([...pgFiles]);
+            }
+          );
+        });
+        if (pgFiles.length > 0) {
+          this.postgraduateFiles.set(pgFiles);
         }
       },
       error: (err) => {
-        console.error('Error loading english files:', err);
+        console.error('Error loading file categories:', err);
+        this.uploadedFiles.set([]);
         this.englishFiles.set([]);
+        this.undergraduateFiles.set([]);
+        this.postgraduateFiles.set([]);
       }
     });
+  }
+
+  private loadFilesByCategories(
+    studentId: string,
+    entityId: string,
+    categories: Array<{ id: number; code: string }>,
+    onDone: (files: any[]) => void
+  ): void {
+    if (!categories.length) {
+      onDone([]);
+      return;
+    }
+
+    const mergedFiles: any[] = [];
+    let remaining = categories.length;
+
+    categories.forEach((category) => {
+      this._mbaService.getFilesByCategory(studentId, category.id, entityId).subscribe({
+        next: (result) => {
+          if (result.success && result.data?.files) {
+            mergedFiles.push(...this.attachCategoryCode(result.data.files, category.code));
+          }
+        },
+        error: (err) => {
+          console.error(`Error loading files for category ${category.code}:`, err);
+        },
+        complete: () => {
+          remaining -= 1;
+          if (remaining === 0) {
+            onDone(mergedFiles);
+          }
+        }
+      });
+    });
+  }
+
+  private attachCategoryCode(files: any[], categoryCode: string): any[] {
+    return (files || []).map((file: any) => ({
+      ...file,
+      categoryCode
+    }));
   }
 
   toggleEditMode(): void {

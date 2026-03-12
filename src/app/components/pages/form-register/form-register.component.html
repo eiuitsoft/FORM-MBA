@@ -895,38 +895,43 @@
                 </div>
 
                 <div>
-                  <label [attr.for]="'undergraduateFile_' + ugIndex" class="block text-sm font-medium text-gray-700">{{
-                    'EDUCATION_DETAILS.UPLOAD_CERT' | translate
-                  }}</label>
-                  <input
-                    type="file"
-                    [id]="'undergraduateFile_' + ugIndex"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    multiple
-                    (change)="onEducationFileChange($event, 'undergraduates', ugIndex)"
-                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#153a5e] file:text-white hover:file:bg-[#a68557] cursor-pointer" />
-                  @if (undergraduates.at(ugIndex).get('file')?.value &&
-                  undergraduates.at(ugIndex).get('file')?.value.length > 0) {
-                  <div class="text-sm mt-2 space-y-1">
-                    <p class="font-semibold text-green-600">
-                      ✓
-                      <span [textContent]="undergraduates.at(ugIndex).get('file')?.value.length"></span>
-                      {{ 'COMMON.FILE_SELECTED' | translate }}
-                    </p>
-                    @for (file of undergraduates.at(ugIndex).get('file')?.value; track $index) {
-                    <div
-                      class="flex items-center justify-between bg-green-50 px-2 py-1 rounded border border-green-200">
-                      <span class="text-xs text-gray-700" [textContent]="file.name"></span>
-                      <button
-                        type="button"
-                        (click)="removeEducationFile('undergraduates', $index, ugIndex)"
-                        class="text-red-600 hover:text-red-800 font-bold ml-2 text-sm">
-                        ✕
-                      </button>
+                  <label class="block text-sm font-medium text-gray-700">{{ 'EDUCATION_DETAILS.UPLOAD_CERT' | translate }}</label>
+                  <button
+                    type="button"
+                    (click)="openEducationFileDialog('undergraduates', ugIndex)"
+                    [class]="
+                      getEducationFileCount('undergraduates', ugIndex) > 0
+                        ? 'mt-1 w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-green-400 rounded bg-green-50 hover:border-green-500 hover:bg-green-100 transition-colors'
+                        : 'mt-1 w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-blue-300 rounded bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-colors'
+                    ">
+                    <span
+                      class="text-sm font-medium"
+                      [class]="
+                        getEducationFileCount('undergraduates', ugIndex) > 0 ? 'text-green-700' : 'text-blue-700'
+                      ">
+                      @if (getEducationFileCount('undergraduates', ugIndex) > 0) {
+                      {{ getEducationFileCount('undergraduates', ugIndex) }} {{ 'COMMON.FILE_SELECTED' | translate }}
+                      } @else {
+                      {{ 'COMMON.FILE_UPLOAD' | translate }}
+                      }
+                    </span>
+                  </button>
+                  <div class="text-xs text-gray-600 mt-2 space-y-1">
+                    <div>
+                      {{ 'FILE_DIALOG.DOC_TYPE_DEGREE' | translate }}:
+                      {{ getEducationFileCountByType('undergraduates', ugIndex, 'degreeFiles') }}
+                    </div>
+                    <div>
+                      {{ 'FILE_DIALOG.DOC_TYPE_TRANSCRIPT' | translate }}:
+                      {{ getEducationFileCountByType('undergraduates', ugIndex, 'transcriptFiles') }}
+                    </div>
+                    @if (shouldShowRecognition('undergraduates', ugIndex)) {
+                    <div>
+                      {{ 'FILE_DIALOG.DOC_TYPE_RECOGNITION' | translate }}:
+                      {{ getEducationFileCountByType('undergraduates', ugIndex, 'recognitionFiles') }}
                     </div>
                     }
                   </div>
-                  }
                 </div>
               </div>
               @if (undergraduates.at(ugIndex).hasError('incompleteRecord') && (submitted() || undergraduates.at(ugIndex).touched)) {
@@ -1117,38 +1122,43 @@
                   }
                 </div>
                 <div>
-                  <label [attr.for]="'postgraduateFile_' + pgIndex" class="block text-sm font-medium text-gray-700">{{
-                    'EDUCATION_DETAILS.UPLOAD_CERT' | translate
-                  }}</label>
-                  <input
-                    type="file"
-                    [id]="'postgraduateFile_' + pgIndex"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    multiple
-                    (change)="onEducationFileChange($event, 'postgraduates', pgIndex)"
-                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#153a5e] file:text-white hover:file:bg-[#a68557] cursor-pointer" />
-                  @if (postgraduates.at(pgIndex).get('file')?.value &&
-                  postgraduates.at(pgIndex).get('file')?.value.length > 0) {
-                  <div class="text-sm mt-2 space-y-1">
-                    <p class="font-semibold text-green-600">
-                      ✓
-                      <span [textContent]="postgraduates.at(pgIndex).get('file')?.value.length"></span>
-                      {{ 'COMMON.FILE_SELECTED' | translate }}
-                    </p>
-                    @for (file of postgraduates.at(pgIndex).get('file')?.value; track $index) {
-                    <div
-                      class="flex items-center justify-between bg-green-50 px-2 py-1 rounded border border-green-200">
-                      <span class="text-xs text-gray-700" [textContent]="file.name"></span>
-                      <button
-                        type="button"
-                        (click)="removeEducationFile('postgraduates', $index, pgIndex)"
-                        class="text-red-600 hover:text-red-800 font-bold ml-2 text-sm">
-                        ✕
-                      </button>
+                  <label class="block text-sm font-medium text-gray-700">{{ 'EDUCATION_DETAILS.UPLOAD_CERT' | translate }}</label>
+                  <button
+                    type="button"
+                    (click)="openEducationFileDialog('postgraduates', pgIndex)"
+                    [class]="
+                      getEducationFileCount('postgraduates', pgIndex) > 0
+                        ? 'mt-1 w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-green-400 rounded bg-green-50 hover:border-green-500 hover:bg-green-100 transition-colors'
+                        : 'mt-1 w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-blue-300 rounded bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-colors'
+                    ">
+                    <span
+                      class="text-sm font-medium"
+                      [class]="
+                        getEducationFileCount('postgraduates', pgIndex) > 0 ? 'text-green-700' : 'text-blue-700'
+                      ">
+                      @if (getEducationFileCount('postgraduates', pgIndex) > 0) {
+                      {{ getEducationFileCount('postgraduates', pgIndex) }} {{ 'COMMON.FILE_SELECTED' | translate }}
+                      } @else {
+                      {{ 'COMMON.FILE_UPLOAD' | translate }}
+                      }
+                    </span>
+                  </button>
+                  <div class="text-xs text-gray-600 mt-2 space-y-1">
+                    <div>
+                      {{ 'FILE_DIALOG.DOC_TYPE_DEGREE' | translate }}:
+                      {{ getEducationFileCountByType('postgraduates', pgIndex, 'degreeFiles') }}
+                    </div>
+                    <div>
+                      {{ 'FILE_DIALOG.DOC_TYPE_TRANSCRIPT' | translate }}:
+                      {{ getEducationFileCountByType('postgraduates', pgIndex, 'transcriptFiles') }}
+                    </div>
+                    @if (shouldShowRecognition('postgraduates', pgIndex)) {
+                    <div>
+                      {{ 'FILE_DIALOG.DOC_TYPE_RECOGNITION' | translate }}:
+                      {{ getEducationFileCountByType('postgraduates', pgIndex, 'recognitionFiles') }}
                     </div>
                     }
                   </div>
-                  }
                 </div>
               </div>
               @if (postgraduates.at(pgIndex).hasError('incompleteRecord') && (submitted() || postgraduates.at(pgIndex).touched)) {
@@ -1168,6 +1178,16 @@
           </div>
         </div>
       </section>
+
+
+      <app-education-file-dialog
+        [(isOpen)]="isEducationDialogOpen"
+        [title]="currentEducationDialogTitle"
+        [showRecognition]="currentEducationShowRecognition"
+        [degreeFiles]="currentEducationDegreeFiles"
+        [transcriptFiles]="currentEducationTranscriptFiles"
+        [recognitionFiles]="currentEducationRecognitionFiles"
+        (onSave)="onEducationFilesDialogSave($event)" />
 
       <!-- Section: English Qualifications -->
       <section class="bg-white rounded-lg shadow-lg overflow-hidden form-section" formGroupName="englishQualifications">

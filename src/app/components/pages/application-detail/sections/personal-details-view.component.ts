@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-dialog.component';
@@ -231,7 +231,7 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
       [title]="dialogTitle"
-      [fileCategoryId]="1"
+      [fileCategoryCode]="'CCCD'"
       [(files)]="uploadedFiles"
       (onSave)="onFilesSaved($event)">
     </app-file-manager-dialog>
@@ -285,3 +285,4 @@ export class PersonalDetailsViewComponent {
     });
   }
 }
+

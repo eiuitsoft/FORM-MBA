@@ -81,9 +81,16 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
                   class="hidden"
                   accept=".pdf,.jpg,.jpeg,.png"
                   multiple
+                  [disabled]="uploadBlocked"
                   (change)="onFileSelect($event)" />
               </label>
             </div>
+
+            @if (uploadBlocked) {
+            <div class="mb-4 p-3 border border-red-200 rounded bg-red-50 text-sm text-red-700">
+              {{ blockMessage }}
+            </div>
+            }
 
             <!-- Pending files preview -->
             @if (pendingFiles.length > 0) {
@@ -133,7 +140,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
               <button
                 type="button"
                 (click)="saveFiles()"
-                [disabled]="uploading || pendingFiles.length === 0"
+                [disabled]="uploadBlocked || uploading || pendingFiles.length === 0"
                 class="w-full flex items-center justify-center px-4 py-2 bg-[#153a5e] text-white rounded-md hover:bg-[#0f2942] disabled:bg-gray-400 disabled:cursor-not-allowed">
                 @if (uploading) {
                 <svg
@@ -264,7 +271,7 @@ export class FileManagerDialogComponent implements OnChanges {
   @Input() isOpen = false;
   @Input() title = 'File Attachments';
   @Input() files: any[] = [];
-  @Input() fileCategoryId: number = 1;
+  @Input() fileCategoryCode = '';
   @Input() entityId?: string;
   @Output() isOpenChange = new EventEmitter<boolean>();
   @Output() filesChange = new EventEmitter<any[]>();
@@ -273,6 +280,9 @@ export class FileManagerDialogComponent implements OnChanges {
   uploading = false;
   loading = false;
   pendingFiles: File[] = [];
+  uploadBlocked = false;
+  blockMessage = 'Unable to load file categories, please try again.';
+  private resolvedFileCategoryId: number | null = null;
 
   get studentId(): string {
     return this._tokenService.studentId();
@@ -282,15 +292,48 @@ export class FileManagerDialogComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['isOpen'] && changes['isOpen'].currentValue === true && !changes['isOpen'].firstChange) {
-      this.loadExistingFiles();
+    if (changes['isOpen']?.currentValue === true) {
+      this.initializeCategoryAndLoadFiles();
     }
   }
 
-  private loadExistingFiles(): void {
-    if (!this.studentId || !this.fileCategoryId) return;
+  private initializeCategoryAndLoadFiles(): void {
+    this.uploadBlocked = false;
+    this.resolvedFileCategoryId = null;
+
+    if (!this.fileCategoryCode) {
+      this.uploadBlocked = true;
+      return;
+    }
+
     this.loading = true;
-    this._mbaService.getFilesByCategory(this.studentId, this.fileCategoryId, this.entityId).subscribe({
+    this._mbaService.getFileCategoryCodeMap(1).subscribe({
+      next: (categoryMap) => {
+        const category = categoryMap[this.fileCategoryCode.toUpperCase()];
+        if (!category?.id) {
+          this.loading = false;
+          this.uploadBlocked = true;
+          return;
+        }
+
+        this.resolvedFileCategoryId = category.id;
+        this.loadExistingFiles();
+      },
+      error: () => {
+        this.loading = false;
+        this.uploadBlocked = true;
+      }
+    });
+  }
+
+  private loadExistingFiles(): void {
+    if (!this.studentId || !this.resolvedFileCategoryId) {
+      this.loading = false;
+      return;
+    }
+
+    this.loading = true;
+    this._mbaService.getFilesByCategory(this.studentId, this.resolvedFileCategoryId, this.entityId).subscribe({
       next: (result) => {
         this.loading = false;
         if (result.success && result.data) {
@@ -326,6 +369,8 @@ export class FileManagerDialogComponent implements OnChanges {
   }
 
   onFileSelect(event: any): void {
+    if (this.uploadBlocked) return;
+
     const selectedFiles = event.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
     for (const file of selectedFiles) {
@@ -362,16 +407,28 @@ export class FileManagerDialogComponent implements OnChanges {
   }
 
   saveFiles(): void {
+    if (this.uploadBlocked) return;
+
     if (this.pendingFiles.length === 0) {
       this.onSave.emit(this.files);
       this._alertService.successMin(this._translate.instant('FILE_DIALOG.SAVED_SUCCESS'));
       return;
     }
+
+    if (!this.resolvedFileCategoryId) {
+      this._alertService.error(this._translate.instant('FILE_DIALOG.ERROR'), this.blockMessage);
+      return;
+    }
+
     this.uploading = true;
     const formData = new FormData();
     formData.append('StudentId', this.studentId);
-    formData.append('FileCategoryId', this.fileCategoryId.toString());
+    formData.append('FileCategoryId', this.resolvedFileCategoryId.toString());
     formData.append('StudentFileType', '1');
+    const profileCode = this._tokenService.profileCode();
+    if (profileCode) {
+      formData.append('ProfileCode', profileCode);
+    }
 
     if (this.entityId) {
       formData.append('EntityId', this.entityId);

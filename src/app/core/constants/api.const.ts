@@ -45,6 +45,7 @@ export const ADMINISTRATIVE_API = {
 
 // File Management endpoints
 export const FILE_API = {
+  GET_FILE_CATEGORIES_BY_TYPE: (type: number) => `${BASE_API_URL}/MBAFileCategory/GetListByType?type=${type}`,
   UPLOAD_ADMISSION_FILES: `${BASE_API_URL}/MBAFile/UploadAdmissionMultiFile`,
   DOWNLOAD_FILE: (fileUrl: string) => `${BASE_API_URL}/MBAFile/DownloadFile?fileUrl=${encodeURIComponent(fileUrl)}`,
   REMOVE_FILE: (pathFile: string) => `${BASE_API_URL}/MBAFile/RemoveFile?pathFile=${encodeURIComponent(pathFile)}`,

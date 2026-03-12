@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -477,7 +477,7 @@ import { CustomDatePickerComponent } from '../../../shared/custom-date-picker/cu
     <app-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
       [title]="dialogTitle"
-      [fileCategoryId]="1"
+      [fileCategoryCode]="'CCCD'"
       [entityId]="getPersonalDetailsEntityId()"
       [(files)]="uploadedFiles"
       (onSave)="onFilesSaved($event)">
@@ -539,3 +539,4 @@ export class PersonalDetailsEditComponent {
     this.formGroup.get('email')?.setValue(input.value, { emitEvent: false });
   }
 }
+

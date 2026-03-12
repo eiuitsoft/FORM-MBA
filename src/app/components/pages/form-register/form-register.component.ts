@@ -13,10 +13,11 @@ import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } fr
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
-import { of, Subscription } from 'rxjs';
+import { firstValueFrom, of, Subscription } from 'rxjs';
 import { AlertService } from '../../../core/services/alert/alert.service';
 import { MbaService } from '../../../core/services/mba/mba.service';
 import { CustomDatePickerComponent } from '../../shared/custom-date-picker/custom-date-picker.component';
+import { EducationFileDialogComponent } from '../../shared/education-file-dialog/education-file-dialog.component';
 import { CustomMonthPickerComponent } from '../../shared/custom-month-picker/custom-month-picker.component';
 
 @Component({
@@ -24,7 +25,15 @@ import { CustomMonthPickerComponent } from '../../shared/custom-month-picker/cus
   templateUrl: './form-register.component.html',
   styleUrls: ['./form-register.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgxIntlTelInputModule, TranslatePipe, CustomDatePickerComponent, CustomMonthPickerComponent]
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    NgxIntlTelInputModule,
+    TranslatePipe,
+    CustomDatePickerComponent,
+    CustomMonthPickerComponent,
+    EducationFileDialogComponent
+  ]
 })
 export class FormRegisterComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
@@ -46,6 +55,15 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
   provinces = signal<any[]>([]); // Changed from cities to provinces
   correspondenceWards = signal<any[]>([]); // Changed from districts to wards
   permanentWards = signal<any[]>([]); // Changed from districts to wards
+
+  isEducationDialogOpen = false;
+  currentEducationSection: 'undergraduates' | 'postgraduates' = 'undergraduates';
+  currentEducationIndex = 0;
+  currentEducationDialogTitle = '';
+  currentEducationShowRecognition = true;
+  currentEducationDegreeFiles: File[] = [];
+  currentEducationTranscriptFiles: File[] = [];
+  currentEducationRecognitionFiles: File[] = [];
 
   currentYear = new Date().getFullYear();
   currentLanguage = 'vi';
@@ -268,18 +286,34 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     this.showConfirmDialog.set(false);
     this.submitting.set(true);
 
-    // Transform form data to match API structure
-    const formData = this.transformFormData();
+    const submissionRawValue = this.applicationForm.getRawValue();
+    const formData = this.transformFormData(submissionRawValue);
 
     this._mbaService.add(formData).subscribe({
-      next: (res) => {
-        this.submitting.set(false);
+      next: async (res) => {
         if (res.success) {
-          this._alertService.success(
-            this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'),
-            this._translate.instant('SUBMIT_RESULT.SUCCESS_MESSAGE'),
-            3000
-          );
+          const studentId = this.extractStudentId(res.data);
+          let uploadFailed = false;
+
+          if (studentId) {
+            uploadFailed = !(await this.uploadEducationFilesAfterAdd(studentId, submissionRawValue));
+          } else {
+            uploadFailed = true;
+          }
+
+          if (uploadFailed) {
+            this._alertService.warning(
+              this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'),
+              'Application was created, but some education files were not uploaded. Please login and re-upload in /application.'
+            );
+          } else {
+            this._alertService.success(
+              this._translate.instant('SUBMIT_RESULT.SUCCESS_TITLE'),
+              this._translate.instant('SUBMIT_RESULT.SUCCESS_MESSAGE'),
+              3000
+            );
+          }
+
           // Reset form after successful submission
           this.applicationForm.reset();
           this.submitted.set(false);
@@ -294,6 +328,7 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
             res.message ? this._translate.instant(res.message) : this._translate.instant('SUBMIT_RESULT.ERROR_MESSAGE')
           );
         }
+        this.submitting.set(false);
       },
       error: (err) => {
         this.submitting.set(false);
@@ -464,8 +499,7 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     return `${baseClasses} border-gray-300 focus:border-[#a68557] focus:ring-[#a68557]`;
   }
 
-  private transformFormData(): FormData {
-    const rawValue = this.applicationForm.getRawValue();
+  private transformFormData(rawValue: any): FormData {
     const formData = new FormData();
 
     this.appendPersonalDetails(formData, rawValue);
@@ -566,8 +600,6 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
       formData.append(`EducationDetails.${degreeType}[${index}].Gpa`, degree.gpa || '');
       formData.append(`EducationDetails.${degreeType}[${index}].GraduationRank`, degree.graduationRank || '');
     }
-
-    this.appendFiles(formData, degree.file, `EducationDetails.${degreeType}[${index}].Files`);
   }
 
   private appendEnglishQualifications(formData: FormData, rawValue: any): void {
@@ -637,6 +669,147 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
       fileArray.forEach((file: File) => {
         formData.append(fieldName, file);
       });
+    }
+  }
+
+  private extractStudentId(data: any): string | null {
+    if (!data) return null;
+    if (typeof data === 'string') return data;
+
+    if (typeof data === 'object') {
+      return (
+        data.studentId ||
+        data.StudentId ||
+        data.id ||
+        data.Id ||
+        data.mbaStudentId ||
+        data.MbaStudentId ||
+        null
+      );
+    }
+
+    return null;
+  }
+
+  private async uploadEducationFilesAfterAdd(studentId: string, rawValue: any): Promise<boolean> {
+    try {
+      const categoryMap = await firstValueFrom(this._mbaService.getFileCategoryCodeMap(1));
+      const requiredCodes = ['BCDH', 'BCCH', 'BDDH', 'CNVB'];
+      const hasAllCodes = requiredCodes.every((code) => !!categoryMap[code]?.id);
+      if (!hasAllCodes) {
+        return false;
+      }
+
+      const detail = await firstValueFrom(this._mbaService.getById(studentId));
+      const profileCode = detail?.personalDetails?.profileCode || '';
+
+      const ugRows = detail?.educationDetails?.undergraduates || [];
+      const pgRows = detail?.educationDetails?.postgraduates || [];
+
+      const undergraduates = (rawValue.educationDetails?.undergraduates || []).filter((ug: any) => ug.university);
+      const postgraduates = (rawValue.educationDetails?.postgraduates || []).filter((pg: any) => pg.university);
+
+      let allSucceeded = true;
+
+      for (let index = 0; index < undergraduates.length; index++) {
+        const ug = undergraduates[index];
+        const entityId = this.resolveEducationEntityId(ugRows, index);
+
+        allSucceeded =
+          (await this.uploadEducationCategoryFiles({
+            studentId,
+            entityId,
+            profileCode,
+            categoryId: categoryMap['BCDH']!.id,
+            files: ug.degreeFiles || []
+          })) && allSucceeded;
+
+        allSucceeded =
+          (await this.uploadEducationCategoryFiles({
+            studentId,
+            entityId,
+            profileCode,
+            categoryId: categoryMap['BDDH']!.id,
+            files: ug.transcriptFiles || []
+          })) && allSucceeded;
+
+        if (this.isForeignCountry(ug.countryId)) {
+          allSucceeded =
+            (await this.uploadEducationCategoryFiles({
+              studentId,
+              entityId,
+              profileCode,
+              categoryId: categoryMap['CNVB']!.id,
+              files: ug.recognitionFiles || []
+            })) && allSucceeded;
+        }
+      }
+
+      for (let index = 0; index < postgraduates.length; index++) {
+        const pg = postgraduates[index];
+        const entityId = this.resolveEducationEntityId(pgRows, index);
+
+        allSucceeded =
+          (await this.uploadEducationCategoryFiles({
+            studentId,
+            entityId,
+            profileCode,
+            categoryId: categoryMap['BCCH']!.id,
+            files: pg.degreeFiles || []
+          })) && allSucceeded;
+
+        allSucceeded =
+          (await this.uploadEducationCategoryFiles({
+            studentId,
+            entityId,
+            profileCode,
+            categoryId: categoryMap['BDDH']!.id,
+            files: pg.transcriptFiles || []
+          })) && allSucceeded;
+      }
+
+      return allSucceeded;
+    } catch (error) {
+      console.error('Education file upload after Add failed:', error);
+      return false;
+    }
+  }
+
+  private resolveEducationEntityId(rows: any[], sortOrder: number): string | undefined {
+    const bySortOrder = rows.find((row: any) => Number(row?.sortOrder) === sortOrder);
+    if (bySortOrder?.id) return bySortOrder.id;
+
+    return rows?.[sortOrder]?.id;
+  }
+
+  private async uploadEducationCategoryFiles(params: {
+    studentId: string;
+    categoryId: number;
+    files: File[];
+    entityId?: string;
+    profileCode?: string;
+  }): Promise<boolean> {
+    if (!params.files?.length) return true;
+
+    const formData = new FormData();
+    formData.append('StudentId', params.studentId);
+    formData.append('FileCategoryId', params.categoryId.toString());
+    formData.append('StudentFileType', '1');
+    if (params.entityId) {
+      formData.append('EntityId', params.entityId);
+    }
+    if (params.profileCode) {
+      formData.append('ProfileCode', params.profileCode);
+    }
+
+    params.files.forEach((file) => formData.append('Files', file));
+
+    try {
+      await firstValueFrom(this._mbaService.uploadAdmissionFiles(formData));
+      return true;
+    } catch (error) {
+      console.error('UploadAdmissionMultiFile failed:', error);
+      return false;
     }
   }
 
@@ -849,6 +1022,86 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         country: ''
       });
     }
+  }
+
+  openEducationFileDialog(section: 'undergraduates' | 'postgraduates', index: number): void {
+    const degreeGroup = this.getEducationGroup(section, index);
+    if (!degreeGroup) return;
+
+    const countryId = degreeGroup.get('countryId')?.value;
+    this.currentEducationSection = section;
+    this.currentEducationIndex = index;
+    this.currentEducationShowRecognition = section === 'undergraduates' ? this.isForeignCountry(countryId) : false;
+    this.currentEducationDialogTitle =
+      section === 'undergraduates'
+        ? this._translate.instant('FILE_DIALOG.TITLE_UNDERGRAD')
+        : this._translate.instant('FILE_DIALOG.TITLE_POSTGRAD');
+    this.currentEducationDegreeFiles = [...(degreeGroup.get('degreeFiles')?.value || [])];
+    this.currentEducationTranscriptFiles = [...(degreeGroup.get('transcriptFiles')?.value || [])];
+    this.currentEducationRecognitionFiles = [...(degreeGroup.get('recognitionFiles')?.value || [])];
+    this.isEducationDialogOpen = true;
+  }
+
+  onEducationFilesDialogSave(event: { degreeFiles: File[]; transcriptFiles: File[]; recognitionFiles: File[] }): void {
+    const degreeGroup = this.getEducationGroup(this.currentEducationSection, this.currentEducationIndex);
+    if (!degreeGroup) return;
+
+    degreeGroup.patchValue({
+      degreeFiles: event.degreeFiles || [],
+      transcriptFiles: event.transcriptFiles || [],
+      recognitionFiles: event.recognitionFiles || []
+    });
+  }
+
+  getEducationFileCount(section: 'undergraduates' | 'postgraduates', index: number): number {
+    const degreeGroup = this.getEducationGroup(section, index);
+    if (!degreeGroup) return 0;
+
+    const degreeFiles = degreeGroup.get('degreeFiles')?.value?.length || 0;
+    const transcriptFiles = degreeGroup.get('transcriptFiles')?.value?.length || 0;
+    const recognitionFiles = degreeGroup.get('recognitionFiles')?.value?.length || 0;
+    return degreeFiles + transcriptFiles + recognitionFiles;
+  }
+
+  getEducationFileCountByType(
+    section: 'undergraduates' | 'postgraduates',
+    index: number,
+    docType: 'degreeFiles' | 'transcriptFiles' | 'recognitionFiles'
+  ): number {
+    const degreeGroup = this.getEducationGroup(section, index);
+    if (!degreeGroup) return 0;
+    return degreeGroup.get(docType)?.value?.length || 0;
+  }
+
+  shouldShowRecognition(section: 'undergraduates' | 'postgraduates', index: number): boolean {
+    if (section === 'postgraduates') return false;
+    const degreeGroup = this.getEducationGroup(section, index);
+    if (!degreeGroup) return false;
+    return this.isForeignCountry(degreeGroup.get('countryId')?.value);
+  }
+
+  private getEducationGroup(section: 'undergraduates' | 'postgraduates', index: number): FormGroup | null {
+    if (section === 'undergraduates') {
+      return this.undergraduates.at(index) as FormGroup;
+    }
+    return this.postgraduates.at(index) as FormGroup;
+  }
+
+  private isForeignCountry(countryId: string | null | undefined): boolean {
+    if (!countryId) return false;
+    const country = this.countries().find((c) => c.id === countryId);
+    if (!country) return false;
+
+    const code = (country.code || '').toString().trim().toUpperCase();
+    if (code === 'VN' || code === 'VNM') return false;
+
+    const nameVi = (country.name || '').toString().toLowerCase();
+    const nameEn = (country.name_EN || '').toString().toLowerCase();
+    if (nameVi.includes('việt nam') || nameVi.includes('viet nam') || nameEn.includes('vietnam')) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -1071,7 +1324,9 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
       graduationRank: ['', Validators.required],
       languageId: ['', Validators.required],
       language: [''],
-      file: [null]
+      degreeFiles: [[]],
+      transcriptFiles: [[]],
+      recognitionFiles: [[]]
     });
   }
 
@@ -1090,7 +1345,9 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         graduationRank: [''],
         languageId: [''],
         language: [''],
-        file: [null]
+        degreeFiles: [[]],
+        transcriptFiles: [[]],
+        recognitionFiles: [[]]
       },
       {
         validators: completeRecordValidator([
@@ -1120,7 +1377,9 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         thesisTitle: [''],
         languageId: [''],
         language: [''],
-        file: [null]
+        degreeFiles: [[]],
+        transcriptFiles: [[]],
+        recognitionFiles: [[]]
       },
       {
         validators: completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'thesisTitle', 'languageId'])
@@ -1174,78 +1433,6 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     }
   }
 
-
-  /**
-   * Handle education file upload - Multiple files
-   */
-  onEducationFileChange(event: Event, section: 'undergraduates' | 'postgraduates', index?: number): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const files = Array.from(input.files);
-
-      for (const file of files) {
-        // Validate file size (max 5MB per file)
-        if (file.size > 5 * 1024 * 1024) {
-          this._alertService.error(
-            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
-            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_SIZE_LIMIT')}`
-          );
-          continue;
-        }
-
-        // Validate file type
-        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-        if (!allowedTypes.includes(file.type)) {
-          this._alertService.error(
-            this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
-            `File ${file.name} ${this._translate.instant('FILE_DIALOG.FILE_INVALID_TYPE')}`
-          );
-          continue;
-        }
-
-        this.updateEducationFiles(section, index, [file]);
-      }
-
-      // Reset input to allow selecting the same file again
-      input.value = '';
-    }
-  }
-
-  /**
-   * Update education files for the specified section
-   */
-  private updateEducationFiles(
-    section: 'undergraduates' | 'postgraduates',
-    index: number | undefined,
-    validFiles: File[]
-  ): void {
-    if (section === 'undergraduates' && index !== undefined) {
-      const existingFiles = this.undergraduates.at(index).get('file')?.value || [];
-      const allFiles = [...existingFiles, ...validFiles];
-      this.undergraduates.at(index).patchValue({ file: allFiles });
-    } else if (section === 'postgraduates' && index !== undefined) {
-      const existingFiles = this.postgraduates.at(index).get('file')?.value || [];
-      const allFiles = [...existingFiles, ...validFiles];
-      this.postgraduates.at(index).patchValue({ file: allFiles });
-    }
-  }
-
-  /**
-   * Remove a specific education file
-   */
-  removeEducationFile(section: 'undergraduates' | 'postgraduates', fileIndex: number, arrayIndex?: number): void {
-    let files: File[] = [];
-
-    if (section === 'undergraduates' && arrayIndex !== undefined) {
-      files = this.undergraduates.at(arrayIndex).get('file')?.value || [];
-      const updatedFiles = files.filter((_, i) => i !== fileIndex);
-      this.undergraduates.at(arrayIndex).patchValue({ file: updatedFiles.length > 0 ? updatedFiles : null });
-    } else if (section === 'postgraduates' && arrayIndex !== undefined) {
-      files = this.postgraduates.at(arrayIndex).get('file')?.value || [];
-      const updatedFiles = files.filter((_, i) => i !== fileIndex);
-      this.postgraduates.at(arrayIndex).patchValue({ file: updatedFiles.length > 0 ? updatedFiles : null });
-    }
-  }
 
   /**
    * Handle English certificate file upload - Multiple files

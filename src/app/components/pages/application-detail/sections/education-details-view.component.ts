@@ -3,12 +3,12 @@ import { EducationDetails } from '@/src/app/core/models/mba/mba-application';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-dialog.component';
+import { EducationFileManagerDialogComponent } from '../file-manager-dialog/education-file-manager-dialog.component';
 
 @Component({
   selector: 'app-education-details-view',
   standalone: true,
-  imports: [CommonModule, FileManagerDialogComponent, TranslatePipe],
+  imports: [CommonModule, EducationFileManagerDialogComponent, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -276,15 +276,16 @@ import { FileManagerDialogComponent } from '../file-manager-dialog/file-manager-
     </section>
 
     <!-- File Manager Dialog -->
-    <app-file-manager-dialog
+    <app-education-file-manager-dialog
       [(isOpen)]="isFileManagerOpen"
       [title]="currentDialogTitle"
-      [fileCategoryId]="currentCategoryId"
+      [degreeLevel]="currentDegreeLevel"
       [entityId]="currentEntityId"
+      [showRecognition]="currentShowRecognition"
       [(files)]="currentFiles"
       (onSave)="onFilesSaved($event)"
       (filesChange)="fileChange($event)">
-    </app-file-manager-dialog>
+    </app-education-file-manager-dialog>
   `
 })
 export class EducationDetailsViewComponent {
@@ -305,8 +306,9 @@ export class EducationDetailsViewComponent {
   currentFiles: any[] = [];
   currentType = '';
   currentIndex = 0;
-  currentCategoryId = 2;
+  currentDegreeLevel: 'undergraduate' | 'postgraduate' = 'undergraduate';
   currentEntityId?: string;
+  currentShowRecognition = false;
 
   get isLangVi(): boolean {
     return (localStorage.getItem('lang') || 'vi') === 'vi';
@@ -339,15 +341,17 @@ export class EducationDetailsViewComponent {
     if (type === EDUCATION_LEVELS.UNDERGRADUATE) {
       this.currentDialogTitle = this.translate.instant('FILE_DIALOG.TITLE_UNDERGRAD');
       this.currentFiles = this.undergraduateFiles[index] || [];
-      this.currentCategoryId = 2;
+      this.currentDegreeLevel = 'undergraduate';
       const degree = this.data?.undergraduates?.[index];
       this.currentEntityId = degree?.id || undefined;
+      this.currentShowRecognition = this.isForeignCountry(degree?.countryId);
     } else {
       this.currentDialogTitle = this.translate.instant('FILE_DIALOG.TITLE_POSTGRAD');
       this.currentFiles = this.postgraduateFiles[index] || [];
-      this.currentCategoryId = 3;
+      this.currentDegreeLevel = 'postgraduate';
       const degree = this.data?.postgraduates?.[index];
       this.currentEntityId = degree?.id || undefined;
+      this.currentShowRecognition = false;
     }
 
     this.isFileManagerOpen = true;
@@ -376,5 +380,20 @@ export class EducationDetailsViewComponent {
   fileChange(files: any[]): void {
     this.currentFiles = files;
     this.onFilesSaved(files);
+  }
+
+  private isForeignCountry(countryId: string | null | undefined): boolean {
+    if (!countryId) return false;
+    const country = this.countries.find((c) => c.id === countryId);
+    if (!country) return false;
+
+    const code = (country.code || '').toString().trim().toUpperCase();
+    if (code === 'VN' || code === 'VNM') return false;
+
+    const nameVi = (country.name || '').toString().toLowerCase();
+    const nameEn = (country.name_EN || '').toString().toLowerCase();
+    if (nameVi.includes('việt nam') || nameVi.includes('viet nam') || nameEn.includes('vietnam')) return false;
+
+    return true;
   }
 }
