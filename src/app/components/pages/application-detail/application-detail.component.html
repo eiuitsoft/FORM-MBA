@@ -160,6 +160,8 @@
       [formGroup]="educationDetailsForm"
       [countries]="countries()"
       [languages]="languages()"
+      [attemptedSave]="attemptedSave()"
+      [fileValidationState]="educationFileValidationState()"
       [undergraduateFiles]="undergraduateFiles()"
       [postgraduateFiles]="postgraduateFiles()"
       [onAddUndergraduate]="addUndergraduate.bind(this)"

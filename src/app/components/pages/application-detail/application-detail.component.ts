@@ -8,6 +8,7 @@ import { conditionalRequiredValidator, scoreRangeValidator } from '@/src/validat
 import { dateRangeValidator, maxDateValidator, minDateYearValidator } from '@/src/validators/date.validator';
 import { emailFormatValidator } from '@/src/validators/email-format.validator';
 import { atLeastOneEnglishQualificationValidator, completeQualificationValidator } from '@/src/validators/english-qualification.validator';
+import { evaluateEducationFileValidation } from '@/src/validators/education-file.validator';
 import { passportFormatValidator } from '@/src/validators/passport-format.validator';
 import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
 import { maxYearValidator, minYearValidator } from '@/src/validators/year.validator';
@@ -28,6 +29,18 @@ import { EnglishQualificationsViewComponent } from './sections/english-qualifica
 import { PersonalDetailsEditComponent } from './sections/personal-details-edit.component';
 import { PersonalDetailsViewComponent } from './sections/personal-details-view.component';
 import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
+
+interface EducationFileErrorState {
+  missingDegreeFile?: true;
+  missingTranscriptFile?: true;
+  missingRecognitionFile?: true;
+  missingEnglishMediumFile?: true;
+}
+
+interface EducationFileValidationState {
+  undergraduates: EducationFileErrorState[];
+  postgraduates: EducationFileErrorState[];
+}
 
 @Component({
   selector: 'app-application-detail',
@@ -66,11 +79,13 @@ export class ApplicationDetailComponent implements OnInit {
   exporting = signal(false);
   isEditMode = signal(false);
   showConfirmDialog = signal(false);
+  attemptedSave = signal(false);
   applicationData = signal<MBAApplicationDetail>(null);
   uploadedFiles = signal<any[]>([]);
   undergraduateFiles = signal<any[][]>([]);
   postgraduateFiles = signal<any[][]>([]);
   englishFiles = signal<any[]>([]);
+  educationFileValidationState = signal<EducationFileValidationState>({ undergraduates: [], postgraduates: [] });
 
   // Dropdown data
   countries = signal<any[]>([]);
@@ -207,6 +222,7 @@ export class ApplicationDetailComponent implements OnInit {
         const pgDegreeCategoryId = categoryMap['BCCH']?.id;
         const transcriptCategoryId = categoryMap['BDDH']?.id;
         const recognitionCategoryId = categoryMap['CNVB']?.id;
+        const englishMediumCategoryId = categoryMap['XNTA']?.id;
 
         if (
           !passportCategoryId ||
@@ -214,7 +230,8 @@ export class ApplicationDetailComponent implements OnInit {
           !ugDegreeCategoryId ||
           !pgDegreeCategoryId ||
           !transcriptCategoryId ||
-          !recognitionCategoryId
+          !recognitionCategoryId ||
+          !englishMediumCategoryId
         ) {
           console.error('Missing required file categories from API.');
           this.uploadedFiles.set([]);
@@ -257,7 +274,8 @@ export class ApplicationDetailComponent implements OnInit {
             [
               { id: ugDegreeCategoryId, code: 'BCDH' },
               { id: transcriptCategoryId, code: 'BDDH' },
-              { id: recognitionCategoryId, code: 'CNVB' }
+              { id: recognitionCategoryId, code: 'CNVB' },
+              { id: englishMediumCategoryId, code: 'XNTA' }
             ],
             (files) => {
               ugFiles[index] = files;
@@ -281,7 +299,9 @@ export class ApplicationDetailComponent implements OnInit {
             pg.id,
             [
               { id: pgDegreeCategoryId, code: 'BCCH' },
-              { id: transcriptCategoryId, code: 'BDDH' }
+              { id: transcriptCategoryId, code: 'BDDH' },
+              { id: recognitionCategoryId, code: 'CNVB' },
+              { id: englishMediumCategoryId, code: 'XNTA' }
             ],
             (files) => {
               pgFiles[index] = files;
@@ -346,6 +366,8 @@ export class ApplicationDetailComponent implements OnInit {
 
   toggleEditMode(): void {
     this.isEditMode.set(true);
+    this.attemptedSave.set(false);
+    this.educationFileValidationState.set({ undergraduates: [], postgraduates: [] });
     const data = this.applicationData();
 
     // Load files for edit mode (reuse loadAllFiles method)
@@ -585,14 +607,21 @@ export class ApplicationDetailComponent implements OnInit {
 
   cancelEdit(): void {
     this.isEditMode.set(false);
+    this.attemptedSave.set(false);
+    this.educationFileValidationState.set({ undergraduates: [], postgraduates: [] });
   }
 
   saveChanges(): void {
-    if (this.editForm.invalid) {
+    this.attemptedSave.set(true);
+    const validEducationFiles = this.validateEducationFileRequirements();
+
+    if (this.editForm.invalid || !validEducationFiles) {
       this.logValidationErrors();
       this._alertService.error(
         this._translate.instant('SUBMIT_RESULT.ERROR_TITLE'),
-        this._translate.instant('COMMON.ERROR_REVIEW')
+        !validEducationFiles
+          ? this._translate.instant('EDUCATION_DETAILS.FILE_FIELDS_REQUIRED')
+          : this._translate.instant('COMMON.ERROR_REVIEW')
       );
       return;
     }
@@ -612,6 +641,8 @@ export class ApplicationDetailComponent implements OnInit {
             this._translate.instant('UPDATE_RESULT.SUCCESS_MESSAGE')
           );
           this.isEditMode.set(false);
+          this.attemptedSave.set(false);
+          this.educationFileValidationState.set({ undergraduates: [], postgraduates: [] });
           this.loadApplicationData(this.applicationId());
         } else {
           this._alertService.error(
@@ -802,6 +833,7 @@ export class ApplicationDetailComponent implements OnInit {
 
     // Add empty file array for new degree
     this.undergraduateFiles.update((files) => [...files, []]);
+    this.refreshEducationFileValidationIfNeeded();
   }
 
   removeUndergraduate(index: number): void {
@@ -809,6 +841,7 @@ export class ApplicationDetailComponent implements OnInit {
       this.undergraduatesArray.removeAt(index);
       // Remove files for this degree
       this.undergraduateFiles.update((files) => files.filter((_, i) => i !== index));
+      this.refreshEducationFileValidationIfNeeded();
     }
   }
 
@@ -830,6 +863,7 @@ export class ApplicationDetailComponent implements OnInit {
 
     // Add empty file array for new degree
     this.postgraduateFiles.update((files) => [...files, []]);
+    this.refreshEducationFileValidationIfNeeded();
   }
 
   removePostgraduate(index: number): void {
@@ -837,6 +871,7 @@ export class ApplicationDetailComponent implements OnInit {
       this.postgraduatesArray.removeAt(index);
       // Remove files for this degree
       this.postgraduateFiles.update((files) => files.filter((_, i) => i !== index));
+      this.refreshEducationFileValidationIfNeeded();
     }
   }
 
@@ -927,6 +962,107 @@ export class ApplicationDetailComponent implements OnInit {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     return `${year}-${month}`;
+  }
+
+  private refreshEducationFileValidationIfNeeded(): void {
+    if (!this.attemptedSave()) return;
+    this.validateEducationFileRequirements();
+  }
+
+  private validateEducationFileRequirements(): boolean {
+    const rawValue = this.editForm?.getRawValue() as MBAApplicationDetail;
+    const validationState: EducationFileValidationState = { undergraduates: [], postgraduates: [] };
+
+    let isValid = true;
+
+    const undergraduates = rawValue?.educationDetails?.undergraduates || [];
+    undergraduates.forEach((ug: EducationRecord, index: number) => {
+      const files = this.undergraduateFiles()?.[index] || [];
+      const errors = evaluateEducationFileValidation({
+        alwaysRequired: index === 0,
+        isEnteredRecord: this.hasAnyRecordValue(ug, [
+          'university',
+          'countryId',
+          'major',
+          'graduationYear',
+          'gpa',
+          'graduationRank',
+          'languageId',
+          'thesisTitle'
+        ]),
+        requireRecognition: this.isForeignCountry(ug?.countryId),
+        requireEnglishMedium: this.isForeignCountry(ug?.countryId),
+        degreeFileCount: this.countFilesByCategory(files, 'BCDH'),
+        transcriptFileCount: this.countFilesByCategory(files, 'BDDH'),
+        recognitionFileCount: this.countFilesByCategory(files, 'CNVB'),
+        englishMediumFileCount: this.countFilesByCategory(files, 'XNTA')
+      });
+
+      validationState.undergraduates[index] = errors || {};
+      if (errors) {
+        isValid = false;
+      }
+    });
+
+    const postgraduates = rawValue?.educationDetails?.postgraduates || [];
+    postgraduates.forEach((pg: EducationRecord, index: number) => {
+      const files = this.postgraduateFiles()?.[index] || [];
+      const errors = evaluateEducationFileValidation({
+        alwaysRequired: false,
+        isEnteredRecord: this.hasAnyRecordValue(pg, [
+          'university',
+          'countryId',
+          'major',
+          'graduationYear',
+          'languageId',
+          'thesisTitle'
+        ]),
+        requireRecognition: this.isForeignCountry(pg?.countryId),
+        requireEnglishMedium: this.isForeignCountry(pg?.countryId),
+        degreeFileCount: this.countFilesByCategory(files, 'BCCH'),
+        transcriptFileCount: this.countFilesByCategory(files, 'BDDH'),
+        recognitionFileCount: this.countFilesByCategory(files, 'CNVB'),
+        englishMediumFileCount: this.countFilesByCategory(files, 'XNTA')
+      });
+
+      validationState.postgraduates[index] = errors || {};
+      if (errors) {
+        isValid = false;
+      }
+    });
+
+    this.educationFileValidationState.set(validationState);
+    return isValid;
+  }
+
+  private hasAnyRecordValue(record: Record<string, any>, fields: string[]): boolean {
+    return fields.some((field) => {
+      const value = record?.[field];
+      return value !== null && value !== undefined && value.toString().trim() !== '';
+    });
+  }
+
+  private countFilesByCategory(files: any[], categoryCode: string): number {
+    if (!Array.isArray(files)) {
+      return 0;
+    }
+
+    const normalizedCode = (categoryCode || '').toUpperCase();
+    return files.filter((file) => ((file?.categoryCode || file?.CategoryCode || '') as string).toUpperCase() === normalizedCode)
+      .length;
+  }
+
+  private isForeignCountry(countryId: string | null | undefined): boolean {
+    if (!countryId) return false;
+    const country = this.countries().find((c) => c.id === countryId);
+    if (!country) return false;
+
+    const code = (country.code || '').toString().trim().toUpperCase();
+    if (code === 'VN' || code === 'VNM') return false;
+
+    const nameVi = (country.name || '').toString().toLowerCase();
+    const nameEn = (country.name_EN || '').toString().toLowerCase();
+    return !nameVi.includes('viá»‡t nam') && !nameVi.includes('viet nam') && !nameEn.includes('vietnam');
   }
 
   // File upload handlers
@@ -1033,6 +1169,7 @@ export class ApplicationDetailComponent implements OnInit {
                 return updated;
               });
             }
+            this.refreshEducationFileValidationIfNeeded();
           }
         };
         reader.readAsDataURL(file);
@@ -1058,6 +1195,7 @@ export class ApplicationDetailComponent implements OnInit {
         return updated;
       });
     }
+    this.refreshEducationFileValidationIfNeeded();
   }
 
   // English qualification file handlers
@@ -1129,6 +1267,7 @@ export class ApplicationDetailComponent implements OnInit {
         return updated;
       });
     }
+    this.refreshEducationFileValidationIfNeeded();
   }
 
   onEnglishFilesUpdate(files: any[]): void {

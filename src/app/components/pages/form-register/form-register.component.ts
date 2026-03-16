@@ -4,6 +4,7 @@ import { scoreRangeValidator } from '@/src/validators/conditional.validator';
 import { dateRangeValidator, maxDateValidator, minDateYearValidator } from '@/src/validators/date.validator';
 import { emailFormatValidator } from '@/src/validators/email-format.validator';
 import { atLeastOneEnglishQualificationValidator, completeQualificationValidator } from '@/src/validators/english-qualification.validator';
+import { educationFileRequiredValidator } from '@/src/validators/education-file.validator';
 import { passportFormatValidator } from '@/src/validators/passport-format.validator';
 import { uniqueFieldValidator } from '@/src/validators/unique-field.validator';
 import { maxYearValidator, minYearValidator } from '@/src/validators/year.validator';
@@ -64,6 +65,7 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
   currentEducationDegreeFiles: File[] = [];
   currentEducationTranscriptFiles: File[] = [];
   currentEducationRecognitionFiles: File[] = [];
+  currentEducationEnglishMediumFiles: File[] = [];
 
   currentYear = new Date().getFullYear();
   currentLanguage = 'vi';
@@ -434,6 +436,18 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         if (index === 2) degreeName = 'EDUCATION_DETAILS.THIRD_DEGREE';
         if (index === 3) degreeName = 'EDUCATION_DETAILS.FOURTH_DEGREE';
         invalidList.push(`${this._translate.instant(eduSection)}: ${this._translate.instant(degreeName)}`);
+        if (
+          control.hasError('missingDegreeFile') ||
+          control.hasError('missingTranscriptFile') ||
+          control.hasError('missingRecognitionFile') ||
+          control.hasError('missingEnglishMediumFile')
+        ) {
+          invalidList.push(
+            `${this._translate.instant(eduSection)}: ${this._translate.instant(degreeName)} - ${this._translate.instant(
+              'EDUCATION_DETAILS.FILE_FIELDS_REQUIRED'
+            )}`
+          );
+        }
       }
     });
     const postgraduates = this.postgraduates.controls;
@@ -441,6 +455,18 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
       if (control.invalid) {
         let degreeName = index === 0 ? 'EDUCATION_DETAILS.POSTGRADUATE_TITLE' : 'EDUCATION_DETAILS.SECOND_POSTGRAD';
         invalidList.push(`${this._translate.instant(eduSection)}: ${this._translate.instant(degreeName)}`);
+        if (
+          control.hasError('missingDegreeFile') ||
+          control.hasError('missingTranscriptFile') ||
+          control.hasError('missingRecognitionFile') ||
+          control.hasError('missingEnglishMediumFile')
+        ) {
+          invalidList.push(
+            `${this._translate.instant(eduSection)}: ${this._translate.instant(degreeName)} - ${this._translate.instant(
+              'EDUCATION_DETAILS.FILE_FIELDS_REQUIRED'
+            )}`
+          );
+        }
       }
     });
 
@@ -694,7 +720,7 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
   private async uploadEducationFilesAfterAdd(studentId: string, rawValue: any): Promise<boolean> {
     try {
       const categoryMap = await firstValueFrom(this._mbaService.getFileCategoryCodeMap(1));
-      const requiredCodes = ['BCDH', 'BCCH', 'BDDH', 'CNVB'];
+      const requiredCodes = ['BCDH', 'BCCH', 'BDDH', 'CNVB', 'XNTA'];
       const hasAllCodes = requiredCodes.every((code) => !!categoryMap[code]?.id);
       if (!hasAllCodes) {
         return false;
@@ -742,6 +768,15 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
               categoryId: categoryMap['CNVB']!.id,
               files: ug.recognitionFiles || []
             })) && allSucceeded;
+
+          allSucceeded =
+            (await this.uploadEducationCategoryFiles({
+              studentId,
+              entityId,
+              profileCode,
+              categoryId: categoryMap['XNTA']!.id,
+              files: ug.englishMediumFiles || []
+            })) && allSucceeded;
         }
       }
 
@@ -766,6 +801,26 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
             categoryId: categoryMap['BDDH']!.id,
             files: pg.transcriptFiles || []
           })) && allSucceeded;
+
+        if (this.isForeignCountry(pg.countryId)) {
+          allSucceeded =
+            (await this.uploadEducationCategoryFiles({
+              studentId,
+              entityId,
+              profileCode,
+              categoryId: categoryMap['CNVB']!.id,
+              files: pg.recognitionFiles || []
+            })) && allSucceeded;
+
+          allSucceeded =
+            (await this.uploadEducationCategoryFiles({
+              studentId,
+              entityId,
+              profileCode,
+              categoryId: categoryMap['XNTA']!.id,
+              files: pg.englishMediumFiles || []
+            })) && allSucceeded;
+        }
       }
 
       return allSucceeded;
@@ -1031,7 +1086,7 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     const countryId = degreeGroup.get('countryId')?.value;
     this.currentEducationSection = section;
     this.currentEducationIndex = index;
-    this.currentEducationShowRecognition = section === 'undergraduates' ? this.isForeignCountry(countryId) : false;
+    this.currentEducationShowRecognition = this.isForeignCountry(countryId);
     this.currentEducationDialogTitle =
       section === 'undergraduates'
         ? this._translate.instant('FILE_DIALOG.TITLE_UNDERGRAD')
@@ -1039,18 +1094,26 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     this.currentEducationDegreeFiles = [...(degreeGroup.get('degreeFiles')?.value || [])];
     this.currentEducationTranscriptFiles = [...(degreeGroup.get('transcriptFiles')?.value || [])];
     this.currentEducationRecognitionFiles = [...(degreeGroup.get('recognitionFiles')?.value || [])];
+    this.currentEducationEnglishMediumFiles = [...(degreeGroup.get('englishMediumFiles')?.value || [])];
     this.isEducationDialogOpen = true;
   }
 
-  onEducationFilesDialogSave(event: { degreeFiles: File[]; transcriptFiles: File[]; recognitionFiles: File[] }): void {
+  onEducationFilesDialogSave(event: {
+    degreeFiles: File[];
+    transcriptFiles: File[];
+    recognitionFiles: File[];
+    englishMediumFiles: File[];
+  }): void {
     const degreeGroup = this.getEducationGroup(this.currentEducationSection, this.currentEducationIndex);
     if (!degreeGroup) return;
 
     degreeGroup.patchValue({
       degreeFiles: event.degreeFiles || [],
       transcriptFiles: event.transcriptFiles || [],
-      recognitionFiles: event.recognitionFiles || []
+      recognitionFiles: event.recognitionFiles || [],
+      englishMediumFiles: event.englishMediumFiles || []
     });
+    degreeGroup.updateValueAndValidity();
   }
 
   getEducationFileCount(section: 'undergraduates' | 'postgraduates', index: number): number {
@@ -1060,21 +1123,32 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     const degreeFiles = degreeGroup.get('degreeFiles')?.value?.length || 0;
     const transcriptFiles = degreeGroup.get('transcriptFiles')?.value?.length || 0;
     const recognitionFiles = degreeGroup.get('recognitionFiles')?.value?.length || 0;
-    return degreeFiles + transcriptFiles + recognitionFiles;
+    const englishMediumFiles = degreeGroup.get('englishMediumFiles')?.value?.length || 0;
+    return degreeFiles + transcriptFiles + recognitionFiles + englishMediumFiles;
   }
 
   getEducationFileCountByType(
     section: 'undergraduates' | 'postgraduates',
     index: number,
-    docType: 'degreeFiles' | 'transcriptFiles' | 'recognitionFiles'
+    docType: 'degreeFiles' | 'transcriptFiles' | 'recognitionFiles' | 'englishMediumFiles'
   ): number {
     const degreeGroup = this.getEducationGroup(section, index);
     if (!degreeGroup) return 0;
     return degreeGroup.get(docType)?.value?.length || 0;
   }
 
+  hasEducationFileError(
+    section: 'undergraduates' | 'postgraduates',
+    index: number,
+    errorKey: 'missingDegreeFile' | 'missingTranscriptFile' | 'missingRecognitionFile' | 'missingEnglishMediumFile'
+  ): boolean {
+    const degreeGroup = this.getEducationGroup(section, index);
+    if (!degreeGroup) return false;
+
+    return !!(degreeGroup.hasError(errorKey) && (this.submitted() || degreeGroup.touched));
+  }
+
   shouldShowRecognition(section: 'undergraduates' | 'postgraduates', index: number): boolean {
-    if (section === 'postgraduates') return false;
     const degreeGroup = this.getEducationGroup(section, index);
     if (!degreeGroup) return false;
     return this.isForeignCountry(degreeGroup.get('countryId')?.value);
@@ -1314,20 +1388,31 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
    * Create undergraduate form group (required fields)
    */
   private createUndergraduateGroup(): FormGroup {
-    return this.fb.group({
-      university: ['', Validators.required],
-      countryId: ['', Validators.required],
-      country: [''],
-      major: ['', Validators.required],
-      graduationYear: ['', [Validators.required, minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
-      gpa: ['', Validators.required],
-      graduationRank: ['', Validators.required],
-      languageId: ['', Validators.required],
-      language: [''],
-      degreeFiles: [[]],
-      transcriptFiles: [[]],
-      recognitionFiles: [[]]
-    });
+    return this.fb.group(
+      {
+        university: ['', Validators.required],
+        countryId: ['', Validators.required],
+        country: [''],
+        major: ['', Validators.required],
+        graduationYear: ['', [Validators.required, minYearValidator(1950), maxYearValidator(new Date().getFullYear())]],
+        gpa: ['', Validators.required],
+        graduationRank: ['', Validators.required],
+        languageId: ['', Validators.required],
+        language: [''],
+        degreeFiles: [[]],
+        transcriptFiles: [[]],
+        recognitionFiles: [[]],
+        englishMediumFiles: [[]]
+      },
+      {
+        validators: educationFileRequiredValidator({
+          alwaysRequired: true,
+          enteredFields: ['university', 'countryId', 'major', 'graduationYear', 'gpa', 'graduationRank', 'languageId'],
+          requireRecognition: (group) => this.isForeignCountry(group.get('countryId')?.value),
+          requireEnglishMedium: (group) => this.isForeignCountry(group.get('countryId')?.value)
+        })
+      }
+    );
   }
 
   /**
@@ -1347,18 +1432,19 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         language: [''],
         degreeFiles: [[]],
         transcriptFiles: [[]],
-        recognitionFiles: [[]]
+        recognitionFiles: [[]],
+        englishMediumFiles: [[]]
       },
       {
-        validators: completeRecordValidator([
-          'university',
-          'countryId',
-          'major',
-          'graduationYear',
-          'gpa',
-          'graduationRank',
-          'languageId'
-        ])
+        validators: [
+          completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'gpa', 'graduationRank', 'languageId']),
+          educationFileRequiredValidator({
+            alwaysRequired: false,
+            enteredFields: ['university', 'countryId', 'major', 'graduationYear', 'gpa', 'graduationRank', 'languageId'],
+            requireRecognition: (group) => this.isForeignCountry(group.get('countryId')?.value),
+            requireEnglishMedium: (group) => this.isForeignCountry(group.get('countryId')?.value)
+          })
+        ]
       }
     );
   }
@@ -1379,10 +1465,19 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         language: [''],
         degreeFiles: [[]],
         transcriptFiles: [[]],
-        recognitionFiles: [[]]
+        recognitionFiles: [[]],
+        englishMediumFiles: [[]]
       },
       {
-        validators: completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'thesisTitle', 'languageId'])
+        validators: [
+          completeRecordValidator(['university', 'countryId', 'major', 'graduationYear', 'thesisTitle', 'languageId']),
+          educationFileRequiredValidator({
+            alwaysRequired: false,
+            enteredFields: ['university', 'countryId', 'major', 'graduationYear', 'thesisTitle', 'languageId'],
+            requireRecognition: (group) => this.isForeignCountry(group.get('countryId')?.value),
+            requireEnglishMedium: (group) => this.isForeignCountry(group.get('countryId')?.value)
+          })
+        ]
       }
     );
   }

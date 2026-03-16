@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChan
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AlertService } from '@/src/app/core/services/alert/alert.service';
 
-type EducationDocumentType = 'degree' | 'transcript' | 'recognition';
+type EducationDocumentType = 'degree' | 'transcript' | 'recognition' | 'englishMedium';
 
 @Component({
   selector: 'app-education-file-dialog',
@@ -38,7 +38,7 @@ type EducationDocumentType = 'degree' | 'transcript' | 'recognition';
                 <span class="text-xs text-gray-500">{{ draftDegreeFiles.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
               </div>
               <label
-                class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
+                class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
                 <div class="text-sm text-blue-700 font-medium">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</div>
                 <div class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</div>
                 <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple (change)="onFileSelect($event, 'degree')" />
@@ -66,7 +66,7 @@ type EducationDocumentType = 'degree' | 'transcript' | 'recognition';
                 <span class="text-xs text-gray-500">{{ draftTranscriptFiles.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
               </div>
               <label
-                class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
+                class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
                 <div class="text-sm text-blue-700 font-medium">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</div>
                 <div class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</div>
                 <input
@@ -100,7 +100,7 @@ type EducationDocumentType = 'degree' | 'transcript' | 'recognition';
                 <span class="text-xs text-gray-500">{{ draftRecognitionFiles.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
               </div>
               <label
-                class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
+                class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
                 <div class="text-sm text-blue-700 font-medium">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</div>
                 <div class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</div>
                 <input
@@ -119,6 +119,39 @@ type EducationDocumentType = 'degree' | 'transcript' | 'recognition';
                     <div class="text-xs text-gray-600">{{ formatFileSize(file.size) }}</div>
                   </div>
                   <button type="button" class="ml-2 text-red-600 hover:text-red-800" (click)="removeDraftFile('recognition', $index)">
+                    {{ 'COMMON.REMOVE' | translate }}
+                  </button>
+                </div>
+                }
+              </div>
+              }
+            </div>
+
+            <div class="p-4 bg-white border border-gray-200 rounded-lg">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-semibold text-[#153a5e]">{{ 'FILE_DIALOG.DOC_TYPE_ENGLISH_MEDIUM' | translate }}</h4>
+                <span class="text-xs text-gray-500">{{ draftEnglishMediumFiles.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
+              </div>
+              <label
+                class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
+                <div class="text-sm text-blue-700 font-medium">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</div>
+                <div class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</div>
+                <input
+                  type="file"
+                  class="hidden"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  multiple
+                  (change)="onFileSelect($event, 'englishMedium')" />
+              </label>
+              @if (draftEnglishMediumFiles.length > 0) {
+              <div class="mt-3 space-y-2">
+                @for (file of draftEnglishMediumFiles; track $index) {
+                <div class="flex items-center justify-between p-2 text-sm bg-blue-50 border border-blue-200 rounded">
+                  <div class="truncate">
+                    <div class="font-medium text-gray-900 truncate">{{ file.name }}</div>
+                    <div class="text-xs text-gray-600">{{ formatFileSize(file.size) }}</div>
+                  </div>
+                  <button type="button" class="ml-2 text-red-600 hover:text-red-800" (click)="removeDraftFile('englishMedium', $index)">
                     {{ 'COMMON.REMOVE' | translate }}
                   </button>
                 </div>
@@ -159,23 +192,27 @@ export class EducationFileDialogComponent implements OnChanges {
   @Input() degreeFiles: File[] = [];
   @Input() transcriptFiles: File[] = [];
   @Input() recognitionFiles: File[] = [];
+  @Input() englishMediumFiles: File[] = [];
 
   @Output() isOpenChange = new EventEmitter<boolean>();
   @Output() onSave = new EventEmitter<{
     degreeFiles: File[];
     transcriptFiles: File[];
     recognitionFiles: File[];
+    englishMediumFiles: File[];
   }>();
 
   draftDegreeFiles: File[] = [];
   draftTranscriptFiles: File[] = [];
   draftRecognitionFiles: File[] = [];
+  draftEnglishMediumFiles: File[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen']?.currentValue === true) {
       this.draftDegreeFiles = [...(this.degreeFiles || [])];
       this.draftTranscriptFiles = [...(this.transcriptFiles || [])];
       this.draftRecognitionFiles = [...(this.recognitionFiles || [])];
+      this.draftEnglishMediumFiles = [...(this.englishMediumFiles || [])];
     }
   }
 
@@ -192,7 +229,8 @@ export class EducationFileDialogComponent implements OnChanges {
     this.onSave.emit({
       degreeFiles: [...this.draftDegreeFiles],
       transcriptFiles: [...this.draftTranscriptFiles],
-      recognitionFiles: [...this.draftRecognitionFiles]
+      recognitionFiles: [...this.draftRecognitionFiles],
+      englishMediumFiles: [...this.draftEnglishMediumFiles]
     });
     this.close();
   }
@@ -262,6 +300,8 @@ export class EducationFileDialogComponent implements OnChanges {
         return this.draftTranscriptFiles;
       case 'recognition':
         return this.draftRecognitionFiles;
+      case 'englishMedium':
+        return this.draftEnglishMediumFiles;
       default:
         return this.draftDegreeFiles;
     }

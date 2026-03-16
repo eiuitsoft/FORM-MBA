@@ -5,6 +5,20 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { EducationFileManagerDialogComponent } from '../file-manager-dialog/education-file-manager-dialog.component';
 import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
 
+type EducationDegreeLevel = 'undergraduate' | 'postgraduate';
+
+interface EducationFileErrorState {
+  missingDegreeFile?: true;
+  missingTranscriptFile?: true;
+  missingRecognitionFile?: true;
+  missingEnglishMediumFile?: true;
+}
+
+interface EducationFileValidationState {
+  undergraduates: EducationFileErrorState[];
+  postgraduates: EducationFileErrorState[];
+}
+
 @Component({
   selector: 'app-education-details-edit',
   standalone: true,
@@ -206,6 +220,26 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                 </span>
               </button>
               <p class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</p>
+              @if (hasFileError('undergraduate', i, 'missingDegreeFile')) {
+              <p class="text-red-600 text-xs mt-1">
+                {{ 'EDUCATION_DETAILS.FILE_REQUIRED_DEGREE' | translate }}
+              </p>
+              }
+              @if (hasFileError('undergraduate', i, 'missingTranscriptFile')) {
+              <p class="text-red-600 text-xs mt-1">
+                {{ 'EDUCATION_DETAILS.FILE_REQUIRED_TRANSCRIPT' | translate }}
+              </p>
+              }
+              @if (hasFileError('undergraduate', i, 'missingRecognitionFile')) {
+              <p class="text-red-600 text-xs mt-1">
+                {{ 'EDUCATION_DETAILS.FILE_REQUIRED_RECOGNITION' | translate }}
+              </p>
+              }
+              @if (hasFileError('undergraduate', i, 'missingEnglishMediumFile')) {
+              <p class="text-red-600 text-xs mt-1">
+                {{ 'EDUCATION_DETAILS.FILE_REQUIRED_ENGLISH_MEDIUM' | translate }}
+              </p>
+              }
             </div>
             
             @if (degree.hasError('incompleteRecord') && degree.touched) {
@@ -390,6 +424,26 @@ import { EDUCATION_LEVELS } from '@/src/app/core/constants/education-level';
                 </span>
               </button>
               <p class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</p>
+              @if (hasFileError('postgraduate', i, 'missingDegreeFile')) {
+              <p class="text-red-600 text-xs mt-1">
+                {{ 'EDUCATION_DETAILS.FILE_REQUIRED_DEGREE' | translate }}
+              </p>
+              }
+              @if (hasFileError('postgraduate', i, 'missingTranscriptFile')) {
+              <p class="text-red-600 text-xs mt-1">
+                {{ 'EDUCATION_DETAILS.FILE_REQUIRED_TRANSCRIPT' | translate }}
+              </p>
+              }
+              @if (hasFileError('postgraduate', i, 'missingRecognitionFile')) {
+              <p class="text-red-600 text-xs mt-1">
+                {{ 'EDUCATION_DETAILS.FILE_REQUIRED_RECOGNITION' | translate }}
+              </p>
+              }
+              @if (hasFileError('postgraduate', i, 'missingEnglishMediumFile')) {
+              <p class="text-red-600 text-xs mt-1">
+                {{ 'EDUCATION_DETAILS.FILE_REQUIRED_ENGLISH_MEDIUM' | translate }}
+              </p>
+              }
             </div>
             
             @if (degree.hasError('incompleteRecord') && degree.touched) {
@@ -431,6 +485,8 @@ export class EducationDetailsEditComponent {
   @Input() formGroup!: FormGroup;
   @Input() countries: any[] = [];
   @Input() languages: any[] = [];
+  @Input() attemptedSave = false;
+  @Input() fileValidationState: EducationFileValidationState = { undergraduates: [], postgraduates: [] };
   @Input() undergraduateFiles: any[][] = [];
   @Input() postgraduateFiles: any[][] = [];
   @Input() onAddUndergraduate!: () => void;
@@ -445,7 +501,7 @@ export class EducationDetailsEditComponent {
   currentFiles: any[] = [];
   currentType = '';
   currentIndex = 0;
-  currentDegreeLevel: 'undergraduate' | 'postgraduate' = 'undergraduate';
+  currentDegreeLevel: EducationDegreeLevel = 'undergraduate';
   currentEntityId?: string;
   currentShowRecognition = false;
 
@@ -478,7 +534,7 @@ export class EducationDetailsEditComponent {
       this.currentDegreeLevel = 'postgraduate';
       const degree = this.postgraduates.at(index);
       this.currentEntityId = degree?.get('id')?.value || undefined;
-      this.currentShowRecognition = false;
+      this.currentShowRecognition = this.isForeignCountry(degree?.get('countryId')?.value);
     }
 
     this.isFileManagerOpen = true;
@@ -514,6 +570,20 @@ export class EducationDetailsEditComponent {
   }
   removePostgraduate(index: number): void {
     this.onRemovePostgraduate(index);
+  }
+
+  hasFileError(
+    degreeLevel: EducationDegreeLevel,
+    index: number,
+    errorKey: 'missingDegreeFile' | 'missingTranscriptFile' | 'missingRecognitionFile' | 'missingEnglishMediumFile'
+  ): boolean {
+    if (!this.attemptedSave) return false;
+
+    if (degreeLevel === 'undergraduate') {
+      return !!this.fileValidationState?.undergraduates?.[index]?.[errorKey];
+    }
+
+    return !!this.fileValidationState?.postgraduates?.[index]?.[errorKey];
   }
 
   private isForeignCountry(countryId: string | null | undefined): boolean {

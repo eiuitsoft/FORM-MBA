@@ -351,7 +351,7 @@ export class EducationDetailsViewComponent {
       this.currentDegreeLevel = 'postgraduate';
       const degree = this.data?.postgraduates?.[index];
       this.currentEntityId = degree?.id || undefined;
-      this.currentShowRecognition = false;
+      this.currentShowRecognition = this.isForeignCountry(degree?.countryId);
     }
 
     this.isFileManagerOpen = true;

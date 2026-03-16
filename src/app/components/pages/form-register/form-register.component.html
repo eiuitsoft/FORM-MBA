@@ -930,8 +930,32 @@
                       {{ 'FILE_DIALOG.DOC_TYPE_RECOGNITION' | translate }}:
                       {{ getEducationFileCountByType('undergraduates', ugIndex, 'recognitionFiles') }}
                     </div>
+                    <div>
+                      {{ 'FILE_DIALOG.DOC_TYPE_ENGLISH_MEDIUM' | translate }}:
+                      {{ getEducationFileCountByType('undergraduates', ugIndex, 'englishMediumFiles') }}
+                    </div>
                     }
                   </div>
+                  @if (hasEducationFileError('undergraduates', ugIndex, 'missingDegreeFile')) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.FILE_REQUIRED_DEGREE' | translate }}
+                  </p>
+                  }
+                  @if (hasEducationFileError('undergraduates', ugIndex, 'missingTranscriptFile')) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.FILE_REQUIRED_TRANSCRIPT' | translate }}
+                  </p>
+                  }
+                  @if (hasEducationFileError('undergraduates', ugIndex, 'missingRecognitionFile')) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.FILE_REQUIRED_RECOGNITION' | translate }}
+                  </p>
+                  }
+                  @if (hasEducationFileError('undergraduates', ugIndex, 'missingEnglishMediumFile')) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.FILE_REQUIRED_ENGLISH_MEDIUM' | translate }}
+                  </p>
+                  }
                 </div>
               </div>
               @if (undergraduates.at(ugIndex).hasError('incompleteRecord') && (submitted() || undergraduates.at(ugIndex).touched)) {
@@ -1157,8 +1181,32 @@
                       {{ 'FILE_DIALOG.DOC_TYPE_RECOGNITION' | translate }}:
                       {{ getEducationFileCountByType('postgraduates', pgIndex, 'recognitionFiles') }}
                     </div>
+                    <div>
+                      {{ 'FILE_DIALOG.DOC_TYPE_ENGLISH_MEDIUM' | translate }}:
+                      {{ getEducationFileCountByType('postgraduates', pgIndex, 'englishMediumFiles') }}
+                    </div>
                     }
                   </div>
+                  @if (hasEducationFileError('postgraduates', pgIndex, 'missingDegreeFile')) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.FILE_REQUIRED_DEGREE' | translate }}
+                  </p>
+                  }
+                  @if (hasEducationFileError('postgraduates', pgIndex, 'missingTranscriptFile')) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.FILE_REQUIRED_TRANSCRIPT' | translate }}
+                  </p>
+                  }
+                  @if (hasEducationFileError('postgraduates', pgIndex, 'missingRecognitionFile')) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.FILE_REQUIRED_RECOGNITION' | translate }}
+                  </p>
+                  }
+                  @if (hasEducationFileError('postgraduates', pgIndex, 'missingEnglishMediumFile')) {
+                  <p class="text-red-600 text-sm mt-1">
+                    {{ 'EDUCATION_DETAILS.FILE_REQUIRED_ENGLISH_MEDIUM' | translate }}
+                  </p>
+                  }
                 </div>
               </div>
               @if (postgraduates.at(pgIndex).hasError('incompleteRecord') && (submitted() || postgraduates.at(pgIndex).touched)) {
@@ -1187,6 +1235,7 @@
         [degreeFiles]="currentEducationDegreeFiles"
         [transcriptFiles]="currentEducationTranscriptFiles"
         [recognitionFiles]="currentEducationRecognitionFiles"
+        [englishMediumFiles]="currentEducationEnglishMediumFiles"
         (onSave)="onEducationFilesDialogSave($event)" />
 
       <!-- Section: English Qualifications -->

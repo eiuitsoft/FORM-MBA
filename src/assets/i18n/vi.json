@@ -1,4 +1,4 @@
-{
+﻿{
   "UNIVERSITY_NAME": "TRƯỜNG ĐẠI HỌC QUỐC TẾ MIỀN ĐÔNG",
   "FORM_TITLE": "PHIẾU DỰ TUYỂN TRÌNH ĐỘ THẠC SĨ QUẢN TRỊ KINH DOANH (MBA)",
   "COMMON": {
@@ -126,7 +126,12 @@
     "GRADUATION_CLASSIFICATION": "Xếp loại tốt nghiệp",
     "GRADUATION_CLASSIFICATION_PLACEHOLDER": "Nhập xếp loại tốt nghiệp",
     "LANGUAGE": "Ngôn ngữ đào tạo chủ yếu",
-    "UPLOAD_CERT": "Tải lên văn bằng (Tùy chọn)",
+    "UPLOAD_CERT": "Tải lên hồ sơ văn bằng",
+    "FILE_FIELDS_REQUIRED": "Vui lòng tải lên đầy đủ tài liệu bắt buộc cho mỗi văn bằng đã nhập",
+    "FILE_REQUIRED_DEGREE": "Bắt buộc tải lên bằng tốt nghiệp",
+    "FILE_REQUIRED_TRANSCRIPT": "Bắt buộc tải lên bảng điểm học tập",
+    "FILE_REQUIRED_RECOGNITION": "Bắt buộc tải lên giấy công nhận văn bằng cho văn bằng nước ngoài",
+    "FILE_REQUIRED_ENGLISH_MEDIUM": "Bắt buộc tải lên giấy xác nhận chương trình chủ yếu bằng tiếng anh",
     "THESIS": "Tên luận văn/luận án",
     "ENTER_THESIS": "Nhập tên luận văn/luận án",
     "ADD_UNDERGRAD": "Thêm bằng đại học",
@@ -245,6 +250,7 @@
     "DOC_TYPE_DEGREE": "Bằng tốt nghiệp",
     "DOC_TYPE_TRANSCRIPT": "Bảng điểm học tập",
     "DOC_TYPE_RECOGNITION": "Giấy công nhận văn bằng (dành cho văn bằng nước ngoài)",
+    "DOC_TYPE_ENGLISH_MEDIUM": "Xác nhận chương trình chủ yếu bằng tiếng Anh",
     "ERROR": "Lỗi",
     "FILE_SIZE_LIMIT": "vượt quá giới hạn 5MB",
     "FILE_INVALID_TYPE": "có định dạng không hợp lệ",

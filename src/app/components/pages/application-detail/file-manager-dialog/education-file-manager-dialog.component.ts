@@ -7,7 +7,7 @@ import { AlertService } from '@/src/app/core/services/alert/alert.service';
 import { TokenService } from '@/src/app/core/services/auth/token.service';
 import { MbaService } from '@/src/app/core/services/mba/mba.service';
 
-type EducationGroup = 'degree' | 'transcript' | 'recognition';
+type EducationGroup = 'degree' | 'transcript' | 'recognition' | 'englishMedium';
 
 type DegreeLevel = 'undergraduate' | 'postgraduate';
 
@@ -74,7 +74,7 @@ interface ManagedFile {
                   <span class="text-xs text-gray-500">{{ filesByGroup.degree.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
                 </div>
                 <label
-                  class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
+                  class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
                   <div class="text-sm text-blue-700 font-medium">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</div>
                   <div class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</div>
                   <input
@@ -116,15 +116,29 @@ interface ManagedFile {
                     <div class="flex items-center gap-2">
                       <button
                         type="button"
-                        class="px-2 py-1 text-xs text-white bg-[#a68557] rounded hover:bg-[#8b6d47]"
-                        (click)="downloadFile(file)">
-                        {{ 'FILE_DIALOG.DOWNLOAD' | translate }}
+                        class="p-2 text-white bg-[#a68557] rounded hover:bg-[#8b6d47]"
+                        (click)="downloadFile(file)"
+                        [title]="'FILE_DIALOG.DOWNLOAD' | translate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
                       </button>
                       <button
                         type="button"
-                        class="px-2 py-1 text-xs text-white bg-red-600 rounded hover:bg-red-700"
-                        (click)="deleteUploadedFile('degree', $index)">
-                        {{ 'FILE_DIALOG.DELETE' | translate }}
+                        class="p-2 text-white bg-red-600 rounded hover:bg-red-700"
+                        (click)="deleteUploadedFile('degree', $index)"
+                        [title]="'FILE_DIALOG.DELETE' | translate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
                   </div>
@@ -139,7 +153,7 @@ interface ManagedFile {
                   <span class="text-xs text-gray-500">{{ filesByGroup.transcript.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
                 </div>
                 <label
-                  class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
+                  class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
                   <div class="text-sm text-blue-700 font-medium">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</div>
                   <div class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</div>
                   <input
@@ -181,15 +195,29 @@ interface ManagedFile {
                     <div class="flex items-center gap-2">
                       <button
                         type="button"
-                        class="px-2 py-1 text-xs text-white bg-[#a68557] rounded hover:bg-[#8b6d47]"
-                        (click)="downloadFile(file)">
-                        {{ 'FILE_DIALOG.DOWNLOAD' | translate }}
+                        class="p-2 text-white bg-[#a68557] rounded hover:bg-[#8b6d47]"
+                        (click)="downloadFile(file)"
+                        [title]="'FILE_DIALOG.DOWNLOAD' | translate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
                       </button>
                       <button
                         type="button"
-                        class="px-2 py-1 text-xs text-white bg-red-600 rounded hover:bg-red-700"
-                        (click)="deleteUploadedFile('transcript', $index)">
-                        {{ 'FILE_DIALOG.DELETE' | translate }}
+                        class="p-2 text-white bg-red-600 rounded hover:bg-red-700"
+                        (click)="deleteUploadedFile('transcript', $index)"
+                        [title]="'FILE_DIALOG.DELETE' | translate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
                   </div>
@@ -205,7 +233,7 @@ interface ManagedFile {
                   <span class="text-xs text-gray-500">{{ filesByGroup.recognition.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
                 </div>
                 <label
-                  class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
+                  class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
                   <div class="text-sm text-blue-700 font-medium">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</div>
                   <div class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</div>
                   <input
@@ -247,15 +275,108 @@ interface ManagedFile {
                     <div class="flex items-center gap-2">
                       <button
                         type="button"
-                        class="px-2 py-1 text-xs text-white bg-[#a68557] rounded hover:bg-[#8b6d47]"
-                        (click)="downloadFile(file)">
-                        {{ 'FILE_DIALOG.DOWNLOAD' | translate }}
+                        class="p-2 text-white bg-[#a68557] rounded hover:bg-[#8b6d47]"
+                        (click)="downloadFile(file)"
+                        [title]="'FILE_DIALOG.DOWNLOAD' | translate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
                       </button>
                       <button
                         type="button"
-                        class="px-2 py-1 text-xs text-white bg-red-600 rounded hover:bg-red-700"
-                        (click)="deleteUploadedFile('recognition', $index)">
-                        {{ 'FILE_DIALOG.DELETE' | translate }}
+                        class="p-2 text-white bg-red-600 rounded hover:bg-red-700"
+                        (click)="deleteUploadedFile('recognition', $index)"
+                        [title]="'FILE_DIALOG.DELETE' | translate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  }
+                </div>
+                }
+              </div>
+
+              <div class="p-4 bg-white border border-gray-200 rounded-lg">
+                <div class="flex items-center justify-between mb-3">
+                  <h4 class="font-semibold text-[#153a5e]">{{ 'FILE_DIALOG.DOC_TYPE_ENGLISH_MEDIUM' | translate }}</h4>
+                  <span class="text-xs text-gray-500">{{ filesByGroup.englishMedium.length }} {{ 'FILE_DIALOG.FILES' | translate }}</span>
+                </div>
+                <label
+                  class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100">
+                  <div class="text-sm text-blue-700 font-medium">{{ 'FILE_DIALOG.CLICK_TO_UPLOAD' | translate }}</div>
+                  <div class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</div>
+                  <input
+                    type="file"
+                    class="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    multiple
+                    [disabled]="uploadBlocked"
+                    (change)="onFileSelect($event, 'englishMedium')" />
+                </label>
+
+                @if (pendingFilesByGroup.englishMedium.length > 0) {
+                <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div class="text-sm font-semibold text-gray-700 mb-2">{{ 'FILE_DIALOG.SELECTED_NOT_SAVED' | translate }}</div>
+                  <div class="space-y-2">
+                    @for (file of pendingFilesByGroup.englishMedium; track $index) {
+                    <div class="flex items-center justify-between p-2 text-sm bg-white border border-yellow-300 rounded">
+                      <div class="truncate">
+                        <div class="font-medium text-gray-900 truncate">{{ file.name }}</div>
+                        <div class="text-xs text-gray-600">{{ formatFileSize(file.size) }}</div>
+                      </div>
+                      <button type="button" class="ml-2 text-red-600 hover:text-red-800" (click)="removePendingFile('englishMedium', $index)">
+                        {{ 'COMMON.REMOVE' | translate }}
+                      </button>
+                    </div>
+                    }
+                  </div>
+                </div>
+                }
+
+                @if (filesByGroup.englishMedium.length > 0) {
+                <div class="mt-3 space-y-2">
+                  @for (file of filesByGroup.englishMedium; track file.id || $index) {
+                  <div class="flex items-center justify-between p-2 text-sm bg-gray-50 border border-gray-200 rounded">
+                    <div class="truncate">
+                      <div class="font-medium text-gray-900 truncate">{{ file.fileName }}</div>
+                      <div class="text-xs text-gray-600">{{ getFileTypeLabel(file.fileType) }}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        class="p-2 text-white bg-[#a68557] rounded hover:bg-[#8b6d47]"
+                        (click)="downloadFile(file)"
+                        [title]="'FILE_DIALOG.DOWNLOAD' | translate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="p-2 text-white bg-red-600 rounded hover:bg-red-700"
+                        (click)="deleteUploadedFile('englishMedium', $index)"
+                        [title]="'FILE_DIALOG.DELETE' | translate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
                   </div>
@@ -311,8 +432,8 @@ export class EducationFileManagerDialogComponent implements OnChanges {
   uploadBlocked = false;
   blockMessage = 'Unable to load file categories, please try again.';
 
-  filesByGroup: Record<EducationGroup, ManagedFile[]> = { degree: [], transcript: [], recognition: [] };
-  pendingFilesByGroup: Record<EducationGroup, File[]> = { degree: [], transcript: [], recognition: [] };
+  filesByGroup: Record<EducationGroup, ManagedFile[]> = { degree: [], transcript: [], recognition: [], englishMedium: [] };
+  pendingFilesByGroup: Record<EducationGroup, File[]> = { degree: [], transcript: [], recognition: [], englishMedium: [] };
 
   private categoryIdByGroup: Partial<Record<EducationGroup, number>> = {};
 
@@ -321,7 +442,7 @@ export class EducationFileManagerDialogComponent implements OnChanges {
   }
 
   get showRecognitionForDialog(): boolean {
-    return this.degreeLevel === 'undergraduate' && this.showRecognition;
+    return this.showRecognition;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -468,8 +589,8 @@ export class EducationFileManagerDialogComponent implements OnChanges {
   private resolveCategoriesAndLoadFiles(): void {
     this.loading = true;
     this.uploadBlocked = false;
-    this.filesByGroup = { degree: [], transcript: [], recognition: [] };
-    this.pendingFilesByGroup = { degree: [], transcript: [], recognition: [] };
+    this.filesByGroup = { degree: [], transcript: [], recognition: [], englishMedium: [] };
+    this.pendingFilesByGroup = { degree: [], transcript: [], recognition: [], englishMedium: [] };
     this.categoryIdByGroup = {};
 
     const activeGroups = this.getActiveGroups();
@@ -564,6 +685,7 @@ export class EducationFileManagerDialogComponent implements OnChanges {
     const categoryCode = (file?.categoryCode || file?.CategoryCode || '').toUpperCase();
     if (categoryCode === 'BDDH') return 'transcript';
     if (categoryCode === 'CNVB') return 'recognition';
+    if (categoryCode === 'XNTA') return 'englishMedium';
 
     const studentFileType = Number(file?.studentFileType || file?.StudentFileType || 1);
     if (studentFileType === 2) return 'transcript';
@@ -586,11 +708,9 @@ export class EducationFileManagerDialogComponent implements OnChanges {
   }
 
   private getActiveGroups(): EducationGroup[] {
-    if (this.degreeLevel === 'postgraduate') {
-      return ['degree', 'transcript'];
-    }
-
-    return this.showRecognitionForDialog ? ['degree', 'transcript', 'recognition'] : ['degree', 'transcript'];
+    return this.showRecognitionForDialog
+      ? ['degree', 'transcript', 'recognition', 'englishMedium']
+      : ['degree', 'transcript'];
   }
 
   private getCategoryCode(group: EducationGroup): string {
@@ -602,11 +722,20 @@ export class EducationFileManagerDialogComponent implements OnChanges {
       return 'BDDH';
     }
 
-    return 'CNVB';
+    if (group === 'recognition') {
+      return 'CNVB';
+    }
+
+    return 'XNTA';
   }
 
   private flattenFiles(): ManagedFile[] {
-    return [...this.filesByGroup.degree, ...this.filesByGroup.transcript, ...this.filesByGroup.recognition];
+    return [
+      ...this.filesByGroup.degree,
+      ...this.filesByGroup.transcript,
+      ...this.filesByGroup.recognition,
+      ...this.filesByGroup.englishMedium
+    ];
   }
 
   private isValidFile(file: File): boolean {
