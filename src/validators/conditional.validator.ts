@@ -40,16 +40,12 @@ export function scoreRangeValidator(min: number, max: number): ValidatorFn {
 
     const score = parseFloat(control.value);
 
-    if (isNaN(score)) {
-      return { invalidScore: true };
-    }
-
-    if (score < min || score > max) {
+    if (isNaN(score) || score < min || score > max) {
       return {
         scoreRange: {
           min: min,
           max: max,
-          actual: score
+          actual: control.value
         }
       };
     }

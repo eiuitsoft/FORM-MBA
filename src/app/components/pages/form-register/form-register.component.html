@@ -1185,7 +1185,7 @@
                     type="text"
                     formControlName="score"
                     [placeholder]="'ENGLISH.SCORE_HINT' | translate"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                    [class]="getFieldClasses('englishQualifications.ielts.score', 'block w-full rounded-md shadow-sm px-3 py-2')" />
                   @if (englishQualifications.get('ielts.score')?.hasError('scoreRange') &&
                   englishQualifications.get('ielts.score')?.touched) {
                   <p class="text-red-600 text-xs mt-1">
@@ -1230,7 +1230,7 @@
                     type="text"
                     formControlName="score"
                     [placeholder]="'ENGLISH.SCORE_HINT' | translate"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                    [class]="getFieldClasses('englishQualifications.toefl.score', 'block w-full rounded-md shadow-sm px-3 py-2')" />
                   @if (englishQualifications.get('toefl.score')?.hasError('scoreRange') &&
                   englishQualifications.get('toefl.score')?.touched) {
                   <p class="text-red-600 text-xs mt-1">
@@ -1273,7 +1273,7 @@
                   type="text"
                   formControlName="name"
                   [placeholder]="'ENGLISH.OTHER_TEST' | translate"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                  [class]="getFieldClasses('englishQualifications.other.name', 'block w-full rounded-md shadow-sm px-3 py-2')" />
               </div>
               <div class="sm:col-span-4 grid grid-cols-3 gap-x-4">
                 <div class="col-span-1">
@@ -1281,7 +1281,7 @@
                     type="text"
                     formControlName="score"
                     [placeholder]="'ENGLISH.SCORE_HINT' | translate"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#a68557] focus:ring-[#a68557] px-3 py-2" />
+                    [class]="getFieldClasses('englishQualifications.other.score', 'block w-full rounded-md shadow-sm px-3 py-2')" />
                 </div>
                 <div class="col-span-2">
                   <app-custom-date-picker

@@ -186,23 +186,23 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
       {
         ielts: this.fb.group(
           {
-            score: ['', [scoreRangeValidator(0, 9)]],
-            date: ['', [maxDateValidator(), minDateYearValidator(1900)]]
+            score: ['', { validators: [scoreRangeValidator(0, 9)], updateOn: 'blur' }],
+            date: ['', { validators: [maxDateValidator(), minDateYearValidator(1900)], updateOn: 'blur' }]
           },
           { validators: completeQualificationValidator(['score', 'date']) }
         ),
         toefl: this.fb.group(
           {
-            score: ['', [scoreRangeValidator(0, 120)]],
-            date: ['', [maxDateValidator(), minDateYearValidator(1900)]]
+            score: ['', { validators: [scoreRangeValidator(0, 120)], updateOn: 'blur' }],
+            date: ['', { validators: [maxDateValidator(), minDateYearValidator(1900)], updateOn: 'blur' }]
           },
           { validators: completeQualificationValidator(['score', 'date']) }
         ),
         other: this.fb.group(
           {
-            name: [''],
-            score: [''],
-            date: ['', [maxDateValidator(), minDateYearValidator(1900)]]
+            name: ['', { updateOn: 'blur' }],
+            score: ['', { updateOn: 'blur' }],
+            date: ['', { validators: [maxDateValidator(), minDateYearValidator(1900)], updateOn: 'blur' }]
           },
           { validators: completeQualificationValidator(['name', 'score', 'date']) }
         ),
@@ -412,7 +412,7 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
     const engSection = 'SECTIONS.ENGLISH';
     const englishGroup = this.applicationForm.get('englishQualifications');
     if (englishGroup?.invalid) {
-      if (englishGroup.errors?.['atLeastOneEnglishQualification']) {
+      if (englishGroup.errors?.['atLeastOneRequired']) {
          invalidList.push(`${this._translate.instant(engSection)}: ${this._translate.instant('ENGLISH.AT_LEAST_ONE')}`);
       }
       checkAndAdd('englishQualifications.ielts.date', 'ENGLISH.DATE_HINT', 'IELTS');
@@ -1342,21 +1342,55 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
 
   private setupConditionalValidation(testType: 'ielts' | 'toefl' | 'other'): void {
     const testGroup = this.englishQualifications.get(testType) as FormGroup;
+    if (!testGroup) return;
     const scoreControl = testGroup.get('score');
     const dateControl = testGroup.get('date');
 
-    // When score changes
-    scoreControl?.valueChanges.subscribe((score) => {
-      if (score) {
-        dateControl?.setValidators([Validators.required, maxDateValidator()]);
-      } else {
-        dateControl?.setValidators([maxDateValidator()]);
-      }
-      dateControl?.updateValueAndValidity({ emitEvent: false });
-    });
+    if (testType === 'other') {
+      const nameControl = testGroup.get('name');
+      const controls = [nameControl, scoreControl, dateControl];
 
-    // When date changes
-    dateControl?.valueChanges.subscribe((date) => {
+      const updateOtherValidators = () => {
+        const hasAny = controls.some((c) => {
+          const val = c?.value;
+          return val !== null && val !== undefined && val.toString().trim() !== '';
+        });
+
+        if (hasAny) {
+          nameControl?.setValidators([Validators.required]);
+          scoreControl?.setValidators([Validators.required]);
+          dateControl?.setValidators([Validators.required, maxDateValidator(), minDateYearValidator(1900)]);
+        } else {
+          nameControl?.clearValidators();
+          scoreControl?.clearValidators();
+          dateControl?.setValidators([maxDateValidator(), minDateYearValidator(1900)]);
+        }
+
+        nameControl?.updateValueAndValidity({ emitEvent: false });
+        scoreControl?.updateValueAndValidity({ emitEvent: false });
+        dateControl?.updateValueAndValidity({ emitEvent: false });
+      };
+
+      controls.forEach((ctrl) => {
+        ctrl?.valueChanges.subscribe(() => updateOtherValidators());
+      });
+
+      // Run once initially
+      updateOtherValidators();
+      return;
+    }
+
+    // For IELTS/TOEFL:
+    const updateIeltsToeflValidators = () => {
+      const score = scoreControl?.value;
+      const date = dateControl?.value;
+
+      if (score) {
+        dateControl?.setValidators([Validators.required, maxDateValidator(), minDateYearValidator(1900)]);
+      } else {
+        dateControl?.setValidators([maxDateValidator(), minDateYearValidator(1900)]);
+      }
+
       if (date) {
         const validators = this.getScoreValidators(testType, true);
         scoreControl?.setValidators(validators);
@@ -1364,8 +1398,16 @@ export class FormRegisterComponent implements OnInit, OnDestroy {
         const validators = this.getScoreValidators(testType, false);
         scoreControl?.setValidators(validators);
       }
+
       scoreControl?.updateValueAndValidity({ emitEvent: false });
-    });
+      dateControl?.updateValueAndValidity({ emitEvent: false });
+    };
+
+    scoreControl?.valueChanges.subscribe(() => updateIeltsToeflValidators());
+    dateControl?.valueChanges.subscribe(() => updateIeltsToeflValidators());
+
+    // Run once initially
+    updateIeltsToeflValidators();
   }
 
   // Helper to easily access nested form groups in the template

@@ -454,25 +454,25 @@ export class ApplicationDetailComponent implements OnInit {
           ielts: this._fb.group(
             {
               id: [data.englishQualifications.ielts?.id],
-              score: [data.englishQualifications.ielts?.score || '', scoreRangeValidator(0, 9)],
-              date: [this.formatDateForInput(data.englishQualifications.ielts?.date), [maxDateValidator(), minDateYearValidator(1900)]]
+              score: [data.englishQualifications.ielts?.score || '', { validators: [scoreRangeValidator(0, 9)], updateOn: 'blur' }],
+              date: [this.formatDateForInput(data.englishQualifications.ielts?.date), { validators: [maxDateValidator(), minDateYearValidator(1900)], updateOn: 'blur' }]
             },
             { validators: completeQualificationValidator(['score', 'date']) }
           ),
           toefl: this._fb.group(
             {
               id: [data.englishQualifications.toefl?.id],
-              score: [data.englishQualifications.toefl?.score || '', scoreRangeValidator(0, 120)],
-              date: [this.formatDateForInput(data.englishQualifications.toefl?.date), [maxDateValidator(), minDateYearValidator(1900)]]
+              score: [data.englishQualifications.toefl?.score || '', { validators: [scoreRangeValidator(0, 120)], updateOn: 'blur' }],
+              date: [this.formatDateForInput(data.englishQualifications.toefl?.date), { validators: [maxDateValidator(), minDateYearValidator(1900)], updateOn: 'blur' }]
             },
             { validators: completeQualificationValidator(['score', 'date']) }
           ),
           other: this._fb.group(
             {
               id: [data.englishQualifications.other?.id],
-              name: [data.englishQualifications.other?.name || ''],
-              score: [data.englishQualifications.other?.score || ''],
-              date: [this.formatDateForInput(data.englishQualifications.other?.date), [maxDateValidator(), minDateYearValidator(1900)]]
+              name: [data.englishQualifications.other?.name || '', { updateOn: 'blur' }],
+              score: [data.englishQualifications.other?.score || '', { updateOn: 'blur' }],
+              date: [this.formatDateForInput(data.englishQualifications.other?.date), { validators: [maxDateValidator(), minDateYearValidator(1900)], updateOn: 'blur' }]
             },
             { validators: completeQualificationValidator(['name', 'score', 'date']) }
           )
@@ -510,6 +510,11 @@ export class ApplicationDetailComponent implements OnInit {
       })
     });
 
+    // Setup conditional validations for English qualifications
+    this.setupConditionalValidation('ielts');
+    this.setupConditionalValidation('toefl');
+    this.setupConditionalValidation('other');
+
     // Reset dirty state after initializing with existing data
     // Form should only be dirty when user actually changes something
     this.editForm.markAsPristine();
@@ -520,6 +525,7 @@ export class ApplicationDetailComponent implements OnInit {
   }
 
   saveChanges(): void {
+    this.editForm.markAllAsTouched();
     if (this.editForm.invalid) {
       this.logValidationErrors();
       this._alertService.error(
@@ -1264,5 +1270,85 @@ export class ApplicationDetailComponent implements OnInit {
         if (control?.invalid) console.log(`    - ${key}:`, control.errors);
       });
     }
+  }
+
+  private getScoreValidators(testType: 'ielts' | 'toefl' | 'other', includeRequired: boolean): any[] {
+    if (testType === 'ielts') {
+      return includeRequired ? [Validators.required, scoreRangeValidator(0, 9)] : [scoreRangeValidator(0, 9)];
+    } else if (testType === 'toefl') {
+      return includeRequired ? [Validators.required, scoreRangeValidator(0, 120)] : [scoreRangeValidator(0, 120)];
+    } else {
+      return includeRequired ? [Validators.required] : [];
+    }
+  }
+
+  private setupConditionalValidation(testType: 'ielts' | 'toefl' | 'other'): void {
+    const testGroup = this.englishQualificationsForm.get(testType) as FormGroup;
+    if (!testGroup) return;
+    const scoreControl = testGroup.get('score');
+    const dateControl = testGroup.get('date');
+
+    if (testType === 'other') {
+      const nameControl = testGroup.get('name');
+      const controls = [nameControl, scoreControl, dateControl];
+
+      const updateOtherValidators = () => {
+        const hasAny = controls.some((c) => {
+          const val = c?.value;
+          return val !== null && val !== undefined && val.toString().trim() !== '';
+        });
+
+        if (hasAny) {
+          nameControl?.setValidators([Validators.required]);
+          scoreControl?.setValidators([Validators.required]);
+          dateControl?.setValidators([Validators.required, maxDateValidator(), minDateYearValidator(1900)]);
+        } else {
+          nameControl?.clearValidators();
+          scoreControl?.clearValidators();
+          dateControl?.setValidators([maxDateValidator(), minDateYearValidator(1900)]);
+        }
+
+        nameControl?.updateValueAndValidity({ emitEvent: false });
+        scoreControl?.updateValueAndValidity({ emitEvent: false });
+        dateControl?.updateValueAndValidity({ emitEvent: false });
+      };
+
+      controls.forEach((ctrl) => {
+        ctrl?.valueChanges.subscribe(() => updateOtherValidators());
+      });
+
+      // Run once initially
+      updateOtherValidators();
+      return;
+    }
+
+    // For IELTS/TOEFL:
+    const updateIeltsToeflValidators = () => {
+      const score = scoreControl?.value;
+      const date = dateControl?.value;
+
+      if (score) {
+        dateControl?.setValidators([Validators.required, maxDateValidator(), minDateYearValidator(1900)]);
+      } else {
+        dateControl?.setValidators([maxDateValidator(), minDateYearValidator(1900)]);
+      }
+
+      if (date) {
+        const validators = this.getScoreValidators(testType, true);
+        scoreControl?.setValidators(validators);
+      } else {
+        const validators = this.getScoreValidators(testType, false);
+        scoreControl?.setValidators(validators);
+      }
+
+      scoreControl?.updateValueAndValidity({ emitEvent: false });
+      dateControl?.updateValueAndValidity({ emitEvent: false });
+    };
+
+    scoreControl?.valueChanges.subscribe(() => updateIeltsToeflValidators());
+    dateControl?.valueChanges.subscribe(() => updateIeltsToeflValidators());
+
+    // Run once initially
+    updateIeltsToeflValidators();
   }
 }

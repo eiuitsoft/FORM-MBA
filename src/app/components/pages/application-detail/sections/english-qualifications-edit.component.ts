@@ -163,6 +163,15 @@ import { CustomDatePickerComponent } from '../../../shared/custom-date-picker/cu
           </button>
           <p class="text-xs text-gray-500 mt-1">{{ 'COMMON.FILE_HINT' | translate }}</p>
         </div>
+
+        <!-- Validation message for at least one English qualification -->
+        @if (formGroup.hasError('atLeastOneRequired') && formGroup.touched) {
+          <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p class="text-red-600 text-sm">
+              {{ 'ENGLISH.AT_LEAST_ONE' | translate }}
+            </p>
+          </div>
+        }
       </div>
     </section>
 
